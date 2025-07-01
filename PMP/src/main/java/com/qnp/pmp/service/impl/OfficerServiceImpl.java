@@ -96,7 +96,7 @@ public class OfficerServiceImpl implements OfficeService {
             officer.setPosition(doc.getString("position"));
             officer.setHometown(doc.getString("hometown"));
             officer.setUnit(doc.getString("unit"));
-            officer.setAvatar(doc.getString("avatar")); // nếu bạn có field ảnh
+            officer.setAvatar(doc.getString("avatar")); 
             result.add(officer);
         }
 
