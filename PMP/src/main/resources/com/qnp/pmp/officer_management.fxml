@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane stylesheets="@style.css" xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.qnp.pmp.controllers.OfficeController"
+            prefHeight="500.0" prefWidth="800.0">
+
+    <VBox spacing="10.0" AnchorPane.topAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.bottomAnchor="10.0">
+
+        <!-- Thanh tìm kiếm và lọc -->
+        <HBox spacing="10">
+            <TextField fx:id="searchField" promptText="Tìm theo họ tên, mã số..." HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="statusFilter" promptText="Trạng thái công tác"/>
+            <Button text="Thêm cán bộ" onAction="#handleAddOfficer"/>
+        </HBox>
+
+        <!-- Bảng danh sách cán bộ -->
+        <TableView fx:id="officerTable" prefHeight="350.0" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="codeColumn" text="Mã số" prefWidth="80"/>
+                <TableColumn fx:id="fullNameColumn" text="Họ tên" prefWidth="120"/>
+                <TableColumn fx:id="birthYearColumn" text="Năm sinh" prefWidth="80"/>
+                <TableColumn fx:id="rankColumn" text="Cấp bậc" prefWidth="80"/>
+                <TableColumn fx:id="positionColumn" text="Chức vụ" prefWidth="100"/>
+                <TableColumn fx:id="unitColumn" text="Đơn vị" prefWidth="100"/>
+                <TableColumn fx:id="statusColumn" text="Trạng thái" prefWidth="100"/>
+                <TableColumn fx:id="avatarColumn" text="Ảnh đại diện" prefWidth="120"/>
+            </columns>
+        </TableView>
+
+        <!-- Nút thao tác dưới -->
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <Button text="Chi tiết" onAction="#handleViewDetail"/>
+            <Button text="Sửa" onAction="#handleEditOfficer"/>
+            <Button text="Xoá" onAction="#handleDeleteOfficer"/>
+        </HBox>
+
+    </VBox>
+
+</AnchorPane>

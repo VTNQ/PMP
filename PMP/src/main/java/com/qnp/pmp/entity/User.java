@@ -11,9 +11,8 @@ public class User {
     private String role;
     private String fullName;
     private String status;
-    private String lastLogin;
     private String email;
     private String phoneNumber;
     private Date createdAt;
-    private int loginCount;
+
 }
