@@ -6,24 +6,39 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 import java.awt.TextField;
+import java.io.IOException;
 
 public class OfficeController {
 
     // FXML bindings
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> statusFilter;
-    @FXML private TableView<OfficerDTO> officerTable;
-    @FXML private TableColumn<OfficerDTO, String> codeColumn;
-    @FXML private TableColumn<OfficerDTO, String> fullNameColumn;
-    @FXML private TableColumn<OfficerDTO, Integer> birthYearColumn;
-    @FXML private TableColumn<OfficerDTO, String> rankColumn;
-    @FXML private TableColumn<OfficerDTO, String> positionColumn;
-    @FXML private TableColumn<OfficerDTO, String> unitColumn;
-    @FXML private TableColumn<OfficerDTO, String> statusColumn;
-    @FXML private TableColumn<OfficerDTO, String> avatarColumn;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private ComboBox<String> statusFilter;
+    @FXML
+    private TableView<OfficerDTO> officerTable;
+    @FXML
+    private TableColumn<OfficerDTO, String> codeColumn;
+    @FXML
+    private TableColumn<OfficerDTO, String> fullNameColumn;
+    @FXML
+    private TableColumn<OfficerDTO, Integer> birthYearColumn;
+    @FXML
+    private TableColumn<OfficerDTO, String> rankColumn;
+    @FXML
+    private TableColumn<OfficerDTO, String> positionColumn;
+    @FXML
+    private TableColumn<OfficerDTO, String> unitColumn;
+    @FXML
+    private TableColumn<OfficerDTO, String> statusColumn;
+    @FXML
+    private TableColumn<OfficerDTO, String> avatarColumn;
 
     private final ObservableList<OfficerDTO> officerList = FXCollections.observableArrayList();
 
@@ -47,7 +62,16 @@ public class OfficeController {
 
     @FXML
     private void handleAddOfficer() {
-        System.out.println("Thêm cán bộ");
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/views/AddOfficer.fxml"));
+            Scene scene = new Scene(loader.load());
+            Stage stage = new Stage();
+            stage.setTitle("Thêm cán bộ");
+            stage.setScene(scene);
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // TODO: mở form thêm mới
     }
 
