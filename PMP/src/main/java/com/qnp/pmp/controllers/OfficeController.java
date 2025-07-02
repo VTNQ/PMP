@@ -11,7 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
-import java.awt.TextField;
+
 import java.io.IOException;
 
 public class OfficeController {
@@ -63,7 +63,7 @@ public class OfficeController {
     @FXML
     private void handleAddOfficer() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/views/AddOfficer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/AddOfficerDialog.fxml"));
             Scene scene = new Scene(loader.load());
             Stage stage = new Stage();
             stage.setTitle("Thêm cán bộ");
