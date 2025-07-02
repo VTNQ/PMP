@@ -54,4 +54,21 @@ public class UserServiceImpl implements UserService {
 
         return null;
     }
+
+    @Override
+    public User getUser() {
+      Document query=new Document("role",new Document("$ne","SUPERADMIN"));
+      Document found = usersCollection.find(query).first();
+      if (found != null) {
+          User user = new User();
+          user.setUsername(found.getString("username"));
+          user.setPassword(null);
+          user.setRole(found.getString("role"));
+          user.setStatus(found.getString("status"));
+          user.setEmail(found.getString("email"));
+          user.setPhoneNumber(found.getString("phoneNumber"));
+          return user;
+      }
+      return null;
+    }
 }

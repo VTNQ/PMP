@@ -1,0 +1,55 @@
+/* Layout chính */
+.root {
+    -fx-background-color: #f9f9f9;
+    -fx-background-radius: 8;
+    -fx-border-color: #ddd;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+}
+
+/* Tiêu đề */
+.label-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333;
+}
+
+/* Trường nhập liệu và ComboBox */
+.text-field, .combo-box {
+    -fx-pref-height: 36px;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+}
+
+/* Nhãn chọn ảnh */
+.image-label {
+    -fx-text-fill: #888;
+    -fx-font-style: italic;
+}
+
+/* Nút mặc định */
+.button {
+    -fx-background-color: #006eff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 6 16;
+    -fx-cursor: hand;
+}
+
+/* Hover */
+.button:hover {
+    -fx-background-color: #0055cc;
+}
+
+/* Nút phụ (Huỷ) */
+.button:cancel {
+    -fx-background-color: #e0e0e0;
+    -fx-text-fill: #333;
+}
+
+.button:cancel:hover {
+    -fx-background-color: #c5c5c5;
+}

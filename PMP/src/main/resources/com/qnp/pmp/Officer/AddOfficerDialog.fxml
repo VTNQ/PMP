@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.collections.FXCollections?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.qnp.pmp.controllers.AddOfficerController"
+      spacing="15" stylesheets="@AddOffice.css"
+      style="-fx-background-color: #f9f9f9; -fx-border-color: #cccccc; -fx-border-radius: 8; -fx-background-radius: 8;">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <!-- Tiêu đề -->
+    <Label text="Thêm Cán Bộ"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;">
+        <VBox.margin>
+            <Insets bottom="15"/>
+        </VBox.margin>
+    </Label>
+
+    <!-- Form nhập liệu -->
+    <GridPane hgap="15" vgap="12">
+        <columnConstraints>
+            <ColumnConstraints halignment="RIGHT" prefWidth="100"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <Label text="Mã số:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="codeField" promptText="Nhập mã số" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Họ tên:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="fullNameField" promptText="Nhập họ tên" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Năm sinh:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <TextField fx:id="birthYearField" promptText="VD: 1970" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Cấp bậc:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="rankField" promptText="VD: Đại tá" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+        <Label text="Chức vụ:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="positionField" promptText="VD: Trưởng phòng" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+        <Label text="Đơn vị:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="unitField" promptText="VD: Phòng Kỹ thuật" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+        <Label text="Trạng thái:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="statusComboBox" promptText="Chọn trạng thái" GridPane.rowIndex="6" GridPane.columnIndex="1">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Đang công tác"/>
+                    <String fx:value="Nghỉ hưu"/>
+                    <String fx:value="Khác"/>
+                </FXCollections>
+            </items>
+        </ComboBox>
+    </GridPane>
+
+    <!-- Chọn ảnh -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="Chọn ảnh" onAction="#handleChooseImage"/>
+        <Label fx:id="imageLabel" text="Chưa chọn ảnh" style="-fx-text-fill: #888;"/>
+    </HBox>
+
+    <!-- Nút thao tác -->
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Huỷ" onAction="#handleCancel"
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;"/>
+        <Button text="Lưu" onAction="#handleSave"
+                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 5;"/>
+    </HBox>
+</VBox>
