@@ -1,14 +1,18 @@
 package com.qnp.pmp.service.impl;
 
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.qnp.pmp.config.MongoDBConnection;
+import com.qnp.pmp.dto.UserViewModel;
 import com.qnp.pmp.entity.User;
 import com.qnp.pmp.service.UserService;
 import org.bson.Document;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserServiceImpl implements UserService {
     private final MongoCollection<Document> usersCollection;
@@ -70,5 +74,21 @@ public class UserServiceImpl implements UserService {
           return user;
       }
       return null;
+    }
+
+    @Override
+    public List<UserViewModel> getUserByRoleUser() {
+        Document query = new Document("role", "USER");
+        FindIterable<Document> results = usersCollection.find(query);
+
+        List<UserViewModel> users = new ArrayList<>();
+        for (Document result : results) {
+            String username = result.getString("username");
+            String status = result.getString("status");
+
+            UserViewModel user = new UserViewModel(username, status);
+            users.add(user);
+        }
+        return users;
     }
 }

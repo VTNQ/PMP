@@ -6,6 +6,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
 import com.qnp.pmp.config.MongoDBConnection;
 import com.qnp.pmp.dto.OfficerDTO;
+import com.qnp.pmp.dto.OfficerViewDTO;
 import com.qnp.pmp.generic.GeneralService;
 import com.qnp.pmp.service.OfficeService;
 import org.bson.Document;
@@ -101,5 +102,27 @@ public class OfficerServiceImpl implements OfficeService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<OfficerViewDTO> getOfficerAllowanceStatus() {
+        Bson filter = Filters.eq("allowanceStatus", true);
+        FindIterable<Document> results = officerCollection.find(filter);
+        List<OfficerViewDTO> officers = new ArrayList<>();
+        for (Document doc : results) {
+            String id = doc.getString("_id");
+            String code = doc.getString("code");
+            String fullName = doc.getString("fullName");
+            int birthYear = doc.getInteger("birthYear");
+            String rank = doc.getString("rank");
+            String position = doc.getString("position");
+            String hometown = doc.getString("hometown");
+            String unit = doc.getString("unit");
+            String workingStatus = doc.getString("workingStatus");
+            String avatar = doc.getString("avatar");
+            OfficerViewDTO officerViewDTO = new OfficerViewDTO(id, code, fullName, birthYear, rank, position, hometown, unit, workingStatus, avatar);
+            officers.add(officerViewDTO);
+        }
+        return officers;
     }
 }
