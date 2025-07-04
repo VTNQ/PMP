@@ -1,0 +1,64 @@
+/* Tiêu đề */
+.heading {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0, 0, 1);
+}
+
+/* Trường nhập liệu */
+.text-field, .password-field {
+    -fx-font-size: 15px;
+    -fx-padding: 10 14;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dcdcdc;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-pref-width: 300;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 1, 0, 0, 1);
+}
+
+/* Khi focus vào text field */
+.text-field:focused, .password-field:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: #f0faff;
+}
+
+/* Nút đăng ký */
+.register-button {
+    -fx-background-color: linear-gradient(to right, #4CAF50, #43a047);
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 10 0;
+    -fx-cursor: hand;
+    -fx-pref-width: 150;
+}
+
+/* Hover nút đăng ký */
+.register-button:hover {
+    -fx-background-color: linear-gradient(to right, #45a049, #388e3c);
+}
+
+/* Link đăng nhập */
+.login-link {
+    -fx-text-fill: #2980b9;
+    -fx-font-weight: bold;
+    -fx-underline: true;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+}
+
+/* Hover link */
+.login-link:hover {
+    -fx-text-fill: #1c638c;
+}
+
+/* Label thông báo lỗi hoặc thành công */
+#errorLabel {
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+    -fx-max-width: 300;
+    -fx-alignment: center;
+}

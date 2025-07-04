@@ -3,6 +3,8 @@ module com.qnp.pmp {
     requires org.mongodb.driver.sync.client;
     requires org.mongodb.driver.core;
     requires org.mongodb.bson;
+    requires org.apache.poi.ooxml;      // XSSFWorkbook, .xlsx
+    requires org.apache.poi.poi;
     requires static lombok;
     requires com.jfoenix;
     requires java.desktop;
