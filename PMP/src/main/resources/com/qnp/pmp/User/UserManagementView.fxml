@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.qnp.pmp.controllers.UserManagementController"
+            prefHeight="400.0" prefWidth="600.0" stylesheets="@user.css">
+
+    <top>
+        <Label text="👤 Quản Lý Người Dùng" style="-fx-font-size: 22px;-fx-font-weight: bold;" BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="20" right="0" bottom="20" left="0"/>
+            </padding>
+        </Label>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <TableView fx:id="userTable" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="usernameCol" text="Tài khoản" prefWidth="150"/>
+                    <TableColumn fx:id="statusCol" text="Trạng thái" prefWidth="120"/>
+                    <TableColumn fx:id="actionsCol" text="Thao tác" prefWidth="250"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Button text="🔄 Làm mới" onAction="#refreshTable"/>
+            <Button text="🔐 Đổi mật khẩu" onAction="#changePassword"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

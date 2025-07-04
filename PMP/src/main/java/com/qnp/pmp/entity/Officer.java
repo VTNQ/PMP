@@ -15,7 +15,7 @@ public class Officer {
     private String hometown;
     private String unit;
     private Date hardshipStartDate;
-    private String allowanceStatus;
+    private boolean allowanceStatus;
     private int totalConvertedMonths;
     private int totalConvertedYears;
     private boolean oneTimeSupport;

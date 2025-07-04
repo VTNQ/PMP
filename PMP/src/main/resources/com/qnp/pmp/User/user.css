@@ -1,0 +1,65 @@
+/* style.css */
+
+/* ===== Toàn bộ giao diện ===== */
+.root {
+    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-background-color: #f5f7fa;
+}
+
+/* ===== Tiêu đề ===== */
+.label {
+    -fx-text-fill: #2c3e50;
+}
+
+/* ===== Bảng ===== */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #dcdfe3;
+    -fx-border-width: 1px;
+    -fx-table-cell-border-color: #e5e7eb;
+    -fx-padding: 10px;
+    -fx-effect: dropshadow(one-pass-box, rgba(0, 0, 0, 0.05), 5, 0.0, 0, 2);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #34495e;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+}
+
+.table-view .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-row-cell:filled:selected {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+}
+
+/* ===== Nút ===== */
+.button {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-padding: 6 12;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #2980b9;
+}
+
+.button:pressed {
+    -fx-background-color: #1f618d;
+}
+
+/* ===== HBox / VBox spacing và padding ===== */
+.hbox, .vbox {
+    -fx-spacing: 10px;
+    -fx-padding: 10px;
+}

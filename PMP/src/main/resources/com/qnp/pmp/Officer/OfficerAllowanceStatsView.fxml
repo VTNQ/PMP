@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.qnp.pmp.controllers.OfficerAllowanceStatsViewController"
+            prefHeight="700" prefWidth="500" stylesheets="@officer.css">
+    <top>
+        <Label text="📊 Danh sách cán bộ đang hưởng phụ cấp"
+               style="-fx-font-size: 20px; -fx-font-weight: bold;"
+               BorderPane.alignment="CENTER">
+            <padding>
+                <Insets top="20" bottom="10"/>
+            </padding>
+        </Label>
+    </top>
+    <center>
+        <VBox spacing="10" >
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+            <TableView fx:id="officerTable" prefHeight="400">
+                <columns>
+                    <TableColumn fx:id="fullNameCol" text="Họ tên" prefWidth="200"/>
+                    <TableColumn fx:id="positionCol" text="Chức vụ" prefWidth="200"/>
+
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label fx:id="totalLabel" text="Tổng: 0 cán bộ"/>
+            <Button text="🔄 Làm mới" onAction="#refreshTable"/>
+        </HBox>
+
+    </bottom>
+</BorderPane>
