@@ -10,13 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import javafx.stage.FileChooser;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.File;
-import java.io.FileInputStream;
 
 import java.io.IOException;
 
@@ -62,7 +56,6 @@ public class OfficeController {
         // Gắn dữ liệu mẫu (tạm thời)
         officerTable.setItems(officerList);
 
-
         // Test data
 
     }
@@ -104,71 +97,5 @@ public class OfficeController {
             System.out.println("Chi tiết: " + selected.getFullName());
             // TODO: hiển thị thông tin chi tiết
         }
-    }
-    @FXML
-    private void handleImportFromExcel() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Chọn tệp Excel");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
-        File file = fileChooser.showOpenDialog(new Stage());
-
-        if (file != null) {
-            try (FileInputStream fis = new FileInputStream(file);
-                 Workbook workbook = new XSSFWorkbook(fis)) {
-                Sheet sheet = workbook.getSheetAt(0);
-
-                ObservableList<OfficerDTO> imported = FXCollections.observableArrayList();
-                for (Row row : sheet) {
-                    if (row.getRowNum() == 0) continue; // bỏ header
-
-                    OfficerDTO dto = new OfficerDTO();
-                    dto.setCode(getCellString(row, 0));
-                    dto.setFullName(getCellString(row, 1));
-                    dto.setBirthYear(parseBirthYear(row, 2));
-                    dto.setRank(getCellString(row, 3));
-                    dto.setPosition(getCellString(row, 4));
-                    dto.setUnit(getCellString(row, 5));
-                    dto.setWorkingStatus(getCellString(row, 6));
-                    dto.setAvatar(getCellString(row, 7)); // hoặc để trống nếu không có
-
-                    if (!dto.getCode().isEmpty()) {
-                        imported.add(dto);
-                    }
-                }
-
-                officerList.addAll(imported); // Gán vào bảng
-                officerTable.setItems(officerList);
-
-                showAlert("Import thành công", "Đã import " + imported.size() + " cán bộ.", Alert.AlertType.INFORMATION);
-            } catch (Exception e) {
-                e.printStackTrace();
-                showAlert("Lỗi", "Không thể đọc file Excel.", Alert.AlertType.ERROR);
-            }
-        }
-    }
-
-    private String getCellString(Row row, int colIndex) {
-        Cell cell = row.getCell(colIndex);
-        return (cell != null) ? cell.toString().trim() : "";
-    }
-
-    private int parseBirthYear(Row row, int colIndex) {
-        try {
-            Cell cell = row.getCell(colIndex);
-            if (cell != null && cell.getCellType() == CellType.NUMERIC) {
-                return (int) cell.getNumericCellValue();
-            } else if (cell != null) {
-                return Integer.parseInt(cell.toString().trim());
-            }
-        } catch (Exception ignored) {}
-        return 0;
-    }
-
-    private void showAlert(String title, String message, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 }
