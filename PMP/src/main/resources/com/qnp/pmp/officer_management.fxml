@@ -17,6 +17,7 @@
             <TextField fx:id="searchField" promptText="Tìm theo họ tên, mã số..." HBox.hgrow="ALWAYS"/>
             <ComboBox fx:id="statusFilter" promptText="Trạng thái công tác"/>
             <Button text="Thêm cán bộ" onAction="#handleAddOfficer"/>
+            <Button text="Import từ Excel" onAction="#handleImportFromExcel"/>
         </HBox>
 
         <!-- Bảng danh sách cán bộ -->

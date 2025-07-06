@@ -68,7 +68,6 @@
 
     <!-- Nút thao tác -->
     <HBox spacing="10" alignment="CENTER_RIGHT">
-        <Button text="Import từ Excel" onAction="#handleImportFromExcel"/>
         <Button text="Huỷ" onAction="#handleCancel"
                 style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-background-radius: 5;"/>
         <Button text="Lưu" onAction="#handleSave"
