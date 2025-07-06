@@ -9,7 +9,7 @@ public class MySQLConnection {
 
     private static String port="22125";
     private static String username="avnadmin";
-    private static String password="";
+    private static String password="AVNS_FJWVKHMbZSte1hZwx4K";
     private static String database="PersonalManagement";
     private static String url="jdbc:mysql://" + host + ":" + port + "/" + database + "?sslmode=require";
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
