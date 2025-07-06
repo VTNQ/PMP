@@ -10,6 +10,7 @@ module com.qnp.pmp {
     requires java.desktop;
     requires javafx.controls;
     requires jbcrypt;
+    requires java.sql;
     opens com.qnp.pmp to javafx.fxml;
     exports com.qnp.pmp;
 
