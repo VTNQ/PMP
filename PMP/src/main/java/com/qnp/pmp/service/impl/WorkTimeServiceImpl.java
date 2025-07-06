@@ -3,23 +3,16 @@ package com.qnp.pmp.service.impl;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
-import com.qnp.pmp.config.MongoDBConnection;
 import com.qnp.pmp.dto.WorkTimeDTO;
 import com.qnp.pmp.service.WorkTimeService;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class WorkTimeServiceImpl implements WorkTimeService {
 
-    private final MongoCollection<Document> collection;
-
-    public WorkTimeServiceImpl() {
-        this.collection = MongoDBConnection.getDatabase().getCollection("work_times");
-    }
 
     private WorkTimeDTO fromDocument(Document doc) {
         WorkTimeDTO dto = new WorkTimeDTO();
@@ -47,50 +40,31 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
     @Override
     public void insert(WorkTimeDTO dto) {
-        collection.insertOne(toDocument(dto));
+
     }
 
     @Override
     public void update(WorkTimeDTO dto) {
-        Bson filter = Filters.eq("id", dto.getId());
-        Bson updates = Updates.combine(
-                Updates.set("officer_id", dto.getOfficerId()),
-                Updates.set("start_date", dto.getStartDate()),
-                Updates.set("end_date", dto.getEndDate()),
-                Updates.set("working_days_count", dto.getWorkingDaysCount()),
-                Updates.set("is_month_calculated", dto.isMonthCalculated()),
-                Updates.set("is_manual_month_calculation", dto.isManualMonthCalculation()),
-                Updates.set("note", dto.getNote())
-        );
-        collection.updateOne(filter, updates);
+
     }
 
     @Override
     public void delete(String id) {
-        collection.deleteOne(Filters.eq("id", id));
+
     }
 
     @Override
     public WorkTimeDTO findById(String id) {
-        Document doc = collection.find(Filters.eq("id", id)).first();
-        return doc != null ? fromDocument(doc) : null;
+       return null;
     }
 
     @Override
     public List<WorkTimeDTO> findByOfficerId(String officerId) {
-        List<WorkTimeDTO> list = new ArrayList<>();
-        for (Document doc : collection.find(Filters.eq("officer_id", officerId))) {
-            list.add(fromDocument(doc));
-        }
-        return list;
+        return null;
     }
 
     @Override
     public List<WorkTimeDTO> findAll() {
-        List<WorkTimeDTO> list = new ArrayList<>();
-        for (Document doc : collection.find()) {
-            list.add(fromDocument(doc));
-        }
-        return list;
+       return null;
     }
 }
