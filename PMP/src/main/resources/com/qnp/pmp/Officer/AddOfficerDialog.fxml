@@ -30,23 +30,23 @@
             <ColumnConstraints hgrow="ALWAYS"/>
         </columnConstraints>
 
-        <Label text="Mã số:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-        <TextField fx:id="codeField" promptText="Nhập mã số" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
 
         <Label text="Họ tên:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <TextField fx:id="fullNameField" promptText="Nhập họ tên" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
+        <Label text="Số điện thoại:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="phoneField" promptText="Nhập số điện thoại" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
         <Label text="Năm sinh:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="birthYearField" promptText="VD: 1970" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-
-        <Label text="Cấp bậc:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <TextField fx:id="rankField" promptText="VD: Đại tá" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-
-        <Label text="Chức vụ:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <TextField fx:id="positionField" promptText="VD: Trưởng phòng" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <TextField fx:id="levelIdField" promptText="VD: 1970" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
         <Label text="Đơn vị:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
         <TextField fx:id="unitField" promptText="VD: Phòng Kỹ thuật" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Đơn vị:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="sinceField" promptText="VD: Phòng Kỹ thuật" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Đơn vị:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="identifierField" promptText="VD: Phòng Kỹ thuật" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+        <Label text="Đơn vị:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="homeTownField" promptText="VD: Phòng Kỹ thuật" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
         <Label text="Trạng thái:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
         <ComboBox fx:id="statusComboBox" promptText="Chọn trạng thái" GridPane.rowIndex="6" GridPane.columnIndex="1">
