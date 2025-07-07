@@ -7,6 +7,7 @@ import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 
@@ -25,9 +26,9 @@ public class AddOfficerController {
     @FXML
     private TextField fullNameField;
     @FXML
-    private TextField levelIdField;
+    private ComboBox<String> levelIdField;
     @FXML
-    private TextField unitField; // Đã sửa
+    private TextField unitField;
     @FXML
     private TextField sinceField;
     @FXML
@@ -37,26 +38,9 @@ public class AddOfficerController {
     @FXML
     private ComboBox<String> statusComboBox;
     @FXML
-    private Label imageLabel;
-    private File selectedImage;
-
-    @FXML
-    private void handleChooseImage() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Chọn ảnh đại diện");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg")
-        );
-        selectedImage = fileChooser.showOpenDialog(null);
-        if (selectedImage != null) {
-            imageLabel.setText(selectedImage.getName());
-        }
-    }
-
-    @FXML
     private void handleCancel() {
-        System.out.println("Hủy bỏ thêm cán bộ");
-        // TODO: close window
+        Stage stage=(Stage) fullNameField.getScene().getWindow();
+        stage.close();
     }
 
     @FXML
@@ -67,12 +51,12 @@ public class AddOfficerController {
             officer.setUnit(unitField.getText());
             officer.setPhone(phoneField.getText());
             officer.setFullName(fullNameField.getText());
-            officer.setLevelId(Integer.parseInt(levelIdField.getText()));
             officer.setSince(sinceField.getText());
             officer.setIdentifier(identifierField.getText());
             officer.setHomeTown(homeTownField.getText());
             officeService.saveOfficer(officer);
             Dialog.displaySuccessFully("Luu cán bộ thành công");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
