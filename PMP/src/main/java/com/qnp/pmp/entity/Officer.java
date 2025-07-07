@@ -6,21 +6,12 @@ import java.util.Date;
 
 @Data
 public class Officer {
-    private String id;
-    private String code;
+    private int id;
     private String fullName;
-    private int birthYear;
-    private String rank;
-    private String position;
-    private String hometown;
+    private String phone;
+    private int levelId;
     private String unit;
-    private Date hardshipStartDate;
-    private boolean allowanceStatus;
-    private int totalConvertedMonths;
-    private int totalConvertedYears;
-    private boolean oneTimeSupport;
-    private String note;
-    private String gender;
-    private String workingStatus;
-    private String avatar;
+    private String since;
+    private String identifier;
+    private String homeTown;
 }

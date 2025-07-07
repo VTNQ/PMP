@@ -1,78 +1,65 @@
 package com.qnp.pmp.controllers;
 
 import com.qnp.pmp.dialog.Dialog;
-import com.qnp.pmp.dto.OfficerDTO;
+import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.service.OfficeService;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 import java.io.File;
-import java.io.FileInputStream;
 
 public class AddOfficerController {
     private final OfficeService officeService;
-    public AddOfficerController(){
-        this.officeService=new OfficerServiceImpl();
-    }
-    @FXML private TextField codeField;
-    @FXML private TextField fullNameField;
-    @FXML private TextField birthYearField;
-    @FXML private TextField rankField;
-    @FXML private TextField positionField;
-    @FXML private TextField unitField; // Đã sửa
-    @FXML private ComboBox<String> statusComboBox;
-    @FXML private Label imageLabel;
-    private File selectedImage;
-    @FXML
-    private void handleChooseImage() {
-        FileChooser fileChooser=new FileChooser();
-        fileChooser.setTitle("Chọn ảnh đại diện");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg")
-        );
-        selectedImage = fileChooser.showOpenDialog(null);
-        if (selectedImage != null) {
-            imageLabel.setText(selectedImage.getName());
-        }
+
+    public AddOfficerController() {
+        this.officeService = new OfficerServiceImpl();
     }
 
     @FXML
+    private TextField phoneField;
+    @FXML
+    private TextField fullNameField;
+    @FXML
+    private ComboBox<String> levelIdField;
+    @FXML
+    private TextField unitField;
+    @FXML
+    private TextField sinceField;
+    @FXML
+    private TextField identifierField;
+    @FXML
+    private TextField homeTownField;
+    @FXML
+    private ComboBox<String> statusComboBox;
+    @FXML
     private void handleCancel() {
-        System.out.println("Hủy bỏ thêm cán bộ");
-        // TODO: close window
+        Stage stage=(Stage) fullNameField.getScene().getWindow();
+        stage.close();
     }
 
     @FXML
     private void handleSave() {
-    try {
-        if (codeField.getText().isEmpty() || fullNameField.getText().isEmpty()) {
-            System.out.println("Vui lòng điền đầy đủ thông tin.");
-            return;
+        try {
+
+            Officer officer = new Officer();
+            officer.setUnit(unitField.getText());
+            officer.setPhone(phoneField.getText());
+            officer.setFullName(fullNameField.getText());
+            officer.setSince(sinceField.getText());
+            officer.setIdentifier(identifierField.getText());
+            officer.setHomeTown(homeTownField.getText());
+            officeService.saveOfficer(officer);
+            Dialog.displaySuccessFully("Luu cán bộ thành công");
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        OfficerDTO officer = new OfficerDTO();
-        officer.setCode(codeField.getText());
-        officer.setFullName(fullNameField.getText());
-        officer.setRank(rankField.getText());
-        officer.setPosition(positionField.getText());
-        officer.setUnit(unitField.getText());
-        officer.setFullName(fullNameField.getText());
-        officer.setBirthYear(Integer.parseInt(birthYearField.getText()));
-        officer.setHometown("");
-        officer.setWorkingStatus(statusComboBox.getValue());
-        officeService.saveOfficer(selectedImage, officer);
-        Dialog.displaySuccessFully("Luu cán bộ thành công");
-    }catch (Exception e) {
-        e.printStackTrace();
-    }
     }
 
 
@@ -89,7 +76,8 @@ public class AddOfficerController {
             } else if (cell != null) {
                 return Integer.parseInt(cell.toString().trim());
             }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
         return 0;
     }
 
