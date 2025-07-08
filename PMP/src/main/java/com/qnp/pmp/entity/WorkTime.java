@@ -9,4 +9,5 @@ public class WorkTime {
     private int timeSheetId;
     private String hourStart;
     private String hourEnd;
+    private String note;
 }

@@ -1,31 +1,26 @@
 package com.qnp.pmp.dto;
 
 import lombok.Data;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Data
 public class WorkTimeDTO {
     private String id;
     private String officerId;
-    private Date startDate;
-    private Date endDate;
-    private int workingDaysCount;
-    private boolean isMonthCalculated;
-    private boolean isManualMonthCalculation;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private boolean isMonthCalculated;         // true nếu đợt này được tính
+    private boolean isManualMonthCalculation;  // nếu tính thủ công
     private String note;
 
-    // Thêm các phương thức tính toán
-    public long getTotalValidDays() {
+    // Số ngày thực tế không tính T7, CN, lễ sẽ tính từ service
+    public long getCalendarDays() {
         if (startDate == null || endDate == null) return 0;
-        long diff = endDate.toInstant().toEpochMilli() - startDate.toInstant().toEpochMilli();
-        return (diff / (1000 * 60 * 60 * 24)) + 1;
+        return ChronoUnit.DAYS.between(startDate, endDate) + 1;
     }
 
-    public long getConvertedMonths() {
-        return getTotalValidDays() >= 15 ? 1 : 0;
-    }
-
-    public long getConvertedYears() {
-        return getTotalValidDays() >= 180 ? 1 : 0;
+    public boolean isValid() {
+        return startDate != null && endDate != null && isMonthCalculated;
     }
 }
