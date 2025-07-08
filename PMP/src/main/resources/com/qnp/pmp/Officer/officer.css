@@ -1,73 +1,41 @@
-/* officer.css */
-
-/* Toàn bộ giao diện */
-.root {
-    -fx-font-family: "Segoe UI", sans-serif;
-    -fx-background-color: #f4f6f9;
-}
-
-/* Tiêu đề */
-.label {
-    -fx-text-fill: #2c3e50;
-}
-
-.label.title {
-    -fx-font-size: 22px;
+.title-label {
+    -fx-font-size: 24px;
     -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 10 0 5 0;
+}
+
+.total-label {
+    -fx-font-size: 14px;
     -fx-text-fill: #34495e;
 }
 
-/* TableView */
-.table-view {
-    -fx-background-color: white;
-    -fx-border-color: #dfe6e9;
-    -fx-border-width: 1px;
-    -fx-table-cell-border-color: #ecf0f1;
-}
-
-.table-view .column-header-background {
-    -fx-background-color: #2d3436;
-}
-
-.table-view .column-header,
-.table-view .filler {
-    -fx-background-color: #2d3436;
-    -fx-border-color: transparent;
-}
-
-.table-view .label {
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-}
-
-/* Dòng trong TableView */
-.table-row-cell {
-    -fx-cell-size: 40px;
-    -fx-border-color: transparent;
-    -fx-padding: 5px;
-}
-.table-row-cell:filled:selected {
-    -fx-background-color: #74b9ff;
-    -fx-text-fill: white;
-}
-
-/* Button */
-.button {
+.refresh-button {
     -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-background-radius: 5px;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);
+}
+
+.refresh-button:hover {
+    -fx-background-color: #1f6ea5;
     -fx-cursor: hand;
-    -fx-padding: 6px 14px;
 }
 
-.button:hover {
-    -fx-background-color: linear-gradient(to bottom, #5dade2, #3498db);
+.table-view {
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-background-color: white;
+    -fx-table-cell-border-color: #f0f0f0;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0.1, 0, 1);
 }
 
-/* Label tổng cộng */
-#totalLabel {
-    -fx-font-weight: bold;
-    -fx-text-fill: #2d3436;
-    -fx-font-size: 14px;
+.table-column {
+    -fx-alignment: CENTER;
+    -fx-font-size: 13px;
+    -fx-text-fill: #2c3e50;
 }

@@ -10,6 +10,6 @@ public interface OfficeService {
     void saveOfficer( Officer officer);
     void updateOfficer(File Image,String id,Officer officer);
     void deleteOfficer(String id);
-    List<Officer> findByNameAndRankAndCodeAndUnitAndWorkingStatus(String name, String code, String rank, String unit, String workingStatus);
+    List<OfficerViewDTO> findByName(String name);
     List<OfficerViewDTO>getOfficerAllowanceStatus();
 }
