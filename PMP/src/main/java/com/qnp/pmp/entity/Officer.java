@@ -15,5 +15,5 @@ public class Officer {
     private String since;
     private String identifier;
     private String homeTown;
-    private LocalDate dod;
+    private LocalDate dob;
 }

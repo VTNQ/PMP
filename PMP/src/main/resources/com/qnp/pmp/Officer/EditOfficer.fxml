@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx/23.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.qnp.pmp.controllers.EditOfficerController"
+      spacing="10" stylesheets="@edit-officer.css">
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    <Label text="✏️ Cập nhật cán bộ" style="-fx-font-weight: bold; -fx-font-size: 16px;"/>
+
+    <TextField fx:id="fullNameField" promptText="Họ tên"/>
+    <TextField fx:id="phoneField" promptText="Số điện thoại"/>
+    <TextField fx:id="levelField" promptText="Chức vụ"/>
+    <TextField fx:id="unitField" promptText="Đơn vị"/>
+    <TextField fx:id="homeTownField" promptText="Quê quán"/>
+    <TextField fx:id="dobField" promptText="Ngày sinh (yyyy-MM-dd)"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="💾 Lưu" onAction="#onSave"/>
+        <Button text="❌ Hủy" onAction="#onCancel"/>
+    </HBox>
+</VBox>

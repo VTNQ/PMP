@@ -6,58 +6,53 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class OfficerViewDTO {
-    private final StringProperty id;
-    private final StringProperty code;
+    private final IntegerProperty id;
     private final StringProperty fullName;
-    private final IntegerProperty birthYear;
-    private final StringProperty rank;
-    private final StringProperty position;
-    private final StringProperty homeTown;
+    private final StringProperty phone;
+    private final StringProperty levelId;
     private final StringProperty unit;
-    private final StringProperty avatar;
-    private final StringProperty workingStatus;
+    private final StringProperty identifier;
+    private final StringProperty homeTown;
+    private final StringProperty dob;
 
-    public OfficerViewDTO(String id, String code, String fullName, int birthYear, String rank, String position, String homeTown, String unit, String avatar, String workingStatus) {
-        this.id = new SimpleStringProperty(id);
-        this.code = new SimpleStringProperty(code);
+    public OfficerViewDTO(int id,String fullName, String phone, String levelId, String unit, String identifier, String homeTown, String dob) {
+        this.id = new SimpleIntegerProperty(id);
         this.fullName = new SimpleStringProperty(fullName);
-        this.birthYear = new SimpleIntegerProperty(birthYear);
-        this.rank = new SimpleStringProperty(rank);
-        this.position = new SimpleStringProperty(position);
-        this.homeTown = new SimpleStringProperty(homeTown);
+        this.phone = new SimpleStringProperty(phone);
+        this.levelId = new SimpleStringProperty(levelId);
         this.unit = new SimpleStringProperty(unit);
-        this.avatar = new SimpleStringProperty(avatar);
-        this.workingStatus = new SimpleStringProperty(workingStatus);
+        this.identifier = new SimpleStringProperty(identifier);
+        this.homeTown = new SimpleStringProperty(homeTown);
+        this.dob = new SimpleStringProperty(dob);
     }
-    public StringProperty idProperty() {
+    public IntegerProperty getId() {
         return id;
-    }
-    public StringProperty codeProperty() {
-        return code;
     }
     public StringProperty fullNameProperty() {
         return fullName;
     }
-    public IntegerProperty birthYearProperty() {
-        return birthYear;
+
+    public StringProperty phoneProperty() {
+        return phone;
     }
-    public StringProperty rankProperty() {
-        return rank;
+
+    public StringProperty levelIdProperty() {
+        return levelId;
     }
-    public StringProperty positionProperty() {
-        return position;
-    }
-    public StringProperty homeTownProperty() {
-        return homeTown;
-    }
+
     public StringProperty unitProperty() {
         return unit;
     }
-    public StringProperty avatarProperty() {
-        return avatar;
+
+    public StringProperty identifierProperty() {
+        return identifier;
     }
-    public StringProperty workingStatusProperty() {
-        return workingStatus;
+
+    public StringProperty homeTownProperty() {
+        return homeTown;
+    }
+
+    public StringProperty dobProperty() {
+        return dob;
     }
 }
-
