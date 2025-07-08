@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.qnp.pmp.controllers.WorkTimeController">
+
+    <top>
+        <HBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <Label text="Mã Cán bộ:" />
+            <TextField fx:id="officerIdField" promptText="Nhập mã cán bộ..." />
+            <Button text="Tải dữ liệu" onAction="#handleLoadWorkTimes" />
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="workTimeTable">
+            <columns>
+                <TableColumn fx:id="startDateColumn" text="Ngày bắt đầu" />
+                <TableColumn fx:id="endDateColumn" text="Ngày kết thúc" />
+                <TableColumn fx:id="validColumn" text="Hợp lệ" />
+                <TableColumn fx:id="noteColumn" text="Ghi chú" />
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="10" right="10" bottom="10" left="10"/>
+            </padding>
+            <HBox spacing="10">
+                <Button text="Tính ngày công" onAction="#handleCalculateDays" />
+                <Button text="Tính tháng làm tròn" onAction="#handleCalculateMonths" />
+            </HBox>
+            <Label fx:id="resultLabel" text="Kết quả: ..." style="-fx-font-weight: bold;" />
+        </VBox>
+    </bottom>
+
+</BorderPane>

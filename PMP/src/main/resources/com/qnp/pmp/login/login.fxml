@@ -31,11 +31,7 @@
         <!-- Thông báo -->
         <Label fx:id="messageLabel" textFill="red" />
 
-        <!-- Nút chuyển sang đăng ký -->
-        <HBox alignment="CENTER" spacing="5">
-            <Label text="Chưa có tài khoản?"/>
-            <Hyperlink text="Đăng ký" onAction="#onRegisterClick" styleClass="register-link"/>
-        </HBox>
+
 
     </VBox>
 </AnchorPane>

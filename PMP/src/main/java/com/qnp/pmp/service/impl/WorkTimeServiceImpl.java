@@ -1,70 +1,78 @@
 package com.qnp.pmp.service.impl;
 
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Updates;
+
 import com.qnp.pmp.dto.WorkTimeDTO;
 import com.qnp.pmp.service.WorkTimeService;
-import org.bson.Document;
-import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.YearMonth;
+
 import java.util.List;
+import java.util.Set;
 
 public class WorkTimeServiceImpl implements WorkTimeService {
 
 
-    private WorkTimeDTO fromDocument(Document doc) {
-        WorkTimeDTO dto = new WorkTimeDTO();
-        dto.setId(doc.getString("id"));
-        dto.setOfficerId(doc.getString("officer_id"));
-        dto.setStartDate(doc.getDate("start_date"));
-        dto.setEndDate(doc.getDate("end_date"));
-        dto.setWorkingDaysCount(doc.getInteger("working_days_count", 0));
-        dto.setMonthCalculated(doc.getBoolean("is_month_calculated", false));
-        dto.setManualMonthCalculation(doc.getBoolean("is_manual_month_calculation", false));
-        dto.setNote(doc.getString("note"));
-        return dto;
-    }
-
-    private Document toDocument(WorkTimeDTO dto) {
-        return new Document("id", dto.getId())
-                .append("officer_id", dto.getOfficerId())
-                .append("start_date", dto.getStartDate())
-                .append("end_date", dto.getEndDate())
-                .append("working_days_count", dto.getWorkingDaysCount())
-                .append("is_month_calculated", dto.isMonthCalculated())
-                .append("is_manual_month_calculation", dto.isManualMonthCalculation())
-                .append("note", dto.getNote());
+    @Override
+    public List<WorkTimeDTO> getWorkTimesByOfficerId(String officerId) {
+        // TODO: Lấy từ repository
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public void insert(WorkTimeDTO dto) {
-
+    public long getTotalValidWorkingDays(List<WorkTimeDTO> workTimes, Set<LocalDate> holidays) {
+        return workTimes.stream()
+                .filter(WorkTimeDTO::isValid)
+                .mapToLong(dto -> countWorkingDays(dto.getStartDate(), dto.getEndDate(), holidays))
+                .sum();
     }
 
     @Override
-    public void update(WorkTimeDTO dto) {
+    public long getRoundedValidMonths(List<WorkTimeDTO> workTimes, Set<LocalDate> holidays) {
+        long totalMonths = 0;
 
+        for (WorkTimeDTO dto : workTimes) {
+            if (!dto.isValid()) continue;
+
+            LocalDate current = dto.getStartDate();
+            LocalDate end = dto.getEndDate();
+
+            while (!current.isAfter(end)) {
+                YearMonth ym = YearMonth.from(current);
+                LocalDate monthStart = ym.atDay(1);
+                LocalDate monthEnd = ym.atEndOfMonth();
+
+                LocalDate from = current.isAfter(monthStart) ? current : monthStart;
+                LocalDate to = end.isBefore(monthEnd) ? end : monthEnd;
+
+                long workDays = countWorkingDays(from, to, holidays);
+                if (workDays >= 15) totalMonths++;
+
+                current = monthEnd.plusDays(1);
+            }
+        }
+        return totalMonths;
     }
 
     @Override
-    public void delete(String id) {
-
+    public String getWorkSummary(List<WorkTimeDTO> workTimes, Set<LocalDate> holidays) {
+        long days = getTotalValidWorkingDays(workTimes, holidays);
+        long months = getRoundedValidMonths(workTimes, holidays);
+        return String.format("Đã tính được %d tháng (%d ngày công tác)", months, days);
     }
 
-    @Override
-    public WorkTimeDTO findById(String id) {
-       return null;
+    // ================= Helper ======================
+
+    private long countWorkingDays(LocalDate from, LocalDate to, Set<LocalDate> holidays) {
+        long count = 0;
+        for (LocalDate date = from; !date.isAfter(to); date = date.plusDays(1)) {
+            DayOfWeek day = date.getDayOfWeek();
+            if (day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY && !holidays.contains(date)) {
+                count++;
+            }
+        }
+        return count;
     }
 
-    @Override
-    public List<WorkTimeDTO> findByOfficerId(String officerId) {
-        return null;
-    }
-
-    @Override
-    public List<WorkTimeDTO> findAll() {
-       return null;
-    }
 }
