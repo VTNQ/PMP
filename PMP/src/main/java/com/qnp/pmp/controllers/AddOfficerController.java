@@ -13,6 +13,8 @@ import org.apache.poi.ss.usermodel.Cell;
 
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class AddOfficerController {
     private final OfficeService officeService;
@@ -51,7 +53,7 @@ public class AddOfficerController {
             officer.setUnit(unitField.getText());
             officer.setPhone(phoneField.getText());
             officer.setFullName(fullNameField.getText());
-            officer.setSince(sinceField.getText());
+            officer.setSince(LocalDate.parse(sinceField.getText(), DateTimeFormatter.ISO_DATE));
             officer.setIdentifier(identifierField.getText());
             officer.setHomeTown(homeTownField.getText());
             officeService.saveOfficer(officer);

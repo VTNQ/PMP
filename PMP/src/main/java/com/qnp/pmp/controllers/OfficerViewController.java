@@ -28,6 +28,7 @@ public class OfficerViewController {
     @FXML private TableColumn<OfficerViewDTO, String> identifierCol;
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
     @FXML private TableColumn<OfficerViewDTO, String> dobCol;
+    @FXML private TableColumn<OfficerViewDTO, String> sinceCol;
     @FXML
     private TextField searchField;
 
@@ -46,23 +47,42 @@ public class OfficerViewController {
         identifierCol.setCellValueFactory(data -> data.getValue().identifierProperty());
         homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
         dobCol.setCellValueFactory(data -> data.getValue().dobProperty());
+        sinceCol.setCellValueFactory(data -> data.getValue().sinceProperty());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
-        centerAllColumns(fullNameCol, phoneCol, positionCol, unitCol, identifierCol, homeTownCol, dobCol);
+        centerAllColumns(fullNameCol, phoneCol, positionCol, unitCol, identifierCol, homeTownCol, dobCol, sinceCol);
 
         // Tải dữ liệu ban đầu
         loadOfficerAllowance();
-        officerTable.setRowFactory(tv->{
-            TableRow<OfficerViewDTO> row = new TableRow<>();
+        officerTable.setRowFactory(tv -> {
+            TableRow<OfficerViewDTO> row = new TableRow<>() {
+                @Override
+                protected void updateItem(OfficerViewDTO item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setStyle("");
+                    } else {
+                        long months = item.getThoiGianHuongThuHut(); // tính số tháng từ since đến hiện tại
+                        if (months >= 57 && months < 60) {
+                            setStyle("-fx-background-color: yellow;");
+                        } else {
+                            setStyle(""); // không bôi nếu không khớp
+                        }
+                    }
+                }
+            };
+
             row.setOnMouseClicked(event -> {
-               if(event.getClickCount() == 2 && !row.isEmpty()) {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
                     OfficerViewDTO officerViewDTO = row.getItem();
                     showEditDialog(officerViewDTO);
                     officerTable.refresh();
-               }
+                }
             });
+
             return row;
         });
+
     }
     private void showEditDialog(OfficerViewDTO officer) {
         try {

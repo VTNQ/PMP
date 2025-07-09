@@ -35,6 +35,7 @@
                     <TableColumn fx:id="identifierCol" text="Mã định danh" />
                     <TableColumn fx:id="homeTownCol" text="Quê quán" />
                     <TableColumn fx:id="dobCol" text="Ngày sinh" />
+                    <TableColumn fx:id="sinceCol" text="Từ ngày" />
                 </columns>
             </TableView>
         </VBox>
