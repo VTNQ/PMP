@@ -8,8 +8,9 @@ import java.util.List;
 
 public interface OfficeService {
     void saveOfficer( Officer officer);
-    void updateOfficer(File Image,String id,Officer officer);
-    void deleteOfficer(String id);
+    void saveOfficerAll(List<Officer> officers);
+    void updateOfficer(int id,Officer officer);
+    void deleteOfficer(int id);
     List<OfficerViewDTO> findByName(String name);
     List<OfficerViewDTO>getOfficerAllowanceStatus();
 

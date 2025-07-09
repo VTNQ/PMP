@@ -13,7 +13,22 @@ public class Officer {
     private int levelId;
     private String unit;
     private LocalDate since;
+
+    public Officer() {
+    }
+
     private String identifier;
     private String homeTown;
     private LocalDate dob;
+
+    public Officer(String fullName, String phone, int levelId, String unit, LocalDate since, String identifier, String homeTown, LocalDate dob) {
+        this.fullName = fullName;
+        this.phone = phone;
+        this.levelId = levelId;
+        this.unit = unit;
+        this.since = since;
+        this.identifier = identifier;
+        this.homeTown = homeTown;
+        this.dob = dob;
+    }
 }

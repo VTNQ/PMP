@@ -1,26 +1,33 @@
 package com.qnp.pmp.controllers;
 
 import com.qnp.pmp.dialog.Dialog;
+import com.qnp.pmp.entity.Level;
 import com.qnp.pmp.entity.Officer;
+import com.qnp.pmp.service.LevelService;
 import com.qnp.pmp.service.OfficeService;
+import com.qnp.pmp.service.impl.LevelServiceImpl;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 
 
 import java.io.File;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class AddOfficerController {
     private final OfficeService officeService;
+    private final LevelService levelService;
 
     public AddOfficerController() {
         this.officeService = new OfficerServiceImpl();
+        this.levelService = new LevelServiceImpl();
     }
 
     @FXML
@@ -28,17 +35,37 @@ public class AddOfficerController {
     @FXML
     private TextField fullNameField;
     @FXML
-    private ComboBox<String> levelIdField;
+    private ComboBox<Level> levelComboBox;
     @FXML
     private TextField unitField;
     @FXML
-    private TextField sinceField;
+    private DatePicker sincePicker;
+    @FXML
+    private DatePicker dobPicker;
     @FXML
     private TextField identifierField;
     @FXML
     private TextField homeTownField;
     @FXML
-    private ComboBox<String> statusComboBox;
+    public void initialize() {
+        List<Level>levelList=levelService.getAll();
+        levelComboBox.setItems(FXCollections.observableList(levelList));
+        levelComboBox.setConverter(new StringConverter<Level>() {
+            @Override
+            public String toString(Level level) {
+                return level != null ? level.getName() : "";
+            }
+
+            @Override
+            public Level fromString(String s) {
+                return levelComboBox.getItems().stream()
+                        .filter(level -> level.getName().equals(s))
+                        .findFirst()
+                        .orElse(null);
+
+            }
+        });
+    }
     @FXML
     private void handleCancel() {
         Stage stage=(Stage) fullNameField.getScene().getWindow();
@@ -46,49 +73,33 @@ public class AddOfficerController {
     }
 
     @FXML
-    private void handleSave() {
+    private void onSave() {
         try {
 
             Officer officer = new Officer();
             officer.setUnit(unitField.getText());
             officer.setPhone(phoneField.getText());
             officer.setFullName(fullNameField.getText());
-            officer.setSince(LocalDate.parse(sinceField.getText(), DateTimeFormatter.ISO_DATE));
+            officer.setLevelId(levelComboBox.getValue().getId());
+            officer.setSince(sincePicker.getValue());
+            officer.setDob(dobPicker.getValue());
             officer.setIdentifier(identifierField.getText());
             officer.setHomeTown(homeTownField.getText());
             officeService.saveOfficer(officer);
-            Dialog.displaySuccessFully("Luu cán bộ thành công");
+            fullNameField.clear();
+            phoneField.clear();
+            unitField.clear();
+            identifierField.clear();
+            homeTownField.clear();
+            levelComboBox.getSelectionModel().clearSelection();
+            sincePicker.setValue(null);
+            dobPicker.setValue(null);
 
+            Dialog.displaySuccessFully("Luu cán bộ thành công");
         } catch (Exception e) {
             e.printStackTrace();
+            Dialog.displayErrorMessage("Luu cán bộ thất bại");
         }
-    }
-
-
-    private String getCellString(Row row, int colIndex) {
-        Cell cell = row.getCell(colIndex);
-        return (cell != null) ? cell.toString().trim() : "";
-    }
-
-    private int parseBirthYear(Row row, int colIndex) {
-        try {
-            Cell cell = row.getCell(colIndex);
-            if (cell != null && cell.getCellType() == CellType.NUMERIC) {
-                return (int) cell.getNumericCellValue();
-            } else if (cell != null) {
-                return Integer.parseInt(cell.toString().trim());
-            }
-        } catch (Exception ignored) {
-        }
-        return 0;
-    }
-
-    private void showAlert(String title, String message, Alert.AlertType type) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
 }

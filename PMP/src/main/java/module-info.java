@@ -11,6 +11,7 @@ module com.qnp.pmp {
     requires javafx.controls;
     requires jbcrypt;
     requires java.sql;
+    requires mysql.connector.j;
     opens com.qnp.pmp to javafx.fxml;
     exports com.qnp.pmp;
 
