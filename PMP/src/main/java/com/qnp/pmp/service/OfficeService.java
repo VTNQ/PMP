@@ -10,7 +10,7 @@ public interface OfficeService {
     void saveOfficer( Officer officer);
     void saveOfficerAll(List<Officer> officers);
     void updateOfficer(int id,Officer officer);
-    void deleteOfficer(String id);
+    void deleteOfficer(int id);
     List<OfficerViewDTO> findByName(String name);
     List<OfficerViewDTO>getOfficerAllowanceStatus();
 

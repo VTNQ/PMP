@@ -49,6 +49,7 @@
             <Button text="📥 Nhập dữ liệu nhiều" onAction="#onImport" styleClass="import-button"/>
             <Button text="🔄 Làm mới" onAction="#refreshTable" styleClass="refresh-button"/>
             <Button text="➕ Thêm mới" onAction="#add" styleClass="add-button"/>
+            <Button text="🗑 Xoá" onAction="#onDelete" styleClass="delete-button"/>
         </HBox>
     </bottom>
 </BorderPane>

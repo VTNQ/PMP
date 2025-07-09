@@ -95,8 +95,15 @@ public class OfficerServiceImpl implements OfficeService {
     }
 
     @Override
-    public void deleteOfficer(String id) {
-
+    public void deleteOfficer(int id) {
+        String sql="DELETE FROM officer WHERE id = ?";
+        try (Connection connection=MySQLConnection.getConnection()){
+            PreparedStatement stmt=connection.prepareStatement(sql);
+            stmt.setInt(1,id);
+            stmt.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override

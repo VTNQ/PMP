@@ -201,6 +201,36 @@ public class OfficerViewController {
         loadOfficerAllowance();
 
     }
+    @FXML
+    private void onDelete() {
+       try {
+           ObservableList<OfficerViewDTO> selectedItems = officerTable.getSelectionModel().getSelectedItems();
+
+           if (selectedItems == null || selectedItems.isEmpty()) {
+               Dialog.displayErrorMessage("Vui lòng chọn ít nhất một cán bộ để xoá.");
+               return;
+           }
+
+           // Xác nhận xoá
+           Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+           alert.setTitle("Xác nhận xoá");
+           alert.setHeaderText("Bạn có chắc chắn muốn xoá " + selectedItems.size() + " cán bộ?");
+           alert.setContentText("Hành động này không thể hoàn tác.");
+           if (alert.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+               return;
+           }
+
+           // ✅ Lấy danh sách ID cần xoá
+           int idDeleted =selectedItems.get(0).getId().get();
+           officeService.deleteOfficer(idDeleted);
+           Dialog.displaySuccessFully("Xóa cán bộ thành công");
+           loadOfficerAllowance();
+       }catch (Exception e) {
+           Dialog.displayErrorMessage("Lỗi xóa cán bộ");
+       }
+
+
+    }
     private void importCsvFile(File file) {
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
