@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
 
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.qnp.pmp.controllers.EditOfficerController"
+      fx:controller="com.qnp.pmp.controllers.AddOfficerController"
       spacing="15"
       prefHeight="500.0" prefWidth="600.0"
       styleClass="root-container" stylesheets="@AddOffice.css">
-
     <padding>
         <Insets top="30" bottom="30" left="30" right="30"/>
     </padding>
 
-    <!-- Tiêu đề có thể thay đổi -->
-    <Label text="✏️ Cập nhật cán bộ" styleClass="form-title"/>
+    <!-- Tiêu đề -->
+    <Label text="🧑‍💼 Thêm cán bộ mới" styleClass="form-title"/>
 
     <!-- Form nhập liệu -->
     <GridPane hgap="15" vgap="12" styleClass="form-grid">
@@ -45,8 +48,9 @@
         <DatePicker fx:id="dobPicker" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
     </GridPane>
 
-    <!-- Nút hành động -->
+    <!-- Nút lưu -->
     <HBox spacing="20" alignment="CENTER_RIGHT">
-        <Button fx:id="saveButton" text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
+        <Button text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
     </HBox>
 </VBox>
+

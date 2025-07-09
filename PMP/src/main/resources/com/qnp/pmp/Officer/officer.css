@@ -19,12 +19,26 @@
     -fx-border-radius: 6px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);
 }
+.add-button {
+    -fx-background-color: linear-gradient(to bottom, #2ecc71, #27ae60); /* Xanh lá cây */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8px 16px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);
+    -fx-cursor: hand;
+}
 
 .refresh-button:hover {
     -fx-background-color: #1f6ea5;
     -fx-cursor: hand;
 }
-
+.import-button{
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
 .table-view {
     -fx-border-color: #e0e0e0;
     -fx-border-width: 1px;

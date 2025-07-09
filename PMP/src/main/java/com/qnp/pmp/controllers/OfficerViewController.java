@@ -1,6 +1,7 @@
 package com.qnp.pmp.controllers;
 
 import com.qnp.pmp.dto.OfficerViewDTO;
+import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.service.OfficeService;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.collections.FXCollections;
@@ -12,11 +13,26 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import com.qnp.pmp.dialog.Dialog;
 import javafx.stage.Stage;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import java.io.IOException;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.event.ActionEvent;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.time.LocalDate;
 public class OfficerViewController {
 
     @FXML private TableView<OfficerViewDTO> officerTable;
@@ -42,7 +58,7 @@ public class OfficerViewController {
         // Gán dữ liệu cho các cột
         fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
         phoneCol.setCellValueFactory(data -> data.getValue().phoneProperty());
-        positionCol.setCellValueFactory(data -> data.getValue().levelIdProperty());
+        positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
         unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
         identifierCol.setCellValueFactory(data -> data.getValue().identifierProperty());
         homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
@@ -50,7 +66,7 @@ public class OfficerViewController {
         sinceCol.setCellValueFactory(data -> data.getValue().sinceProperty());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
-        centerAllColumns(fullNameCol, phoneCol, positionCol, unitCol, identifierCol, homeTownCol, dobCol, sinceCol);
+        centerAllColumns(fullNameCol, phoneCol, positionCol, unitCol, identifierCol, homeTownCol, dobCol,sinceCol);
 
         // Tải dữ liệu ban đầu
         loadOfficerAllowance();
@@ -76,13 +92,26 @@ public class OfficerViewController {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     OfficerViewDTO officerViewDTO = row.getItem();
                     showEditDialog(officerViewDTO);
-                    officerTable.refresh();
-                }
+                  loadOfficerAllowance();
+               }
             });
 
             return row;
         });
 
+    }
+    private void showAddDialog(){
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/AddOfficerView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Add Officer");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
     private void showEditDialog(OfficerViewDTO officer) {
         try {
@@ -128,6 +157,10 @@ public class OfficerViewController {
         totalLabel.setText("Tổng: " + data.size() + " cán bộ");
     }
     @FXML
+    private void add() {
+        showAddDialog();
+    }
+    @FXML
     private void onSearch(KeyEvent event) {
             if(event.getCode()==KeyCode.ENTER) {
                 String keyword=searchField.getText().trim();
@@ -145,4 +178,106 @@ public class OfficerViewController {
     private void refreshTable() {
         loadOfficerAllowance();
     }
+    @FXML
+    private void onImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Import Officer");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("CSV file", "*.csv"),
+                new FileChooser.ExtensionFilter("Excel file", "*.xlsx")
+        );
+
+        File file = fileChooser.showOpenDialog(officerTable.getScene().getWindow());
+        if (file != null) {
+            String fileName = file.getName().toLowerCase();
+            if (fileName.endsWith(".csv")) {
+                importCsvFile(file);
+            } else if (fileName.endsWith(".xlsx")) {
+                importExcelFile(file);
+            } else {
+                Dialog.displayErrorMessage("Định dạng file không hỗ trợ.");
+            }
+        }
+        loadOfficerAllowance();
+
+    }
+    private void importCsvFile(File file) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            List<Officer> officerList = new ArrayList<>();
+            boolean skipHeader = true;
+            while ((line = br.readLine()) != null) {
+                if (skipHeader) {
+                    skipHeader = false;
+                    continue; // bỏ qua dòng tiêu đề
+                }
+
+                String[] fields = line.split(",", -1);
+                if (fields.length >= 8) {
+                    Officer officer = new Officer(
+                            fields[0],                      // fullName
+                            fields[1],                      // phone
+                            Integer.parseInt(fields[2]),    // levelId
+                            fields[3],                      // unit
+                            LocalDate.parse(fields[4]),     // since
+                            fields[5],                      // identifier
+                            fields[6],                      // homeTown
+                            LocalDate.parse(fields[7])      // dob
+                    );
+                    officerList.add(officer);
+                }
+            }
+            officeService.saveOfficerAll(officerList);
+            Dialog.displaySuccessFully("Đã lưu " + officerList.size() + " cán bộ");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialog.displayErrorMessage("Không thể đọc file CSV");
+        }
+    }
+    private String getCellString(org.apache.poi.ss.usermodel.Cell cell) {
+        if (cell == null) return "";
+        return switch (cell.getCellType()) {
+            case STRING -> cell.getStringCellValue();
+            case NUMERIC -> String.valueOf((long) cell.getNumericCellValue());
+            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
+            case FORMULA -> cell.getCellFormula();
+            default -> "";
+        };
+    }
+
+    private void importExcelFile(File file) {
+        List<Officer> officerList = new ArrayList<>();
+        try (FileInputStream fis = new FileInputStream(file);
+             Workbook workbook = WorkbookFactory.create(fis)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+            boolean skipHeader = true;
+            for (Row row : sheet) {
+                if (skipHeader) {
+                    skipHeader = false;
+                    continue;
+                }
+                Officer officer = new Officer(
+                        getCellString(row.getCell(0)),                        // fullName
+                        getCellString(row.getCell(1)),                        // phone
+                        (int) row.getCell(2).getNumericCellValue(),           // levelId
+                        getCellString(row.getCell(3)),                        // unit
+                        row.getCell(4).getLocalDateTimeCellValue().toLocalDate(), // since
+                        getCellString(row.getCell(5)),                        // identifier
+                        getCellString(row.getCell(6)),                        // homeTown
+                        row.getCell(7).getLocalDateTimeCellValue().toLocalDate()  // dob
+                );
+                officerList.add(officer);
+            }
+
+            officeService.saveOfficerAll(officerList);
+            Dialog.displaySuccessFully("Đã lưu " + officerList.size() + " cán bộ");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialog.displayErrorMessage("Không thể đọc file Excel");
+        }
+    }
+
+
 }

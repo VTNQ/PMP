@@ -12,18 +12,21 @@ public class OfficerViewDTO {
     private final IntegerProperty id;
     private final StringProperty fullName;
     private final StringProperty phone;
-    private final StringProperty levelId;
+    private final IntegerProperty levelId;
+    private final StringProperty levelName;
     private final StringProperty unit;
     private final StringProperty identifier;
     private final StringProperty homeTown;
     private final StringProperty dob;
     private final StringProperty since;
-    public OfficerViewDTO(int id, String fullName, String phone, String levelId, String unit,
-                          String identifier, String homeTown, String dob, String since) {
+
+
+    public OfficerViewDTO(int id,String fullName, String phone,Integer levelId,String levelName, String unit, String identifier, String homeTown, String dob,String since) {
         this.id = new SimpleIntegerProperty(id);
         this.fullName = new SimpleStringProperty(fullName);
         this.phone = new SimpleStringProperty(phone);
-        this.levelId = new SimpleStringProperty(levelId);
+        this.levelId = new SimpleIntegerProperty(levelId);
+       this.levelName = new SimpleStringProperty(levelName);
         this.unit = new SimpleStringProperty(unit);
         this.identifier = new SimpleStringProperty(identifier);
         this.homeTown = new SimpleStringProperty(homeTown);
@@ -41,8 +44,14 @@ public class OfficerViewDTO {
         return phone;
     }
 
-    public StringProperty levelIdProperty() {
+    public IntegerProperty levelIdProperty() {
         return levelId;
+    }
+    public StringProperty levelNameProperty() {
+        return levelName;
+    }
+    public StringProperty sinceProperty() {
+        return since;
     }
 
     public StringProperty unitProperty() {
@@ -67,9 +76,6 @@ public class OfficerViewDTO {
 
     public void setSince(String value) {
         since.set(value);
-    }
-    public StringProperty sinceProperty() {
-        return since;
     }
 
 

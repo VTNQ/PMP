@@ -1,55 +1,42 @@
-/* Layout chính */
-.root {
+.root-container {
     -fx-background-color: #f9f9f9;
-    -fx-background-radius: 8;
-    -fx-border-color: #ddd;
-    -fx-border-width: 1;
-    -fx-border-radius: 8;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-font-family: "Segoe UI", sans-serif;
 }
 
-/* Tiêu đề */
-.label-title {
-    -fx-font-size: 20px;
+.form-title {
+    -fx-font-size: 22px;
     -fx-font-weight: bold;
     -fx-text-fill: #333;
+    -fx-padding: 0 0 10 0;
 }
 
-/* Trường nhập liệu và ComboBox */
-.text-field, .combo-box {
-    -fx-pref-height: 36px;
-    -fx-font-size: 14px;
-    -fx-background-radius: 5;
+.form-grid Label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #444;
+}
+
+TextField, ComboBox, DatePicker {
+    -fx-pref-width: 300;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-padding: 6 8;
+    -fx-background-color: white;
     -fx-border-color: #ccc;
-    -fx-border-radius: 5;
+    -fx-font-size: 13px;
 }
 
-/* Nhãn chọn ảnh */
-.image-label {
-    -fx-text-fill: #888;
-    -fx-font-style: italic;
-}
-
-/* Nút mặc định */
-.button {
-    -fx-background-color: #006eff;
+.save-button {
+    -fx-background-color: #4CAF50;
     -fx-text-fill: white;
     -fx-font-weight: bold;
+    -fx-padding: 8 16;
     -fx-background-radius: 6;
-    -fx-padding: 6 16;
-    -fx-cursor: hand;
+    -fx-border-radius: 6;
 }
 
-/* Hover */
-.button:hover {
-    -fx-background-color: #0055cc;
-}
-
-/* Nút phụ (Huỷ) */
-.button:cancel {
-    -fx-background-color: #e0e0e0;
-    -fx-text-fill: #333;
-}
-
-.button:cancel:hover {
-    -fx-background-color: #c5c5c5;
+.save-button:hover {
+    -fx-background-color: #45a049;
 }

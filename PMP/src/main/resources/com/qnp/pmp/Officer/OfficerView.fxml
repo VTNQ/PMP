@@ -35,7 +35,7 @@
                     <TableColumn fx:id="identifierCol" text="Mã định danh" />
                     <TableColumn fx:id="homeTownCol" text="Quê quán" />
                     <TableColumn fx:id="dobCol" text="Ngày sinh" />
-                    <TableColumn fx:id="sinceCol" text="Từ ngày" />
+                    <TableColumn fx:id="sinceCol" text="Ngày bắt đầu"/>
                 </columns>
             </TableView>
         </VBox>
@@ -46,7 +46,9 @@
         <HBox alignment="CENTER_RIGHT" spacing="10">
             <padding><Insets top="10" right="20" bottom="10" left="20"/></padding>
             <Label fx:id="totalLabel" text="Tổng: 0 cán bộ" styleClass="total-label"/>
+            <Button text="📥 Nhập dữ liệu nhiều" onAction="#onImport" styleClass="import-button"/>
             <Button text="🔄 Làm mới" onAction="#refreshTable" styleClass="refresh-button"/>
+            <Button text="➕ Thêm mới" onAction="#add" styleClass="add-button"/>
         </HBox>
     </bottom>
 </BorderPane>
