@@ -4,6 +4,9 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class OfficerViewDTO {
     private final IntegerProperty id;
@@ -14,8 +17,9 @@ public class OfficerViewDTO {
     private final StringProperty identifier;
     private final StringProperty homeTown;
     private final StringProperty dob;
-
-    public OfficerViewDTO(int id,String fullName, String phone, String levelId, String unit, String identifier, String homeTown, String dob) {
+    private final StringProperty since;
+    public OfficerViewDTO(int id, String fullName, String phone, String levelId, String unit,
+                          String identifier, String homeTown, String dob, String since) {
         this.id = new SimpleIntegerProperty(id);
         this.fullName = new SimpleStringProperty(fullName);
         this.phone = new SimpleStringProperty(phone);
@@ -24,6 +28,7 @@ public class OfficerViewDTO {
         this.identifier = new SimpleStringProperty(identifier);
         this.homeTown = new SimpleStringProperty(homeTown);
         this.dob = new SimpleStringProperty(dob);
+        this.since = new SimpleStringProperty(since);
     }
     public IntegerProperty getId() {
         return id;
@@ -55,4 +60,27 @@ public class OfficerViewDTO {
     public StringProperty dobProperty() {
         return dob;
     }
+
+    public String getSince() {
+        return since.get();
+    }
+
+    public void setSince(String value) {
+        since.set(value);
+    }
+    public StringProperty sinceProperty() {
+        return since;
+    }
+
+
+    public long getThoiGianHuongThuHut() {
+        if (since.get() == null || since.get().isBlank()) return 0;
+        try {
+            LocalDate sinceDate = LocalDate.parse(since.get(), DateTimeFormatter.ISO_DATE);
+            return ChronoUnit.MONTHS.between(sinceDate, LocalDate.now());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
 }

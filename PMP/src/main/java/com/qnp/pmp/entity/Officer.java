@@ -12,7 +12,7 @@ public class Officer {
     private String phone;
     private int levelId;
     private String unit;
-    private String since;
+    private LocalDate since;
     private String identifier;
     private String homeTown;
     private LocalDate dob;
