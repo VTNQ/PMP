@@ -79,8 +79,10 @@ public class OfficerViewController {
                         setStyle("");
                     } else {
                         long months = item.getThoiGianHuongThuHut(); // tính số tháng từ since đến hiện tại
-                        if (months >= 57 && months < 60) {
-                            setStyle("-fx-background-color: yellow;");
+                        if (months >= 60) {
+                            setStyle("-fx-background-color: #ff9999;");
+                        } else if (months >= 57) {
+                            setStyle("-fx-background-color: #ffff99;");
                         } else {
                             setStyle(""); // không bôi nếu không khớp
                         }
@@ -183,8 +185,9 @@ public class OfficerViewController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Import Officer");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("CSV file", "*.csv"),
-                new FileChooser.ExtensionFilter("Excel file", "*.xlsx")
+                new FileChooser.ExtensionFilter("Excel file", "*.xlsx"),
+                new FileChooser.ExtensionFilter("CSV file", "*.csv")
+
         );
 
         File file = fileChooser.showOpenDialog(officerTable.getScene().getWindow());
