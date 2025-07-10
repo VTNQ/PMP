@@ -11,6 +11,7 @@ public class Officer {
     private String fullName;
     private String phone;
     private int levelId;
+    private String levelName;
     private String unit;
     private LocalDate since;
 
@@ -21,10 +22,10 @@ public class Officer {
     private String homeTown;
     private LocalDate dob;
 
-    public Officer(String fullName, String phone, int levelId, String unit, LocalDate since, String identifier, String homeTown, LocalDate dob) {
+    public Officer(String fullName, String phone, String levelName, String unit, LocalDate since, String identifier, String homeTown, LocalDate dob) {
         this.fullName = fullName;
         this.phone = phone;
-        this.levelId = levelId;
+        this.levelName = levelName;
         this.unit = unit;
         this.since = since;
         this.identifier = identifier;

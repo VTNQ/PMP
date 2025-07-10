@@ -247,7 +247,7 @@ public class OfficerViewController {
                     Officer officer = new Officer(
                             fields[0],                      // fullName
                             fields[1],                      // phone
-                            Integer.parseInt(fields[2]),    // levelId
+                            fields[2],    // levelId
                             fields[3],                      // unit
                             LocalDate.parse(fields[4]),     // since
                             fields[5],                      // identifier
@@ -290,7 +290,7 @@ public class OfficerViewController {
                 Officer officer = new Officer(
                         getCellString(row.getCell(0)),                        // fullName
                         getCellString(row.getCell(1)),                        // phone
-                        (int) row.getCell(2).getNumericCellValue(),           // levelId
+                        getCellString(row.getCell(2)),        // level
                         getCellString(row.getCell(3)),                        // unit
                         row.getCell(4).getLocalDateTimeCellValue().toLocalDate(), // since
                         getCellString(row.getCell(5)),                        // identifier

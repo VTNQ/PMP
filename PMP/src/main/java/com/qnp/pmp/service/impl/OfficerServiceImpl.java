@@ -2,8 +2,10 @@ package com.qnp.pmp.service.impl;
 
 import com.qnp.pmp.config.MySQLConnection;
 import com.qnp.pmp.dto.OfficerViewDTO;
+import com.qnp.pmp.entity.Level;
 import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.generic.GeneralService;
+import com.qnp.pmp.service.LevelService;
 import com.qnp.pmp.service.OfficeService;
 
 import java.io.File;
@@ -13,9 +15,10 @@ import java.util.List;
 
 public class OfficerServiceImpl implements OfficeService {
     private GeneralService generalService;
-
+    private LevelService levelService;
     public OfficerServiceImpl() {
         this.generalService = new GeneralService();
+        this.levelService=new LevelServiceImpl();
     }
 
     @Override
@@ -60,7 +63,10 @@ public class OfficerServiceImpl implements OfficeService {
             for (Officer officer : officers) {
                 stmt.setString(1, officer.getFullName());
                 stmt.setString(2, officer.getPhone());
-                stmt.setInt(3, officer.getLevelId());
+                Level level=levelService.getByName(officer.getLevelName());
+                if(level!=null){
+                    stmt.setInt(3, level.getId());
+                }
                 stmt.setString(4, officer.getUnit());
                 stmt.setDate(5, java.sql.Date.valueOf(officer.getSince()));
                 stmt.setString(6, officer.getIdentifier());
@@ -69,7 +75,7 @@ public class OfficerServiceImpl implements OfficeService {
                 stmt.addBatch();
             }
             stmt.executeBatch();
-        }catch (Exception e) {
+        }catch (SQLException |ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
