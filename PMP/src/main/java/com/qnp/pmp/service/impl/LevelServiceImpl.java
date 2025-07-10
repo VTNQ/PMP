@@ -31,4 +31,24 @@ public class LevelServiceImpl implements LevelService {
         }
         return levelList;
     }
+
+    @Override
+    public Level getByName(String levelName) {
+        String sql = "select * from level where name = ?";
+        try (Connection connection = MySQLConnection.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, levelName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Level level = new Level();
+                level.setId(rs.getInt("id"));
+                level.setName(rs.getString("name"));
+                return level;
+            }
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

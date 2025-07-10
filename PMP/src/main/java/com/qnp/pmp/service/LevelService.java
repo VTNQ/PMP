@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface LevelService {
     List<Level>getAll();
+    Level getByName(String levelName);
 }
