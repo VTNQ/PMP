@@ -11,27 +11,24 @@ import java.time.temporal.ChronoUnit;
 public class OfficerViewDTO {
     private final IntegerProperty id;
     private final StringProperty fullName;
-    private final StringProperty phone;
     private final IntegerProperty levelId;
     private final StringProperty levelName;
     private final StringProperty unit;
-    private final StringProperty identifier;
+    private final IntegerProperty birthYear;
     private final StringProperty homeTown;
-    private final StringProperty dob;
-    private final StringProperty since;
+    private final StringProperty note;
 
 
-    public OfficerViewDTO(int id,String fullName, String phone,Integer levelId,String levelName, String unit, String identifier, String homeTown, String dob,String since) {
+    public OfficerViewDTO(int id,String fullName,Integer levelId,String levelName, String unit,Integer birthYear, String homeTown,String note) {
         this.id = new SimpleIntegerProperty(id);
         this.fullName = new SimpleStringProperty(fullName);
-        this.phone = new SimpleStringProperty(phone);
         this.levelId = new SimpleIntegerProperty(levelId);
        this.levelName = new SimpleStringProperty(levelName);
         this.unit = new SimpleStringProperty(unit);
-        this.identifier = new SimpleStringProperty(identifier);
         this.homeTown = new SimpleStringProperty(homeTown);
-        this.dob = new SimpleStringProperty(dob);
-        this.since = new SimpleStringProperty(since);
+        this.note = new SimpleStringProperty(note);
+        this.birthYear = new SimpleIntegerProperty(birthYear);
+
     }
     public IntegerProperty getId() {
         return id;
@@ -40,9 +37,6 @@ public class OfficerViewDTO {
         return fullName;
     }
 
-    public StringProperty phoneProperty() {
-        return phone;
-    }
 
     public IntegerProperty levelIdProperty() {
         return levelId;
@@ -50,43 +44,30 @@ public class OfficerViewDTO {
     public StringProperty levelNameProperty() {
         return levelName;
     }
-    public StringProperty sinceProperty() {
-        return since;
-    }
-
     public StringProperty unitProperty() {
         return unit;
-    }
-
-    public StringProperty identifierProperty() {
-        return identifier;
     }
 
     public StringProperty homeTownProperty() {
         return homeTown;
     }
-
-    public StringProperty dobProperty() {
-        return dob;
+    public StringProperty noteProperty() {
+        return note;
     }
-
-    public String getSince() {
-        return since.get();
-    }
-
-    public void setSince(String value) {
-        since.set(value);
+    public IntegerProperty birthYearProperty() {
+        return birthYear;
     }
 
 
-    public long getThoiGianHuongThuHut() {
-        if (since.get() == null || since.get().isBlank()) return 0;
-        try {
-            LocalDate sinceDate = LocalDate.parse(since.get(), DateTimeFormatter.ISO_DATE);
-            return ChronoUnit.MONTHS.between(sinceDate, LocalDate.now());
-        } catch (Exception e) {
-            return 0;
-        }
-    }
+
+//    public long getThoiGianHuongThuHut() {
+//        if (since.get() == null || since.get().isBlank()) return 0;
+//        try {
+//            LocalDate sinceDate = LocalDate.parse(since.get(), DateTimeFormatter.ISO_DATE);
+//            return ChronoUnit.MONTHS.between(sinceDate, LocalDate.now());
+//        } catch (Exception e) {
+//            return 0;
+//        }
+//    }
 
 }

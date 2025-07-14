@@ -7,29 +7,25 @@ import java.util.Date;
 
 @Data
 public class Officer {
-    private int id;
-    private String fullName;
-    private String phone;
-    private int levelId;
-    private String levelName;
-    private String unit;
-    private LocalDate since;
-
+        private int id;
+        private String fullName;
+        private int levelId;
+        private String levelName;
+        private String unit;
+        private int birthYear;
+        private String note;
     public Officer() {
     }
 
-    private String identifier;
-    private String homeTown;
-    private LocalDate dob;
 
-    public Officer(String fullName, String phone, String levelName, String unit, LocalDate since, String identifier, String homeTown, LocalDate dob) {
+    private String homeTown;
+
+    public Officer(String fullName, String levelName, String unit, String homeTown, int birthYear, String note) {
         this.fullName = fullName;
-        this.phone = phone;
         this.levelName = levelName;
         this.unit = unit;
-        this.since = since;
-        this.identifier = identifier;
         this.homeTown = homeTown;
-        this.dob = dob;
+        this.birthYear = birthYear;
+        this.note = note;
     }
 }
