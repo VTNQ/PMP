@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -28,19 +29,15 @@ public class EditOfficerController {
         this.levelService = new LevelServiceImpl();
     }
     @FXML
-    private TextField phoneField;
-    @FXML
     private TextField fullNameField;
     @FXML
     private ComboBox<Level> levelComboBox;
     @FXML
     private TextField unitField;
     @FXML
-    private DatePicker sincePicker;
+    private TextField birthYearField;
     @FXML
-    private DatePicker dobPicker;
-    @FXML
-    private TextField identifierField;
+    private TextArea noteField;
     @FXML
     private TextField homeTownField;
     private int id;
@@ -49,14 +46,11 @@ public class EditOfficerController {
     public void setOfficer(OfficerViewDTO officer) {
         this.officer = officer;
         fullNameField.setText(officer.fullNameProperty().getValue());
-        phoneField.setText(officer.phoneProperty().getValue());
+        birthYearField.setText(String.valueOf(officer.birthYearProperty().get()));
         unitField.setText(officer.unitProperty().getValue());
+        noteField.setText(officer.noteProperty().getValue());
         homeTownField.setText(officer.homeTownProperty().getValue());
         this.id=officer.getId().getValue();
-        identifierField.setText(officer.identifierProperty().getValue());
-
-        dobPicker.setValue(LocalDate.parse(officer.dobProperty().get()));
-        sincePicker.setValue(LocalDate.parse(officer.sinceProperty().getValue()));
 
         // Tìm Level phù hợp theo ID trong ComboBox
         int officerLevelId = officer.levelIdProperty().get();
@@ -93,12 +87,10 @@ public class EditOfficerController {
       try {
           Officer officerDto=new Officer();
           officerDto.setFullName(fullNameField.getText());
-          officerDto.setPhone(phoneField.getText());
           officerDto.setUnit(unitField.getText());
           officerDto.setHomeTown(homeTownField.getText());
-          officerDto.setIdentifier(identifierField.getText());
-          officerDto.setSince(sincePicker.getValue());
-          officerDto.setDob(dobPicker.getValue());
+          officerDto.setBirthYear(Integer.valueOf(birthYearField.getText()));
+          officerDto.setNote(noteField.getText());
           officerDto.setId(id);
           officerDto.setLevelId(levelComboBox.getSelectionModel().getSelectedItem().getId());
           officeService.updateOfficer(id,officerDto);

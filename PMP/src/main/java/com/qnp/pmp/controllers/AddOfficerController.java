@@ -30,8 +30,7 @@ public class AddOfficerController {
         this.levelService = new LevelServiceImpl();
     }
 
-    @FXML
-    private TextField phoneField;
+
     @FXML
     private TextField fullNameField;
     @FXML
@@ -39,11 +38,9 @@ public class AddOfficerController {
     @FXML
     private TextField unitField;
     @FXML
-    private DatePicker sincePicker;
+    private TextField birthYearField;
     @FXML
-    private DatePicker dobPicker;
-    @FXML
-    private TextField identifierField;
+    private TextArea noteField;
     @FXML
     private TextField homeTownField;
     @FXML
@@ -78,22 +75,18 @@ public class AddOfficerController {
 
             Officer officer = new Officer();
             officer.setUnit(unitField.getText());
-            officer.setPhone(phoneField.getText());
             officer.setFullName(fullNameField.getText());
             officer.setLevelId(levelComboBox.getValue().getId());
-            officer.setSince(sincePicker.getValue());
-            officer.setDob(dobPicker.getValue());
-            officer.setIdentifier(identifierField.getText());
             officer.setHomeTown(homeTownField.getText());
+            officer.setBirthYear(Integer.valueOf(birthYearField.getText()));
+            officer.setNote(noteField.getText());
             officeService.saveOfficer(officer);
             fullNameField.clear();
-            phoneField.clear();
             unitField.clear();
-            identifierField.clear();
+            birthYearField.clear();
             homeTownField.clear();
             levelComboBox.getSelectionModel().clearSelection();
-            sincePicker.setValue(null);
-            dobPicker.setValue(null);
+            noteField.clear();
 
             Dialog.displaySuccessFully("Luu cán bộ thành công");
         } catch (Exception e) {

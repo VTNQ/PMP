@@ -38,13 +38,11 @@ public class OfficerViewController {
     @FXML private TableView<OfficerViewDTO> officerTable;
 
     @FXML private TableColumn<OfficerViewDTO, String> fullNameCol;
-    @FXML private TableColumn<OfficerViewDTO, String> phoneCol;
     @FXML private TableColumn<OfficerViewDTO, String> positionCol;
     @FXML private TableColumn<OfficerViewDTO, String> unitCol;
-    @FXML private TableColumn<OfficerViewDTO, String> identifierCol;
+    @FXML private TableColumn<OfficerViewDTO, Integer> birthYearCol;
+    @FXML private TableColumn<OfficerViewDTO,String>noteCol;
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
-    @FXML private TableColumn<OfficerViewDTO, String> dobCol;
-    @FXML private TableColumn<OfficerViewDTO, String> sinceCol;
     @FXML
     private TextField searchField;
 
@@ -57,16 +55,14 @@ public class OfficerViewController {
 
         // Gán dữ liệu cho các cột
         fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
-        phoneCol.setCellValueFactory(data -> data.getValue().phoneProperty());
         positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
         unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
-        identifierCol.setCellValueFactory(data -> data.getValue().identifierProperty());
         homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
-        dobCol.setCellValueFactory(data -> data.getValue().dobProperty());
-        sinceCol.setCellValueFactory(data -> data.getValue().sinceProperty());
+        birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
+        noteCol.setCellValueFactory(data -> data.getValue().noteProperty());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
-        centerAllColumns(fullNameCol, phoneCol, positionCol, unitCol, identifierCol, homeTownCol, dobCol,sinceCol);
+        centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol,noteCol);
 
         // Tải dữ liệu ban đầu
         loadOfficerAllowance();
@@ -78,12 +74,12 @@ public class OfficerViewController {
                     if (item == null || empty) {
                         setStyle("");
                     } else {
-                        long months = item.getThoiGianHuongThuHut(); // tính số tháng từ since đến hiện tại
-                        if (months >= 57 && months < 60) {
-                            setStyle("-fx-background-color: yellow;");
-                        } else {
-                            setStyle(""); // không bôi nếu không khớp
-                        }
+//                        long months = item.getThoiGianHuongThuHut(); // tính số tháng từ since đến hiện tại
+//                        if (months >= 57 && months < 60) {
+//                            setStyle("-fx-background-color: yellow;");
+//                        } else {
+//                            setStyle(""); // không bôi nếu không khớp
+//                        }
                     }
                 }
             };
@@ -246,13 +242,11 @@ public class OfficerViewController {
                 if (fields.length >= 8) {
                     Officer officer = new Officer(
                             fields[0],                      // fullName
-                            fields[1],                      // phone
-                            fields[2],    // levelId
-                            fields[3],                      // unit
-                            LocalDate.parse(fields[4]),     // since
-                            fields[5],                      // identifier
-                            fields[6],                      // homeTown
-                            LocalDate.parse(fields[7])      // dob
+                            fields[1],    // levelId
+                            fields[2],                      // unit
+                            fields[3],     // since
+                            Integer.valueOf(fields[4]),                      // identifier
+                            fields[5]                  // homeTown
                     );
                     officerList.add(officer);
                 }
@@ -287,15 +281,19 @@ public class OfficerViewController {
                     skipHeader = false;
                     continue;
                 }
+                int birthYear = 0;
+                try {
+                    birthYear= Integer.parseInt(getCellString(row.getCell(4)));
+                } catch (NumberFormatException e) {
+                    // có thể log cảnh báo nếu cần
+                }
                 Officer officer = new Officer(
                         getCellString(row.getCell(0)),                        // fullName
                         getCellString(row.getCell(1)),                        // phone
                         getCellString(row.getCell(2)),        // level
                         getCellString(row.getCell(3)),                        // unit
-                        row.getCell(4).getLocalDateTimeCellValue().toLocalDate(), // since
-                        getCellString(row.getCell(5)),                        // identifier
-                        getCellString(row.getCell(6)),                        // homeTown
-                        row.getCell(7).getLocalDateTimeCellValue().toLocalDate()  // dob
+                        birthYear,                        // identifier
+                        getCellString(row.getCell(5))                        // homeTown
                 );
                 officerList.add(officer);
             }

@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-<?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.qnp.pmp.controllers.AddOfficerController"
       spacing="15"
       prefHeight="500.0" prefWidth="600.0"
       styleClass="root-container" stylesheets="@AddOffice.css">
+
     <padding>
         <Insets top="30" bottom="30" left="30" right="30"/>
     </padding>
@@ -26,8 +23,7 @@
         <Label text="Họ tên:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <Label text="SĐT:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="phoneField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
 
         <Label text="Cấp bậc(ID):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
         <ComboBox fx:id="levelComboBox" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
@@ -35,22 +31,19 @@
         <Label text="Đơn vị:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
         <TextField fx:id="unitField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-        <Label text="Ngày vào làm:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="sincePicker" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
-        <Label text="Mã định danh:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-        <TextField fx:id="identifierField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-
         <Label text="Quê quán:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
         <TextField fx:id="homeTownField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
 
-        <Label text="Ngày sinh:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="dobPicker" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+        <Label text="Năm sinh:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <TextField fx:id="birthYearField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+        <Label text="Ghi chú:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+        <TextArea fx:id="noteField" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="3"/>
     </GridPane>
 
     <!-- Nút lưu -->
     <HBox spacing="20" alignment="CENTER_RIGHT">
         <Button text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
     </HBox>
-</VBox>
 
+</VBox>
