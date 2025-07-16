@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.qnp.pmp.controllers.AddStudyTimeController"
+      spacing="20"
+      alignment="TOP_CENTER"
+      prefWidth="420" prefHeight="340"
+      stylesheets="@AddStudy.css">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <Label text="➕ Thêm đợt học" styleClass="form-title"/>
+
+    <GridPane hgap="15" vgap="15" styleClass="form-grid">
+        <Label text="Lần học:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Spinner fx:id="roundSpinner" editable="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Cán bộ:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="officerComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Ngày bắt đầu:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="startDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Ngày kết thúc:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="endDatePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
+        <Button text="❌ Hủy" onAction="#onCancel" styleClass="cancel-button"/>
+    </HBox>
+
+</VBox>

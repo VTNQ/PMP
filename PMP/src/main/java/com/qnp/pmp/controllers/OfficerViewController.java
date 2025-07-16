@@ -1,9 +1,11 @@
 package com.qnp.pmp.controllers;
 
 import com.qnp.pmp.dto.OfficerViewDTO;
+import com.qnp.pmp.dto.StudyRoundDTO;
 import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.service.OfficeService;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -43,6 +45,7 @@ public class OfficerViewController {
     @FXML private TableColumn<OfficerViewDTO, Integer> birthYearCol;
     @FXML private TableColumn<OfficerViewDTO,String>noteCol;
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
+    @FXML private TableColumn<OfficerViewDTO,Integer> totalAllowance;
     @FXML
     private TextField searchField;
 
@@ -60,6 +63,7 @@ public class OfficerViewController {
         homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
         birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
         noteCol.setCellValueFactory(data -> data.getValue().noteProperty());
+        totalAllowance.setCellValueFactory(data->data.getValue().allowanceMonthsProperty().asObject());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
         centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol,noteCol);
@@ -109,6 +113,19 @@ public class OfficerViewController {
             e.printStackTrace();
         }
     }
+    private void showAddStudyTime(){
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/AddStudy.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Add Study Time");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
     private void showEditDialog(OfficerViewDTO officer) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/EditOfficer.fxml"));
@@ -147,10 +164,28 @@ public class OfficerViewController {
     }
 
     private void loadOfficerAllowance() {
+        List<OfficerViewDTO>list=officeService.getOfficerAllowanceStatus();
         ObservableList<OfficerViewDTO> data =
                 FXCollections.observableArrayList(officeService.getOfficerAllowanceStatus());
         officerTable.setItems(data);
         totalLabel.setText("Tổng: " + data.size() + " cán bộ");
+        int maxRound = list.stream()
+                .flatMap(dto -> dto.getStudyRounds().keySet().stream())
+                .max(Integer::compareTo)
+                .orElse(0);
+
+        // Tạo các cột động cho từng "Lần n"
+        for (int i = 1; i <= maxRound; i++) {
+            final int roundNum = i;
+            TableColumn<OfficerViewDTO, String> roundCol = new TableColumn<>("Lần " + roundNum + " (Từ ngày đến ngày)");
+
+            roundCol.setCellValueFactory(cellData -> {
+                StudyRoundDTO round = cellData.getValue().getStudyRounds().get(roundNum);
+                return new SimpleStringProperty(round != null ? round.getFormatted() : "");
+            });
+
+            officerTable.getColumns().add(roundCol);
+        }
     }
     @FXML
     private void add() {
@@ -306,6 +341,10 @@ public class OfficerViewController {
             Dialog.displayErrorMessage("Không thể đọc file Excel");
         }
     }
+    @FXML
+    private void onAddStudyTime(){
+        showAddStudyTime();
 
+    }
 
 }
