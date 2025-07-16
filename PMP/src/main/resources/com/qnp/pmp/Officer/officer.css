@@ -9,6 +9,17 @@
     -fx-font-size: 14px;
     -fx-text-fill: #34495e;
 }
+.studytime-button {
+    -fx-background-color: #17a2b8;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 14;
+    -fx-background-radius: 6;
+}
+
+.studytime-button:hover {
+    -fx-background-color: #138496;
+}
 
 .refresh-button {
     -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);

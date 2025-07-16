@@ -7,6 +7,10 @@ import javafx.beans.property.StringProperty;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class OfficerViewDTO {
     private final IntegerProperty id;
@@ -17,6 +21,9 @@ public class OfficerViewDTO {
     private final IntegerProperty birthYear;
     private final StringProperty homeTown;
     private final StringProperty note;
+    private final Map<Integer, StudyRoundDTO> studyRounds = new TreeMap<>();
+    private final IntegerProperty allowanceMonths = new SimpleIntegerProperty(0);
+
 
 
     public OfficerViewDTO(int id,String fullName,Integer levelId,String levelName, String unit,Integer birthYear, String homeTown,String note) {
@@ -36,7 +43,17 @@ public class OfficerViewDTO {
     public StringProperty fullNameProperty() {
         return fullName;
     }
+    public IntegerProperty allowanceMonthsProperty() {
+        return allowanceMonths;
+    }
 
+    public int getAllowanceMonths() {
+        return allowanceMonths.get();
+    }
+
+    public void setAllowanceMonths(int value) {
+        allowanceMonths.set(value);
+    }
 
     public IntegerProperty levelIdProperty() {
         return levelId;
@@ -58,7 +75,13 @@ public class OfficerViewDTO {
         return birthYear;
     }
 
+    public void addStudyRound(int round, LocalDate start, LocalDate end) {
+        studyRounds.put(round, new StudyRoundDTO(round, start, end));
+    }
 
+    public Map<Integer, StudyRoundDTO> getStudyRounds() {
+        return studyRounds;
+    }
 
 //    public long getThoiGianHuongThuHut() {
 //        if (since.get() == null || since.get().isBlank()) return 0;

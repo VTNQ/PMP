@@ -20,6 +20,8 @@ public class Officer {
 
     private String homeTown;
 
+
+
     public Officer(String fullName, String levelName, String unit, String homeTown, int birthYear, String note) {
         this.fullName = fullName;
         this.levelName = levelName;
@@ -27,5 +29,9 @@ public class Officer {
         this.homeTown = homeTown;
         this.birthYear = birthYear;
         this.note = note;
+    }
+    @Override
+    public String toString() {
+        return fullName;
     }
 }

@@ -13,5 +13,5 @@ public interface OfficeService {
     void deleteOfficer(int id);
     List<OfficerViewDTO> findByName(String name);
     List<OfficerViewDTO>getOfficerAllowanceStatus();
-
+    List<Officer>getOfficers();
 }
