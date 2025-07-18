@@ -1,9 +1,7 @@
 package com.qnp.pmp.dto;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -24,19 +22,21 @@ public class OfficerViewDTO {
     private final Map<Integer, StudyRoundDTO> studyRounds = new TreeMap<>();
     private final IntegerProperty allowanceMonths = new SimpleIntegerProperty(0);
 
-
-
-    public OfficerViewDTO(int id,String fullName,Integer levelId,String levelName, String unit,Integer birthYear, String homeTown,String note) {
+    private final ObjectProperty<LocalDate> since = new SimpleObjectProperty<>();
+    public OfficerViewDTO(int id, String fullName, Integer levelId, String levelName,
+                          String unit, Integer birthYear, String homeTown,
+                          String note, LocalDate since) {
         this.id = new SimpleIntegerProperty(id);
         this.fullName = new SimpleStringProperty(fullName);
         this.levelId = new SimpleIntegerProperty(levelId);
-       this.levelName = new SimpleStringProperty(levelName);
+        this.levelName = new SimpleStringProperty(levelName);
         this.unit = new SimpleStringProperty(unit);
         this.homeTown = new SimpleStringProperty(homeTown);
         this.note = new SimpleStringProperty(note);
         this.birthYear = new SimpleIntegerProperty(birthYear);
-
+        this.since.set(since);
     }
+
     public IntegerProperty getId() {
         return id;
     }
@@ -46,6 +46,7 @@ public class OfficerViewDTO {
     public IntegerProperty allowanceMonthsProperty() {
         return allowanceMonths;
     }
+    public LocalDate getSince() { return since.get(); }
 
     public int getAllowanceMonths() {
         return allowanceMonths.get();

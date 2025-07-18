@@ -19,6 +19,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import com.qnp.pmp.dialog.Dialog;
 import javafx.stage.Stage;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
@@ -28,6 +29,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.event.ActionEvent;
@@ -281,7 +283,8 @@ public class OfficerViewController {
                             fields[2],                      // unit
                             fields[3],     // since
                             Integer.valueOf(fields[4]),                      // identifier
-                            fields[5]                  // homeTown
+                            fields[5]         ,
+                            LocalDate.parse(fields[6])// homeTown
                     );
                     officerList.add(officer);
                 }
@@ -302,6 +305,20 @@ public class OfficerViewController {
             case FORMULA -> cell.getCellFormula();
             default -> "";
         };
+    }
+    private LocalDate getCellLocalDate(Cell cell) {
+        if (cell == null || cell.getCellType() != CellType.NUMERIC) {
+            return null; // hoặc LocalDate.now() tùy ý bạn
+        }
+
+        if (DateUtil.isCellDateFormatted(cell)) {
+            return cell.getDateCellValue()
+                    .toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        }
+
+        return null;
     }
 
     private void importExcelFile(File file) {
@@ -328,7 +345,8 @@ public class OfficerViewController {
                         getCellString(row.getCell(2)),        // level
                         getCellString(row.getCell(3)),                        // unit
                         birthYear,                        // identifier
-                        getCellString(row.getCell(5))                        // homeTown
+                        getCellString(row.getCell(5)),
+                      getCellLocalDate( row.getCell(6))// homeTown
                 );
                 officerList.add(officer);
             }

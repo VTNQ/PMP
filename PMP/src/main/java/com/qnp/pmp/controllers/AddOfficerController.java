@@ -34,6 +34,8 @@ public class AddOfficerController {
     @FXML
     private TextField fullNameField;
     @FXML
+    private DatePicker sinceDatePicker;
+    @FXML
     private ComboBox<Level> levelComboBox;
     @FXML
     private TextField unitField;
@@ -79,6 +81,7 @@ public class AddOfficerController {
             officer.setLevelId(levelComboBox.getValue().getId());
             officer.setHomeTown(homeTownField.getText());
             officer.setBirthYear(Integer.valueOf(birthYearField.getText()));
+            officer.setSince(LocalDate.parse(sinceDatePicker.getValue().toString()));
             officer.setNote(noteField.getText());
             officeService.saveOfficer(officer);
             fullNameField.clear();
