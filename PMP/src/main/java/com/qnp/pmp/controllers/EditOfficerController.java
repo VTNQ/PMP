@@ -35,6 +35,8 @@ public class EditOfficerController {
     @FXML
     private TextField unitField;
     @FXML
+    private DatePicker sinceDatePicker;
+    @FXML
     private TextField birthYearField;
     @FXML
     private TextArea noteField;
@@ -50,6 +52,7 @@ public class EditOfficerController {
         unitField.setText(officer.unitProperty().getValue());
         noteField.setText(officer.noteProperty().getValue());
         homeTownField.setText(officer.homeTownProperty().getValue());
+        sinceDatePicker.setValue(officer.getSince());
         this.id=officer.getId().getValue();
 
         // Tìm Level phù hợp theo ID trong ComboBox
@@ -90,6 +93,7 @@ public class EditOfficerController {
           officerDto.setUnit(unitField.getText());
           officerDto.setHomeTown(homeTownField.getText());
           officerDto.setBirthYear(Integer.valueOf(birthYearField.getText()));
+          officerDto.setSince(sinceDatePicker.getValue());
           officerDto.setNote(noteField.getText());
           officerDto.setId(id);
           officerDto.setLevelId(levelComboBox.getSelectionModel().getSelectedItem().getId());

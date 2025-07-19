@@ -36,9 +36,11 @@
 
         <Label text="Năm sinh:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
         <TextField fx:id="birthYearField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+        <Label text="Ngày bắt đầu:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="sinceDatePicker" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
+        <Label text="Ghi chú:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+        <TextArea fx:id="noteField" GridPane.rowIndex="9" GridPane.columnIndex="1" prefRowCount="3"/>
 
-        <Label text="Ghi chú:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-        <TextArea fx:id="noteField" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="3"/>
     </GridPane>
 
     <!-- Nút lưu -->
