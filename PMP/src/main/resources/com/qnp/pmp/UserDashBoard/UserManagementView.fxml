@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="500" prefWidth="800" style="-fx-background-color: #f4f6f8;" stylesheets="@user.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qnp.pmp.controllers.UserManagementController">
+<BorderPane prefHeight="500" prefWidth="800" style="-fx-background-color: #f4f6f8;" stylesheets="@user.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qnp.pmp.controllers.UserAdminController">
 
     <!-- Tiêu đề -->
     <top>

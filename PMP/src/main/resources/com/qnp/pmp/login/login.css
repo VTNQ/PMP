@@ -1,30 +1,43 @@
-/* login.css */
 .root {
     -fx-font-family: "Segoe UI", sans-serif;
-    -fx-background-color: #ffffff;
+    -fx-background-color: linear-gradient(to bottom right, #f0f3f7, #e4eaf1);
 }
 
+/* Container bo góc & đổ bóng */
+.login-container {
+    -fx-background-color: white;
+    -fx-padding: 40;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0.3, 4, 4);
+}
+
+/* Tiêu đề */
 .heading {
-    -fx-font-size: 24px;
+    -fx-font-size: 26px;
     -fx-fill: #3f51b5;
     -fx-font-weight: bold;
 }
 
-.text-field, .password-field {
-    -fx-font-size: 14px;
+/* Các trường nhập */
+.form-field {
+    -fx-pref-width: 300px;
     -fx-pref-height: 40px;
-    -fx-border-color: #cfcfcf;
-    -fx-border-radius: 6;
+    -fx-font-size: 14px;
     -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #cfd8dc;
+    -fx-background-color: white;
     -fx-padding: 0 10 0 10;
 }
 
+/* Nút đăng nhập */
 .login-button {
     -fx-background-color: #3f51b5;
     -fx-text-fill: white;
     -fx-font-size: 14px;
+    -fx-font-weight: bold;
     -fx-background-radius: 6;
-    -fx-pref-width: 200px;
+    -fx-pref-width: 300px;
     -fx-pref-height: 40px;
     -fx-cursor: hand;
 }

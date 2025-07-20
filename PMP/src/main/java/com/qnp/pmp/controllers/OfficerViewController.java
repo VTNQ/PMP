@@ -1,7 +1,7 @@
 package com.qnp.pmp.controllers;
 
+import com.qnp.pmp.dialog.Dialog;
 import com.qnp.pmp.dto.OfficerViewDTO;
-import com.qnp.pmp.dto.StudyRoundDTO;
 import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.service.OfficeService;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
@@ -17,61 +17,39 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
-import com.qnp.pmp.dialog.Dialog;
 import javafx.stage.Stage;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import javafx.util.Callback;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.event.ActionEvent;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.time.LocalDate;
+
 public class OfficerViewController {
 
     @FXML private TableView<OfficerViewDTO> officerTable;
-
     @FXML private TableColumn<OfficerViewDTO, String> fullNameCol;
     @FXML private TableColumn<OfficerViewDTO, String> positionCol;
     @FXML private TableColumn<OfficerViewDTO, String> unitCol;
     @FXML private TableColumn<OfficerViewDTO, Integer> birthYearCol;
-    @FXML private TableColumn<OfficerViewDTO,String>noteCol;
+    @FXML private TableColumn<OfficerViewDTO, String> noteCol;
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
-    @FXML private TableColumn<OfficerViewDTO,Integer> totalAllowance;
-    @FXML
-    private TextField searchField;
+    @FXML private TableColumn<OfficerViewDTO, Integer> totalAllowance;
+    @FXML private TableColumn<OfficerViewDTO, Void> studyTimeButtonCol;
 
+    @FXML private TextField searchField;
     @FXML private Label totalLabel;
 
     private final OfficeService officeService = new OfficerServiceImpl();
 
     @FXML
     public void initialize() {
-
-        // Gán dữ liệu cho các cột
-        fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
-        positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
-        unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
-        homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
-        birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
-        noteCol.setCellValueFactory(data -> data.getValue().noteProperty());
-        totalAllowance.setCellValueFactory(data->data.getValue().allowanceMonthsProperty().asObject());
-        officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        // Căn giữa dữ liệu cho tất cả cột
-        centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol,noteCol);
-
-        // Tải dữ liệu ban đầu
+        configureColumns();
         loadOfficerAllowance();
+        addStudyTimeButtonToTable();
         officerTable.setRowFactory(tv -> {
             TableRow<OfficerViewDTO> row = new TableRow<>() {
                 @Override
@@ -94,39 +72,12 @@ public class OfficerViewController {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     OfficerViewDTO officerViewDTO = row.getItem();
                     showEditDialog(officerViewDTO);
-                  loadOfficerAllowance();
-               }
+                    loadOfficerAllowance();
+                }
             });
 
             return row;
         });
-
-    }
-    private void showAddDialog(){
-        try {
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/AddOfficerView.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Add Officer");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-    }
-    private void showAddStudyTime(){
-        try {
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/AddStudy.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setTitle("Add Study Time");
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setScene(new Scene(root));
-            stage.showAndWait();
-        }catch (IOException e){
-            e.printStackTrace();
-        }
     }
     private void showEditDialog(OfficerViewDTO officer) {
         try {
@@ -146,14 +97,29 @@ public class OfficerViewController {
             e.printStackTrace();
         }
     }
+    private void configureColumns() {
+        fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
+        positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
+        unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
+        homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
+        birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
+        noteCol.setCellValueFactory(data -> data.getValue().noteProperty());
+        totalAllowance.setCellValueFactory(data -> data.getValue().allowanceMonthsProperty().asObject());
+        centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol, noteCol, totalAllowance);
+    }
 
     private <T> void centerCell(TableColumn<OfficerViewDTO, T> column) {
-        column.setCellFactory(tc -> new TableCell<>() {
+        column.setCellFactory(new Callback<TableColumn<OfficerViewDTO, T>, TableCell<OfficerViewDTO, T>>() {
             @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.toString());
-                setStyle("-fx-alignment: CENTER;");
+            public TableCell<OfficerViewDTO, T> call(TableColumn<OfficerViewDTO, T> param) {
+                return new TableCell<OfficerViewDTO, T>() {
+                    @Override
+                    protected void updateItem(T item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setText(empty || item == null ? null : item.toString());
+                        setStyle("-fx-alignment: CENTER;");
+                    }
+                };
             }
         });
     }
@@ -165,53 +131,136 @@ public class OfficerViewController {
         }
     }
 
-    private void loadOfficerAllowance() {
-        List<OfficerViewDTO>list=officeService.getOfficerAllowanceStatus();
-        ObservableList<OfficerViewDTO> data =
-                FXCollections.observableArrayList(officeService.getOfficerAllowanceStatus());
-        officerTable.setItems(data);
-        totalLabel.setText("Tổng: " + data.size() + " cán bộ");
-        int maxRound = list.stream()
-                .flatMap(dto -> dto.getStudyRounds().keySet().stream())
-                .max(Integer::compareTo)
-                .orElse(0);
+    private void addStudyTimeButtonToTable() {
+        Callback<TableColumn<OfficerViewDTO, Void>, TableCell<OfficerViewDTO, Void>> cellFactory = new Callback<TableColumn<OfficerViewDTO, Void>, TableCell<OfficerViewDTO, Void>>() {
+            @Override
+            public TableCell<OfficerViewDTO, Void> call(final TableColumn<OfficerViewDTO, Void> param) {
+                return new TableCell<OfficerViewDTO, Void>() {
+                    private final Button btn = new Button("⏱ Xem");
 
-        // Tạo các cột động cho từng "Lần n"
-        for (int i = 1; i <= maxRound; i++) {
-            final int roundNum = i;
-            TableColumn<OfficerViewDTO, String> roundCol = new TableColumn<>("Lần " + roundNum + " (Từ ngày đến ngày)");
+                    {
+                        btn.setOnAction(event -> {
+                            OfficerViewDTO officer = getTableView().getItems().get(getIndex());
+                            showStudyTime(officer);
+                        });
+                        btn.setStyle(
+                                "-fx-background-color: #007bff;" +   // màu nền xanh
+                                        "-fx-text-fill: white;" +           // chữ trắng
+                                        "-fx-font-weight: bold;" +          // chữ đậm
+                                        "-fx-background-radius: 8;" +       // bo góc
+                                        "-fx-cursor: hand;"                 // hiển thị con trỏ bàn tay khi hover
+                        );
 
-            roundCol.setCellValueFactory(cellData -> {
-                StudyRoundDTO round = cellData.getValue().getStudyRounds().get(roundNum);
-                return new SimpleStringProperty(round != null ? round.getFormatted() : "");
-            });
+                    }
 
-            officerTable.getColumns().add(roundCol);
+                    @Override
+                    protected void updateItem(Void item, boolean empty) {
+                        super.updateItem(item, empty);
+                        setGraphic(empty ? null : btn);
+                    }
+                };
+            }
+        };
+
+        studyTimeButtonCol.setCellFactory(cellFactory);
+    }
+
+    private void showStudyTime(OfficerViewDTO officer) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/StudyTimeView.fxml"));
+            Parent root = loader.load();
+
+            StudyTimeController controller = loader.getController();
+            controller.setOfficer(officer);
+
+            Stage stage = new Stage();
+            stage.setTitle("Thời gian học");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
-    @FXML
-    private void add() {
-        showAddDialog();
+
+    private void loadOfficerAllowance() {
+        List<OfficerViewDTO> data = officeService.getOfficerAllowanceStatus();
+        ObservableList<OfficerViewDTO> observableData = FXCollections.observableArrayList(data);
+        officerTable.setItems(observableData);
+        totalLabel.setText("Tổng: " + observableData.size() + " cán bộ");
     }
+
     @FXML
     private void onSearch(KeyEvent event) {
-            if(event.getCode()==KeyCode.ENTER) {
-                String keyword=searchField.getText().trim();
-                if (!keyword.isEmpty()) {
-                    ObservableList<OfficerViewDTO> result =
-                            FXCollections.observableArrayList(officeService.findByName(keyword));
-                    officerTable.setItems(result);
-                    totalLabel.setText("Tổng: " + result.size() + " cán bộ");
-                } else {
-                    loadOfficerAllowance(); // Nếu rỗng thì tải lại toàn bộ
-                }
+        if (event.getCode() == KeyCode.ENTER) {
+            String keyword = searchField.getText().trim();
+            if (!keyword.isEmpty()) {
+                ObservableList<OfficerViewDTO> result = FXCollections.observableArrayList(officeService.findByName(keyword));
+                officerTable.setItems(result);
+                totalLabel.setText("Tổng: " + result.size() + " cán bộ");
+            } else {
+                loadOfficerAllowance();
             }
+        }
     }
+
     @FXML
     private void refreshTable() {
-        officerTable.getItems().clear();              // Xóa dữ liệu hiện tại
-        officerTable.getColumns().removeIf(col -> col.getText().startsWith("Lần")); // Xóa các cột động cũ nếu có
+        searchField.clear();
         loadOfficerAllowance();
+    }
+
+    @FXML
+    private void onAddStudyTime() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/AddStudy.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Thêm thời gian học");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            loadOfficerAllowance();
+        } catch (IOException e) {
+            Dialog.displayErrorMessage("Không thể mở cửa sổ thêm thời gian học.");
+        }
+    }
+
+    @FXML
+    private void add() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/AddOfficerView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Thêm cán bộ");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            loadOfficerAllowance();
+        } catch (IOException e) {
+            Dialog.displayErrorMessage("Không thể mở cửa sổ thêm cán bộ.");
+        }
+    }
+
+    @FXML
+    private void onDelete() {
+        OfficerViewDTO selected = officerTable.getSelectionModel().getSelectedItem();
+        if (selected == null) {
+            Dialog.displayErrorMessage("Vui lòng chọn một cán bộ để xoá.");
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Xác nhận xoá");
+        alert.setHeaderText("Xoá cán bộ: ");
+        alert.setContentText("Bạn có chắc chắn muốn xoá?");
+
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            officeService.deleteOfficer(selected.getId().get());
+            Dialog.displaySuccessFully("Đã xoá thành công.");
+            loadOfficerAllowance();
+        }
     }
     @FXML
     private void onImport() {
@@ -234,36 +283,6 @@ public class OfficerViewController {
             }
         }
         loadOfficerAllowance();
-
-    }
-    @FXML
-    private void onDelete() {
-       try {
-           ObservableList<OfficerViewDTO> selectedItems = officerTable.getSelectionModel().getSelectedItems();
-
-           if (selectedItems == null || selectedItems.isEmpty()) {
-               Dialog.displayErrorMessage("Vui lòng chọn ít nhất một cán bộ để xoá.");
-               return;
-           }
-
-           // Xác nhận xoá
-           Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-           alert.setTitle("Xác nhận xoá");
-           alert.setHeaderText("Bạn có chắc chắn muốn xoá " + selectedItems.size() + " cán bộ?");
-           alert.setContentText("Hành động này không thể hoàn tác.");
-           if (alert.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
-               return;
-           }
-
-           // ✅ Lấy danh sách ID cần xoá
-           int idDeleted =selectedItems.get(0).getId().get();
-           officeService.deleteOfficer(idDeleted);
-           Dialog.displaySuccessFully("Xóa cán bộ thành công");
-           loadOfficerAllowance();
-       }catch (Exception e) {
-           Dialog.displayErrorMessage("Lỗi xóa cán bộ");
-       }
-
 
     }
     private void importCsvFile(File file) {
@@ -348,7 +367,7 @@ public class OfficerViewController {
                         getCellString(row.getCell(3)),                        // unit
                         birthYear,                        // identifier
                         getCellString(row.getCell(5)),
-                      getCellLocalDate( row.getCell(6))// homeTown
+                        getCellLocalDate( row.getCell(6))// homeTown
                 );
                 officerList.add(officer);
             }
@@ -361,10 +380,4 @@ public class OfficerViewController {
             Dialog.displayErrorMessage("Không thể đọc file Excel");
         }
     }
-    @FXML
-    private void onAddStudyTime(){
-        showAddStudyTime();
-
-    }
-
 }
