@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class OfficerServiceImpl implements OfficeService {
     private GeneralService generalService;
@@ -115,18 +116,19 @@ public class OfficerServiceImpl implements OfficeService {
 
     @Override
     public List<OfficerViewDTO> findByName(String name) {
-        Map<Integer,OfficerViewDTO> officerMap = new HashMap<>();
-        String sql = "SELECT o.id, o.full_name,l.id as levelId, l.name AS level_name, o.unit, o.hometown,o.birth_year,o.note,o.since " +
+        Map<Integer, OfficerViewDTO> officerMap = new HashMap<>();
+        String sql = "SELECT o.id, o.full_name, l.id as levelId, l.name AS level_name, o.unit, o.hometown, o.birth_year, o.note, o.since " +
                 "FROM officer o " +
                 "JOIN level l ON o.level_id = l.id " +
                 "WHERE o.full_name LIKE ?";
-
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
             // Bước 1: Lấy danh sách cán bộ
             PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setString(1, "%" + name + "%");
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String fullName = rs.getString("full_name");
@@ -137,7 +139,6 @@ public class OfficerServiceImpl implements OfficeService {
                 int birthYear = rs.getInt("birth_year");
                 String note = rs.getString("note");
 
-                // Xử lý ngày 'since' an toàn
                 Date sqlSince = rs.getDate("since");
                 LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
 
@@ -146,17 +147,29 @@ public class OfficerServiceImpl implements OfficeService {
                 officerMap.put(id, dto);
             }
 
+            if (officerMap.isEmpty()) {
+                return new ArrayList<>();
+            }
+
             // Bước 2: Lấy thông tin thời gian đi học
-            String studySql = """
-            SELECT officer_id, round, start_date, end_date
-            FROM studyTimes
-            ORDER BY officer_id, round
-        """;
+            String idPlaceholders = officerMap.keySet().stream()
+                    .map(id -> "?")
+                    .collect(Collectors.joining(", "));
+
+            String studySql = "SELECT a.officer_id, a.round, a.start_date, a.end_date " +
+                    "FROM studyTimes a " +
+                    "WHERE a.officer_id IN (" + idPlaceholders + ") " +
+                    "ORDER BY a.officer_id, a.round";
 
             stmt = connection.prepareStatement(studySql);
+
+            int index = 1;
+            for (Integer id : officerMap.keySet()) {
+                stmt.setInt(index++, id);
+            }
+
             rs = stmt.executeQuery();
 
-            // officer_id -> (YearMonth -> tổng số ngày đi học)
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
 
             while (rs.next()) {
@@ -203,11 +216,12 @@ public class OfficerServiceImpl implements OfficeService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace(); // Bạn có thể ghi log rõ hơn trong thực tế
+            e.printStackTrace();
         }
 
         return new ArrayList<>(officerMap.values());
     }
+
 
     @Override
     public List<OfficerViewDTO> getOfficerAllowanceStatus() {
@@ -235,7 +249,6 @@ public class OfficerServiceImpl implements OfficeService {
                 int birthYear = rs.getInt("birth_year");
                 String note = rs.getString("note");
 
-                // Xử lý ngày 'since' an toàn
                 Date sqlSince = rs.getDate("since");
                 LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
 
@@ -244,17 +257,28 @@ public class OfficerServiceImpl implements OfficeService {
                 officerMap.put(id, dto);
             }
 
-            // Bước 2: Lấy thông tin thời gian đi học
-            String studySql = """
-            SELECT officer_id, round, start_date, end_date
-            FROM studyTimes
-            ORDER BY officer_id, round
-        """;
+            if (officerMap.isEmpty()) {
+                return new ArrayList<>();
+            }
+
+            // Bước 2: Lấy thông tin thời gian đi học cho officer_id nằm trong danh sách officerMap
+            String idPlaceholders = officerMap.keySet().stream()
+                    .map(id -> "?")
+                    .collect(Collectors.joining(", "));
+
+            String studySql = "SELECT officer_id, round, start_date, end_date " +
+                    "FROM studyTimes " +
+                    "WHERE officer_id IN (" + idPlaceholders + ") " +
+                    "ORDER BY officer_id, round";
 
             stmt = connection.prepareStatement(studySql);
+            int index = 1;
+            for (Integer id : officerMap.keySet()) {
+                stmt.setInt(index++, id);
+            }
+
             rs = stmt.executeQuery();
 
-            // officer_id -> (YearMonth -> tổng số ngày đi học)
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
 
             while (rs.next()) {
@@ -301,7 +325,7 @@ public class OfficerServiceImpl implements OfficeService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace(); // Bạn có thể ghi log rõ hơn trong thực tế
+            e.printStackTrace(); // Gợi ý: dùng logger thay vì in ra console
         }
 
         return new ArrayList<>(officerMap.values());
