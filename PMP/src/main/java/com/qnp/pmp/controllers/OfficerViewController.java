@@ -209,6 +209,8 @@ public class OfficerViewController {
     }
     @FXML
     private void refreshTable() {
+        officerTable.getItems().clear();              // Xóa dữ liệu hiện tại
+        officerTable.getColumns().removeIf(col -> col.getText().startsWith("Lần")); // Xóa các cột động cũ nếu có
         loadOfficerAllowance();
     }
     @FXML
