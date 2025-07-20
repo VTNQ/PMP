@@ -1,0 +1,47 @@
+/* Phông chữ tổng thể */
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* Tiêu đề */
+.form-title {
+    -fx-font-size: 18px;          /* ↓ giảm xuống */
+    -fx-font-weight: 600;         /* trung bình */
+    -fx-text-fill: #2c3e50;
+    -fx-letter-spacing: 0.5px;    /* dễ nhìn hơn */
+}
+
+/* Khung nhập liệu */
+.form-container {
+    -fx-background-color: white;
+    -fx-padding: 30;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.4, 3, 3);
+}
+
+/* Trường nhập */
+.text-field, .password-field {
+    -fx-pref-height: 40px;
+    -fx-font-size: 14px;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #d0d7de;
+    -fx-background-color: #ffffff;
+    -fx-padding: 0 10 0 10;
+}
+
+/* Nút tạo tài khoản */
+.create-button {
+    -fx-background-color: #28a745; /* Xanh lá đẹp */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-pref-height: 40px;
+}
+
+.create-button:hover {
+    -fx-background-color: #218838;
+}

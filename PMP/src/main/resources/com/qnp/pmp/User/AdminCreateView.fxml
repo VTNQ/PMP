@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Pos?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.qnp.pmp.controllers.AdminCreateController"
+           style="-fx-background-color: #f4f6f8;"
+           stylesheets="@AdminCreateView.css">
+
+    <VBox spacing="20" alignment="CENTER">
+        <Label text="➕ TẠO TÀI KHOẢN" styleClass="form-title"/>
+
+        <GridPane hgap="10" vgap="15" styleClass="form-container">
+            <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" minWidth="100"/>
+                <ColumnConstraints hgrow="ALWAYS"/>
+            </columnConstraints>
+
+            <!-- Username -->
+            <Label text="Tên đăng nhập:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+            <TextField fx:id="usernameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+            <!-- Password -->
+            <Label text="Mật khẩu:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+            <PasswordField fx:id="passwordField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+            <!-- Full name -->
+            <Label text="Họ và tên:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+            <TextField fx:id="fullNameField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+            <!-- Nút tạo -->
+            <Button fx:id="createButton"
+                    text="Tạo tài khoản"
+                    onAction="#handleCreateAccount"
+                    GridPane.rowIndex="3" GridPane.columnIndex="1"
+                    styleClass="create-button"
+                    maxWidth="Infinity"/>
+        </GridPane>
+    </VBox>
+</StackPane>

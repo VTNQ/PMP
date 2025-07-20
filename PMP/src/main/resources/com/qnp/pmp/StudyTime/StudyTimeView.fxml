@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.qnp.pmp.controllers.StudyTimeController"
+      spacing="10"
+     style="-fx-background-color: #f9f9f9">
+    <padding>
+        <Insets top="15" right="15" bottom="15" left="15"/>
+    </padding>
+    <Label text="📚 Lịch học của cán bộ" styleClass="title-label" style="-fx-font-size: 18px;-fx-font-weight: bold;-fx-padding: 0 0 10 0" />
+    <TableView fx:id="studyTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="roundCol" text="Lần học" prefWidth="100"/>
+            <TableColumn fx:id="startDateCol" text="Từ ngày" prefWidth="150"/>
+            <TableColumn fx:id="endDateCol" text="Đến ngày" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+
+</VBox>

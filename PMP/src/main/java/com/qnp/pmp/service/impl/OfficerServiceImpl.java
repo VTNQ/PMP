@@ -117,97 +117,116 @@ public class OfficerServiceImpl implements OfficeService {
     @Override
     public List<OfficerViewDTO> findByName(String name) {
         Map<Integer, OfficerViewDTO> officerMap = new HashMap<>();
-        String sql = "SELECT o.id, o.full_name, l.id as levelId, l.name AS level_name, o.unit, o.hometown, o.birth_year, o.note, o.since " +
-                "FROM officer o " +
-                "JOIN level l ON o.level_id = l.id " +
-                "WHERE o.full_name LIKE ?";
+
+        String sql = """
+        SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
+               o.unit, o.hometown, o.birth_year, o.note, o.since
+        FROM officer o
+        JOIN level l ON o.level_id = l.id
+        WHERE o.full_name LIKE ?
+    """;
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
-            // Bước 1: Lấy danh sách cán bộ
-            PreparedStatement stmt = connection.prepareStatement(sql);
-            stmt.setString(1, "%" + name + "%");
-            ResultSet rs = stmt.executeQuery();
+            // Bước 1: Tìm danh sách cán bộ theo tên
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, "%" + name + "%");
 
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String fullName = rs.getString("full_name");
-                int levelId = rs.getInt("levelId");
-                String levelName = rs.getString("level_name");
-                String unit = rs.getString("unit");
-                String homeTown = rs.getString("hometown");
-                int birthYear = rs.getInt("birth_year");
-                String note = rs.getString("note");
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int id = rs.getInt("id");
+                        String fullName = rs.getString("full_name");
+                        int levelId = rs.getInt("levelId");
+                        String levelName = rs.getString("level_name");
+                        String unit = rs.getString("unit");
+                        String homeTown = rs.getString("hometown");
+                        int birthYear = rs.getInt("birth_year");
+                        String note = rs.getString("note");
+                        Date sqlSince = rs.getDate("since");
+                        LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
 
-                Date sqlSince = rs.getDate("since");
-                LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
-
-                OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                        unit, birthYear, homeTown, note, since);
-                officerMap.put(id, dto);
+                        OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
+                                unit, birthYear, homeTown, note, since);
+                        officerMap.put(id, dto);
+                    }
+                }
             }
 
-            if (officerMap.isEmpty()) {
-                return new ArrayList<>();
-            }
+            if (officerMap.isEmpty()) return new ArrayList<>();
 
-            // Bước 2: Lấy thông tin thời gian đi học
+            // Bước 2: Lấy thông tin học tập từ bảng studyTimes
             String idPlaceholders = officerMap.keySet().stream()
                     .map(id -> "?")
                     .collect(Collectors.joining(", "));
 
-            String studySql = "SELECT a.officer_id, a.round, a.start_date, a.end_date " +
-                    "FROM studyTimes a " +
-                    "WHERE a.officer_id IN (" + idPlaceholders + ") " +
-                    "ORDER BY a.officer_id, a.round";
-
-            stmt = connection.prepareStatement(studySql);
-
-            int index = 1;
-            for (Integer id : officerMap.keySet()) {
-                stmt.setInt(index++, id);
-            }
-
-            rs = stmt.executeQuery();
+            String studySql = "SELECT officer_id, round, start_date, end_date " +
+                    "FROM studyTimes " +
+                    "WHERE officer_id IN (" + idPlaceholders + ") " +
+                    "ORDER BY officer_id, round";
 
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
 
-            while (rs.next()) {
-                int officerId = rs.getInt("officer_id");
-                int round = rs.getInt("round");
-                LocalDate startDate = rs.getDate("start_date").toLocalDate();
-                LocalDate endDate = rs.getDate("end_date").toLocalDate();
+            try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
+                int index = 1;
+                for (Integer id : officerMap.keySet()) {
+                    stmt.setInt(index++, id);
+                }
 
-                OfficerViewDTO dto = officerMap.get(officerId);
-                if (dto == null) continue;
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int officerId = rs.getInt("officer_id");
+                        int round = rs.getInt("round");
+                        LocalDate originalStart = rs.getDate("start_date").toLocalDate();
+                        LocalDate originalEnd = rs.getDate("end_date").toLocalDate();
 
-                dto.addStudyRound(round, startDate, endDate);
+                        OfficerViewDTO dto = officerMap.get(officerId);
+                        if (dto == null) continue;
 
-                Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
-                        .computeIfAbsent(officerId, k -> new HashMap<>());
+                        LocalDate sinceDate = dto.getSince();
+                        if (sinceDate == null) continue;
 
-                LocalDate date = startDate;
-                while (!date.isAfter(endDate)) {
-                    YearMonth ym = YearMonth.from(date);
-                    monthlyDays.put(ym, monthlyDays.getOrDefault(ym, 0) + 1);
-                    date = date.plusDays(1);
+                        // Cắt bỏ phần học trước since nếu có
+                        LocalDate start = originalStart.isBefore(sinceDate) ? sinceDate : originalStart;
+                        LocalDate end = originalEnd;
+                        if (end.isBefore(start)) continue;
+
+                        dto.addStudyRound(round, originalStart, originalEnd);
+
+                        Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
+                                .computeIfAbsent(officerId, k -> new HashMap<>());
+
+                        LocalDate date = start;
+                        while (!date.isAfter(end)) {
+                            YearMonth ym = YearMonth.from(date);
+                            monthlyDays.put(ym, monthlyDays.getOrDefault(ym, 0) + 1);
+                            date = date.plusDays(1);
+                        }
+                    }
                 }
             }
 
-            // Bước 3: Tính số tháng được hưởng phụ cấp
+            // Bước 3: Tính số tháng phụ cấp từ since → hiện tại
+            YearMonth currentMonth = YearMonth.now();
+
             for (Map.Entry<Integer, OfficerViewDTO> entry : officerMap.entrySet()) {
                 int officerId = entry.getKey();
                 OfficerViewDTO dto = entry.getValue();
                 Map<YearMonth, Integer> daysPerMonth = studyDaysByOfficer.getOrDefault(officerId, Map.of());
 
                 LocalDate sinceDate = dto.getSince();
-                YearMonth sinceMonth = (sinceDate != null) ? YearMonth.from(sinceDate) : YearMonth.of(1900, 1);
+                if (sinceDate == null) {
+                    dto.setAllowanceMonths(0);
+                    continue;
+                }
+
+                YearMonth sinceMonth = YearMonth.from(sinceDate);
+                int totalMonths = (int) ChronoUnit.MONTHS.between(sinceMonth, currentMonth);
 
                 int count = 0;
-                for (Map.Entry<YearMonth, Integer> monthEntry : daysPerMonth.entrySet()) {
-                    YearMonth month = monthEntry.getKey();
-                    int studyDays = monthEntry.getValue();
-                    if (!month.isBefore(sinceMonth) && studyDays <= 15) {
+                for (int i = 0; i < totalMonths; i++) {
+                    YearMonth month = sinceMonth.plusMonths(i);
+                    int studyDays = daysPerMonth.getOrDefault(month, 0);
+                    if (studyDays <= 15) {
                         count++;
                     }
                 }
@@ -216,7 +235,7 @@ public class OfficerServiceImpl implements OfficeService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // nên thay bằng logger
         }
 
         return new ArrayList<>(officerMap.values());
@@ -237,31 +256,33 @@ public class OfficerServiceImpl implements OfficeService {
         try (Connection connection = MySQLConnection.getConnection()) {
 
             // Bước 1: Lấy danh sách cán bộ
-            PreparedStatement stmt = connection.prepareStatement(officerSql);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String fullName = rs.getString("full_name");
-                int levelId = rs.getInt("levelId");
-                String levelName = rs.getString("level_name");
-                String unit = rs.getString("unit");
-                String homeTown = rs.getString("hometown");
-                int birthYear = rs.getInt("birth_year");
-                String note = rs.getString("note");
+            try (PreparedStatement stmt = connection.prepareStatement(officerSql);
+                 ResultSet rs = stmt.executeQuery()) {
 
-                Date sqlSince = rs.getDate("since");
-                LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String fullName = rs.getString("full_name");
+                    int levelId = rs.getInt("levelId");
+                    String levelName = rs.getString("level_name");
+                    String unit = rs.getString("unit");
+                    String homeTown = rs.getString("hometown");
+                    int birthYear = rs.getInt("birth_year");
+                    String note = rs.getString("note");
 
-                OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                        unit, birthYear, homeTown, note, since);
-                officerMap.put(id, dto);
+                    Date sqlSince = rs.getDate("since");
+                    LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
+
+                    OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
+                            unit, birthYear, homeTown, note, since);
+                    officerMap.put(id, dto);
+                }
             }
 
             if (officerMap.isEmpty()) {
                 return new ArrayList<>();
             }
 
-            // Bước 2: Lấy thông tin thời gian đi học cho officer_id nằm trong danh sách officerMap
+            // Bước 2: Lấy thông tin học tập, chỉ tính từ ngày since
             String idPlaceholders = officerMap.keySet().stream()
                     .map(id -> "?")
                     .collect(Collectors.joining(", "));
@@ -271,52 +292,71 @@ public class OfficerServiceImpl implements OfficeService {
                     "WHERE officer_id IN (" + idPlaceholders + ") " +
                     "ORDER BY officer_id, round";
 
-            stmt = connection.prepareStatement(studySql);
-            int index = 1;
-            for (Integer id : officerMap.keySet()) {
-                stmt.setInt(index++, id);
-            }
-
-            rs = stmt.executeQuery();
-
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
 
-            while (rs.next()) {
-                int officerId = rs.getInt("officer_id");
-                int round = rs.getInt("round");
-                LocalDate startDate = rs.getDate("start_date").toLocalDate();
-                LocalDate endDate = rs.getDate("end_date").toLocalDate();
+            try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
+                int index = 1;
+                for (Integer id : officerMap.keySet()) {
+                    stmt.setInt(index++, id);
+                }
 
-                OfficerViewDTO dto = officerMap.get(officerId);
-                if (dto == null) continue;
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int officerId = rs.getInt("officer_id");
+                        int round = rs.getInt("round");
+                        LocalDate originalStart = rs.getDate("start_date").toLocalDate();
+                        LocalDate originalEnd = rs.getDate("end_date").toLocalDate();
 
-                dto.addStudyRound(round, startDate, endDate);
+                        OfficerViewDTO dto = officerMap.get(officerId);
+                        if (dto == null) continue;
 
-                Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
-                        .computeIfAbsent(officerId, k -> new HashMap<>());
+                        LocalDate sinceDate = dto.getSince();
+                        if (sinceDate == null) continue;
 
-                LocalDate date = startDate;
-                while (!date.isAfter(endDate)) {
-                    YearMonth ym = YearMonth.from(date);
-                    monthlyDays.put(ym, monthlyDays.getOrDefault(ym, 0) + 1);
-                    date = date.plusDays(1);
+                        // Cắt bỏ phần học trước sinceDate nếu có
+                        LocalDate start = originalStart.isBefore(sinceDate) ? sinceDate : originalStart;
+                        LocalDate end = originalEnd;
+
+                        // Nếu sau khi cắt thì không còn gì để tính
+                        if (end.isBefore(start)) continue;
+
+                        dto.addStudyRound(round, originalStart, originalEnd);
+
+                        Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
+                                .computeIfAbsent(officerId, k -> new HashMap<>());
+
+                        LocalDate date = start;
+                        while (!date.isAfter(end)) {
+                            YearMonth ym = YearMonth.from(date);
+                            monthlyDays.put(ym, monthlyDays.getOrDefault(ym, 0) + 1);
+                            date = date.plusDays(1);
+                        }
+                    }
                 }
             }
 
-            // Bước 3: Tính số tháng được hưởng phụ cấp
+            // Bước 3: Tính số tháng phụ cấp từ tháng since đến currentMonth
+            YearMonth currentMonth = YearMonth.now();
+
             for (Map.Entry<Integer, OfficerViewDTO> entry : officerMap.entrySet()) {
                 int officerId = entry.getKey();
                 OfficerViewDTO dto = entry.getValue();
                 Map<YearMonth, Integer> daysPerMonth = studyDaysByOfficer.getOrDefault(officerId, Map.of());
 
                 LocalDate sinceDate = dto.getSince();
-                YearMonth sinceMonth = (sinceDate != null) ? YearMonth.from(sinceDate) : YearMonth.of(1900, 1);
+                if (sinceDate == null) {
+                    dto.setAllowanceMonths(0);
+                    continue;
+                }
+
+                YearMonth sinceMonth = YearMonth.from(sinceDate);
+                int totalMonths = (int) ChronoUnit.MONTHS.between(sinceMonth, currentMonth);
 
                 int count = 0;
-                for (Map.Entry<YearMonth, Integer> monthEntry : daysPerMonth.entrySet()) {
-                    YearMonth month = monthEntry.getKey();
-                    int studyDays = monthEntry.getValue();
-                    if (!month.isBefore(sinceMonth) && studyDays <= 15) {
+                for (int i = 0; i < totalMonths; i++) {
+                    YearMonth month = sinceMonth.plusMonths(i);
+                    int studyDays = daysPerMonth.getOrDefault(month, 0);
+                    if (studyDays <= 15) {
                         count++;
                     }
                 }
@@ -325,12 +365,11 @@ public class OfficerServiceImpl implements OfficeService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace(); // Gợi ý: dùng logger thay vì in ra console
+            e.printStackTrace(); // Gợi ý: dùng logger thay cho e.printStackTrace() trong ứng dụng thực tế
         }
 
         return new ArrayList<>(officerMap.values());
     }
-
 
     @Override
     public List<Officer> getOfficers() {

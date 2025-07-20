@@ -5,33 +5,20 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.qnp.pmp.controllers.LoginController"
-            prefWidth="400.0" prefHeight="350.0"
-            stylesheets="@login.css">
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.qnp.pmp.controllers.LoginController"
+           stylesheets="@login.css"
+           prefWidth="1000.0" prefHeight="600.0">
 
-    <VBox alignment="CENTER" spacing="15.0"
-          AnchorPane.topAnchor="30" AnchorPane.leftAnchor="20" AnchorPane.rightAnchor="20">
+    <!-- Khung login -->
+    <VBox alignment="CENTER" spacing="15.0" styleClass="login-container">
+        <Text text="🔐 ĐĂNG NHẬP HỆ THỐNG" styleClass="heading"/>
 
-        <padding>
-            <Insets top="20" bottom="20" left="20" right="20"/>
-        </padding>
+        <TextField fx:id="usernameField" promptText="Tên đăng nhập" styleClass="form-field"/>
+        <PasswordField fx:id="passwordField" promptText="Mật khẩu" styleClass="form-field"/>
 
-        <!-- Tiêu đề -->
-        <Text text="ĐĂNG NHẬP" styleClass="heading"/>
-
-        <!-- Các trường nhập -->
-        <TextField fx:id="usernameField" promptText="Tên đăng nhập" />
-        <PasswordField fx:id="passwordField" promptText="Mật khẩu" />
-
-        <!-- Nút đăng nhập -->
         <Button fx:id="loginButton" text="Đăng nhập" onAction="#onLoginClick" styleClass="login-button"/>
-
-        <!-- Thông báo -->
-        <Label fx:id="messageLabel" textFill="red" />
-
-
-
+        <Label fx:id="messageLabel" textFill="red"/>
     </VBox>
-</AnchorPane>
+</StackPane>
