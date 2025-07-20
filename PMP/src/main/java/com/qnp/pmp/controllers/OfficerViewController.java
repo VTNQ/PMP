@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.*;
 import java.time.LocalDate;
@@ -41,21 +42,18 @@ public class OfficerViewController {
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
     @FXML private TableColumn<OfficerViewDTO, Integer> totalAllowance;
     @FXML private TableColumn<OfficerViewDTO, Void> studyTimeButtonCol;
-    @FXML private TableColumn<OfficerViewDTO,Integer> totalAllowance;
     @FXML
     private TableColumn<OfficerViewDTO, LocalDate> sinceCol;
 
     @FXML
     private TextField searchField;
 
-    @FXML private TextField searchField;
     @FXML private Label totalLabel;
 
     private final OfficeService officeService = new OfficerServiceImpl();
 
     @FXML
     public void initialize() {
-        configureColumns();
 
         ExcelBackupService autoBackup = new ExcelBackupServiceImpl(officeService);
         autoBackup.startAutoBackup();
@@ -344,6 +342,19 @@ public class OfficerViewController {
         }
 
         return null;
+    }
+    private void showAddStudyTime(){
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/AddStudy.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setTitle("Add Study Time");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     private void importExcelFile(File file) {
