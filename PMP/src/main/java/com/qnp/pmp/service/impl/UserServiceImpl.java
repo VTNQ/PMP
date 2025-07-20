@@ -66,7 +66,6 @@ public class UserServiceImpl implements UserService {
                     user.setFullName(resultSet.getString("full_name"));
                     user.setRole(RoleUser.valueOf(resultSet.getString("role")));
                     user.setCreatedAt(resultSet.getTimestamp("created_at").toLocalDateTime());
-                    user.setLastSign(resultSet.getTimestamp("last_sign").toLocalDateTime());
                     return user;
                 }
             }
