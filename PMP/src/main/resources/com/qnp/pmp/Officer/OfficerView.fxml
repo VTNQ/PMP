@@ -45,6 +45,7 @@
                     <TableColumn fx:id="homeTownCol" text="Quê quán"/>
                     <TableColumn fx:id="noteCol" text="Ghi chú"/>
                     <TableColumn fx:id="totalAllowance" text="Tổng tháng phụ cấp"/>
+                    <TableColumn fx:id="sinceCol" text="Ngày bắt đầu"/>
                 </columns>
             </TableView>
         </VBox>
@@ -62,6 +63,7 @@
             <Button text="➕ Thêm mới" onAction="#add" styleClass="add-button"/>
             <Button text="⏱ Thêm thời gian học" onAction="#onAddStudyTime" styleClass="studytime-button"/>
             <Button text="🗑 Xoá" onAction="#onDelete" styleClass="delete-button"/>
+            <Button fx:id="btnManualExcelBackup" text="Backup Excel" onAction="#onManualExcelBackup"/>
         </HBox>
     </bottom>
 </BorderPane>

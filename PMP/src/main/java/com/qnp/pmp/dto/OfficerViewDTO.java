@@ -47,7 +47,9 @@ public class OfficerViewDTO {
         return allowanceMonths;
     }
     public LocalDate getSince() { return since.get(); }
-
+    public ObjectProperty<LocalDate> sinceProperty() {
+        return since;
+    }
     public int getAllowanceMonths() {
         return allowanceMonths.get();
     }

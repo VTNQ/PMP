@@ -3,7 +3,9 @@ package com.qnp.pmp.controllers;
 import com.qnp.pmp.dto.OfficerViewDTO;
 import com.qnp.pmp.dto.StudyRoundDTO;
 import com.qnp.pmp.entity.Officer;
+import com.qnp.pmp.service.ExcelBackupService;
 import com.qnp.pmp.service.OfficeService;
+import com.qnp.pmp.service.impl.ExcelBackupServiceImpl;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -49,6 +51,9 @@ public class OfficerViewController {
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
     @FXML private TableColumn<OfficerViewDTO,Integer> totalAllowance;
     @FXML
+    private TableColumn<OfficerViewDTO, LocalDate> sinceCol;
+
+    @FXML
     private TextField searchField;
 
     @FXML private Label totalLabel;
@@ -58,6 +63,10 @@ public class OfficerViewController {
     @FXML
     public void initialize() {
 
+        ExcelBackupService autoBackup = new ExcelBackupServiceImpl(officeService);
+        autoBackup.startAutoBackup();
+
+
         // Gán dữ liệu cho các cột
         fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
         positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
@@ -66,6 +75,7 @@ public class OfficerViewController {
         birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
         noteCol.setCellValueFactory(data -> data.getValue().noteProperty());
         totalAllowance.setCellValueFactory(data->data.getValue().allowanceMonthsProperty().asObject());
+        sinceCol.setCellValueFactory(cellData -> cellData.getValue().sinceProperty());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
         centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol,noteCol);
@@ -366,5 +376,56 @@ public class OfficerViewController {
         showAddStudyTime();
 
     }
+    @FXML
+    private void onManualExcelBackup(javafx.event.ActionEvent event) {
+        List<OfficerViewDTO> officers = officeService.getOfficerAllowanceStatus();
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Chọn nơi lưu file Excel");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel Files", "*.xlsx"));
+        File file = fileChooser.showSaveDialog(officerTable.getScene().getWindow());
+
+        if (file != null) {
+            try (Workbook workbook = new XSSFWorkbook()) {
+                Sheet sheet = workbook.createSheet("Officers");
+
+                // Tiêu đề cột
+                Row header = sheet.createRow(0);
+                header.createCell(0).setCellValue("ID");
+                header.createCell(1).setCellValue("Họ tên");
+                header.createCell(2).setCellValue("Trình độ");
+                header.createCell(3).setCellValue("Đơn vị");
+                header.createCell(4).setCellValue("Năm sinh");
+                header.createCell(5).setCellValue("Quê quán");
+                header.createCell(6).setCellValue("Ghi chú");
+                header.createCell(7).setCellValue("Số tháng hưởng");
+
+                // Dữ liệu
+                for (int i = 0; i < officers.size(); i++) {
+                    OfficerViewDTO o = officers.get(i);
+                    Row row = sheet.createRow(i + 1);
+                    row.createCell(0).setCellValue(o.getId().get());
+                    row.createCell(1).setCellValue(o.fullNameProperty().get());
+                    row.createCell(2).setCellValue(o.levelNameProperty().get());
+                    row.createCell(3).setCellValue(o.unitProperty().get());
+                    row.createCell(4).setCellValue(o.birthYearProperty().get());
+                    row.createCell(5).setCellValue(o.homeTownProperty().get());
+                    row.createCell(6).setCellValue(o.noteProperty().get());
+                    row.createCell(7).setCellValue(o.getAllowanceMonths());
+                }
+
+                try (FileOutputStream fos = new FileOutputStream(file)) {
+                    workbook.write(fos);
+                }
+
+                Dialog.displaySuccessFully("Xuất file Excel thành công!");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Dialog.displayErrorMessage("Lỗi khi ghi file Excel.");
+            }
+        }
+    }
+
 
 }
