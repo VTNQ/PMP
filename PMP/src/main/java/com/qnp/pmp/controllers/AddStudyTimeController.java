@@ -1,7 +1,6 @@
 package com.qnp.pmp.controllers;
 
 import com.qnp.pmp.dialog.Dialog;
-import com.qnp.pmp.entity.Level;
 import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.entity.StudyTime;
 import com.qnp.pmp.service.OfficeService;
@@ -9,35 +8,32 @@ import com.qnp.pmp.service.StudyTimeService;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import com.qnp.pmp.service.impl.StudyTimeServiceImpl;
 import javafx.collections.FXCollections;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Spinner;
-import javafx.util.StringConverter;
+import javafx.scene.control.*;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.util.StringConverter;
 
 import java.util.List;
 
 public class AddStudyTimeController {
-    private StudyTimeService  studyTimeService;
-    private OfficeService officeService;
-    public AddStudyTimeController() {
-        this.studyTimeService=new StudyTimeServiceImpl();
-        this.officeService=new OfficerServiceImpl();
-    }
-    @FXML
-    private Spinner<Integer> roundSpinner;
-    @FXML
-    private ComboBox<Officer>officerComboBox;
-    @FXML
-    private DatePicker startDatePicker;
+    private final StudyTimeService studyTimeService = new StudyTimeServiceImpl();
+    private final OfficeService officeService = new OfficerServiceImpl();
+
+    @FXML private Spinner<Integer> roundSpinner;
+    @FXML private ComboBox<Officer> officerComboBox;
+    @FXML private DatePicker startDatePicker;
+    @FXML private DatePicker endDatePicker;
 
     @FXML
-    private DatePicker endDatePicker;
-    @FXML
     public void initialize() {
-        List<Officer>officerList=officeService.getOfficers();
-        officerComboBox.setItems(FXCollections.observableList(officerList));
+        List<Officer> officerList = officeService.getOfficers();
+
+        officerComboBox.setEditable(true); // Cho phép nhập tìm
+        FilteredList<Officer> filteredItems = new FilteredList<>(FXCollections.observableList(officerList), p -> true);
+        officerComboBox.setItems(filteredItems);
+
+        // Gán cách hiển thị tên
         officerComboBox.setConverter(new StringConverter<Officer>() {
             @Override
             public String toString(Officer officer) {
@@ -47,32 +43,61 @@ public class AddStudyTimeController {
             @Override
             public Officer fromString(String s) {
                 return officerComboBox.getItems().stream()
-                        .filter(officer->officer.getFullName().equals(s))
+                        .filter(officer -> officer.getFullName().equals(s))
                         .findFirst()
                         .orElse(null);
-
             }
         });
-        roundSpinner.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 1)
-        );
+
+        // Lọc theo tên nhập vào
+        officerComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
+            final String search = newVal.toLowerCase();
+            filteredItems.setPredicate(officer -> {
+                if (search == null || search.isEmpty()) return true;
+                return officer.getFullName().toLowerCase().contains(search);
+            });
+            if (!filteredItems.isEmpty()) {
+                officerComboBox.show();
+            }
+        });
+
+        // Spinner lần học
+        roundSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 1));
     }
+
     @FXML
     private void onSave() {
-        StudyTime studyTime = new StudyTime();
-        studyTime.setOfficerId(officerComboBox.getValue().getId());
-        studyTime.setRound(roundSpinner.getValue());
-        studyTime.setStartDate(startDatePicker.getValue());
-        studyTime.setEndDate(endDatePicker.getValue());
-        studyTimeService.saveStudyTime(studyTime);
-        officerComboBox.getSelectionModel().clearSelection();
-        roundSpinner.getValueFactory().setValue(1); // reset về 1
-        startDatePicker.setValue(null);
-        endDatePicker.setValue(null);
+        try {
+            Officer selectedOfficer = officerComboBox.getValue();
+            if (selectedOfficer == null || startDatePicker.getValue() == null || endDatePicker.getValue() == null) {
+                Dialog.displayErrorMessage("Vui lòng điền đầy đủ thông tin.");
+                return;
+            }
 
-        Dialog.displaySuccessFully("Luu Thời gian học thành công");
+            StudyTime studyTime = new StudyTime();
+            studyTime.setOfficerId(selectedOfficer.getId());
+            studyTime.setRound(roundSpinner.getValue());
+            studyTime.setStartDate(startDatePicker.getValue());
+            studyTime.setEndDate(endDatePicker.getValue());
+
+            studyTimeService.saveStudyTime(studyTime);
+
+            // Reset form
+            officerComboBox.getSelectionModel().clearSelection();
+            officerComboBox.getEditor().clear();
+            roundSpinner.getValueFactory().setValue(1);
+            startDatePicker.setValue(null);
+            endDatePicker.setValue(null);
+
+            Dialog.displaySuccessFully("Lưu thời gian học thành công");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialog.displayErrorMessage("Có lỗi xảy ra khi lưu.");
+        }
     }
-    @FXML
-    private void onCancel() {}
 
+    @FXML
+    private void onCancel() {
+        // có thể thêm stage.close() nếu bạn muốn
+    }
 }
