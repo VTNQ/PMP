@@ -62,7 +62,7 @@ public class LoginController {
 
             switch (user.getRole()) {
                 case SUPERADMIN:
-                    loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Admin/Dashboard.fxml"));
+                    loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/SuperAdmin/Dashboard.fxml"));
                     root = loader.load();
                     scene = new Scene(root);
                     stage.setScene(scene);
@@ -71,7 +71,15 @@ public class LoginController {
                     break;
 
                 case ADMIN:
-                    loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/UserDashBoard/Dashboard.fxml"));
+                    loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/AdminDashboard/Dashboard.fxml"));
+                    root = loader.load();
+                    scene = new Scene(root);
+                    stage.setScene(scene);
+                    stage.setTitle("Admin Dashboard");
+                    stage.show();
+                    break;
+                case USER:
+                    loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/UserDashboard/Dashboard.fxml"));
                     root = loader.load();
                     scene = new Scene(root);
                     stage.setScene(scene);

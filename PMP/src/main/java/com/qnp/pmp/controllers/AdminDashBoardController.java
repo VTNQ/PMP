@@ -24,16 +24,16 @@ public class AdminDashBoardController {
                 "🚪 Logout"
         );
         menuList.getSelectionModel().select(0);
-    loadView("UserDashBoard/DefaultDashboard");
+    loadView("AdminDashboard/DefaultDashboard");
         menuList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 String viewKey = newValue.replaceAll("[^a-zA-Z ]", "").trim();
                 switch (viewKey) {
                     case "Dashboard":
-                        loadView("Admin/DefaultDashboard");
+                        loadView("AdminDashboard/DefaultDashboard");
                         break;
                     case "Manager User":
-                        loadView("UserDashBoard/UserManagementView");
+                        loadView("AdminDashboard/UserManagementView");
                         break;
                     case "Logout":
                         logOut();

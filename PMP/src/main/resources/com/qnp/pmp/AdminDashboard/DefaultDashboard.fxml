@@ -11,7 +11,7 @@
       stylesheets="@Dashboard.css">
 
     <!-- Tiêu đề -->
-    <Label text="👋 Chào mừng SuperAdmin!" styleClass="dashboard-title"/>
+    <Label text="👋 Chào mừng Admin!" styleClass="dashboard-title"/>
     <Label text="Hệ thống quản lý người dùng và dự án." styleClass="dashboard-subtitle"/>
 
     <!-- Các thẻ thống kê -->
