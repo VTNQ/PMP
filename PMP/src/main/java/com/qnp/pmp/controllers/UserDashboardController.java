@@ -9,43 +9,27 @@ import javafx.scene.layout.StackPane;
 
 import java.io.IOException;
 
-public class SuperAdminDashBoardController {
-
+public class UserDashboardController {
     @FXML
     private ListView<String> menuList;
-
     @FXML
     private StackPane contentArea;
-
     @FXML
     public void initialize() {
-        // Thêm các mục vào menu
-        menuList.getItems().addAll(
-                "📊 Dashboard",
-                "🏢 Manager Officer",
-                "👤 Manager User",
-                "⚙ Settings",
-                "🚪 Logout"
-        );
-
-        // Mặc định chọn Dashboard
+            menuList.getItems().addAll(
+                    "📊 Dashboard",
+                    "🚪 Logout"
+            );
         menuList.getSelectionModel().select(0);
-        loadView("SuperAdmin/DefaultDashboard");
-
-        // Xử lý khi thay đổi menu
+        loadView("UserDashboard/DefaultDashboard");
         menuList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 String viewKey = newValue.replaceAll("[^a-zA-Z ]", "").trim();
                 switch (viewKey) {
                     case "Dashboard":
-                        loadView("SuperAdmin/DefaultDashboard");
+                        loadView("UserDashboard//DefaultDashboard");
                         break;
-                    case "Manager Officer":
-                        loadView("Officer/OfficerView");
-                        break;
-                    case "Manager User":
-                        loadView("User/UserManagementView");
-                        break;
+
                     case "Logout":
                         logOut();
                         break;
@@ -56,10 +40,6 @@ public class SuperAdminDashBoardController {
             }
         });
     }
-
-    /**
-     * Load một view FXML vào contentArea và đặt lại kích thước nếu cần.
-     */
     private void loadView(String viewName) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/" + viewName + ".fxml"));
@@ -76,10 +56,6 @@ public class SuperAdminDashBoardController {
             e.printStackTrace();
         }
     }
-
-    /**
-     * Chuyển về màn hình đăng nhập.
-     */
     private void logOut() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/login/login.fxml"));

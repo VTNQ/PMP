@@ -75,7 +75,7 @@ public class UserAdminController {
     @FXML
     private void addAction(){
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/UserDashBoard/AdminCreateView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/AdminDashboard/AdminCreateView.fxml"));
             Parent root = loader.load();
 
             Stage stage = new Stage();
