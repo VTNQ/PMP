@@ -18,6 +18,7 @@ public class UserDashboardController {
     public void initialize() {
             menuList.getItems().addAll(
                     "📊 Dashboard",
+                    "👨‍💼 Can bo",
                     "🚪 Logout"
             );
         menuList.getSelectionModel().select(0);
@@ -29,7 +30,9 @@ public class UserDashboardController {
                     case "Dashboard":
                         loadView("UserDashboard//DefaultDashboard");
                         break;
-
+                    case "Can bo":  // "👨‍💼 Cán bộ" sau khi loại emoji và dấu
+                        loadView("Officer/OfficerUserView");
+                        break;
                     case "Logout":
                         logOut();
                         break;
