@@ -59,29 +59,44 @@ public class OfficerServiceImpl implements OfficeService {
 
     @Override
     public void saveOfficerAll(List<Officer> officers) {
-        String sql =
-                "INSERT INTO officer(full_name,level_id,unit,hometown,birth_year,note) VALUES(?,?,?,?,?,?);";
+        String sql = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, since) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = MySQLConnection.getConnection();
-        PreparedStatement stmt = conn.prepareStatement(sql)
-        ){
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             for (Officer officer : officers) {
-                stmt.setString(1, officer.getFullName());
-                Level level=levelService.getByName(officer.getLevelName());
-                if(level!=null){
-                    stmt.setInt(2, level.getId());
+                // Lấy level theo tên
+                Level level = levelService.getByName(officer.getLevelName());
+
+                // Nếu không tìm thấy trình độ thì bỏ qua hoặc set default
+                if (level == null) {
+                    System.err.println("⚠ Không tìm thấy trình độ: " + officer.getLevelName() + " → Bỏ qua cán bộ: " + officer.getFullName());
+                    continue; // hoặc throw nếu bạn muốn nghiêm ngặt
                 }
 
+                stmt.setString(1, officer.getFullName());
+                stmt.setInt(2, level.getId());
                 stmt.setString(3, officer.getUnit());
                 stmt.setString(4, officer.getHomeTown());
                 stmt.setInt(5, officer.getBirthYear());
                 stmt.setString(6, officer.getNote());
+
+                // Kiểm tra null cho trường `since`
+                if (officer.getSince() != null) {
+                    stmt.setDate(7, java.sql.Date.valueOf(officer.getSince()));
+                } else {
+                    stmt.setNull(7, java.sql.Types.DATE);
+                }
+
                 stmt.addBatch();
             }
+
             stmt.executeBatch();
-        }catch (SQLException |ClassNotFoundException e) {
-            e.printStackTrace();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace(); // nên dùng logger thực tế
         }
     }
+
+
 
     @Override
     public void updateOfficer(int id,Officer officer) {
