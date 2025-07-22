@@ -1,5 +1,6 @@
 package com.qnp.pmp.dto;
 
+import com.qnp.pmp.entity.Officer;
 import javafx.beans.property.*;
 
 import java.time.LocalDate;
@@ -95,5 +96,18 @@ public class OfficerViewDTO {
 //            return 0;
 //        }
 //    }
+
+    public Officer toEntity() {
+        Officer officer = new Officer();
+        officer.setFullName(this.fullNameProperty().get());
+        officer.setLevelId(this.levelIdProperty().get());
+        officer.setLevelName(this.levelNameProperty().get());
+        officer.setUnit(this.unitProperty().get());
+        officer.setBirthYear(this.birthYearProperty().get());
+        officer.setNote(this.noteProperty().get());
+        officer.setHomeTown(this.homeTownProperty().get());
+        officer.setSince(this.getSince()); // since là ObjectProperty<LocalDate>
+        return officer;
+    }
 
 }

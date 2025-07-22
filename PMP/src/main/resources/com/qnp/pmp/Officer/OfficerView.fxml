@@ -64,6 +64,7 @@
             <Button text="⏱ Thêm thời gian học" onAction="#onAddStudyTime" styleClass="studytime-button" prefWidth="200"/>
             <Button text="🗑 Xoá" onAction="#onDelete" styleClass="delete-button" prefWidth="90"/>
             <Button fx:id="btnManualExcelBackup" text="Backup Excel" onAction="#onManualExcelBackup"/>
+            <Button text="📸 Nhập từ ảnh" onAction="#onImportFromImage" styleClass="import-button" prefWidth="180"/>
         </FlowPane>
     </VBox>
 

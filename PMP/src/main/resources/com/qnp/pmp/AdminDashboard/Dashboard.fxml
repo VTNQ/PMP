@@ -7,14 +7,15 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane stylesheets="@Dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qnp.pmp.controllers.AdminDashBoardController">
-    <HBox prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-        <VBox prefWidth="200.0" spacing="10.0" style="-fx-background-color: #2c3e50;">
-            <Label styleClass="sidebar-title" text="🧑‍💻 Admin" />
-            <ListView fx:id="menuList" styleClass="sidebar-list" />
+<AnchorPane stylesheets="@Dashboard.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qnp.pmp.controllers.UserDashboardController">
+    <HBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <!-- Sidebar cố định -->
+        <VBox prefWidth="200.0" minWidth="180" maxWidth="250" spacing="10.0" style="-fx-background-color: #2c3e50;">
+            <Label styleClass="sidebar-title" text="🧑‍💻 User" />
+            <ListView fx:id="menuList" styleClass="sidebar-list" VBox.vgrow="ALWAYS" />
         </VBox>
 
-        <!-- Content Area -->
-        <StackPane fx:id="contentArea" prefHeight="600.0" prefWidth="690.0" style="-fx-background-color: #ecf0f1;" />
+        <!-- Content Area linh hoạt -->
+        <StackPane fx:id="contentArea" style="-fx-background-color: #ecf0f1;" HBox.hgrow="ALWAYS" minWidth="500" />
     </HBox>
 </AnchorPane>
