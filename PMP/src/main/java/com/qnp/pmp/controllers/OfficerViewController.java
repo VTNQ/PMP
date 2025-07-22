@@ -314,14 +314,15 @@ public class OfficerViewController {
                 String[] fields = line.split(",", -1);
                 if (fields.length >= 8) {
                     Officer officer = new Officer(
-                            fields[0],                      // fullName
-                            fields[1],    // levelId
-                            fields[2],                      // unit
-                            fields[3],     // since
-                            Integer.valueOf(fields[4]),                      // identifier
-                            fields[5]         ,
-                            LocalDate.parse(fields[6])// homeTown
+                            fields[0],// fullName
+                            Integer.valueOf(fields[1]),// birthYear
+                            LocalDate.parse(fields[2]),     // since
+                            fields[3],                      // levelName
+                            fields[4],                      // unit
+                            fields[5],                      // homeTown
+                            fields[6]                       // note
                     );
+
                     officerList.add(officer);
                 }
             }
@@ -382,32 +383,44 @@ public class OfficerViewController {
                     skipHeader = false;
                     continue;
                 }
-                int birthYear = 0;
+
                 try {
-                    birthYear= Integer.parseInt(getCellString(row.getCell(4)));
-                } catch (NumberFormatException e) {
-                    // có thể log cảnh báo nếu cần
+                    String fullName = getCellString(row.getCell(0));              // Cột A
+                    int birthYear = Integer.parseInt(getCellString(row.getCell(1))); // Cột B
+                    LocalDate since = getCellLocalDate(row.getCell(2));           // Cột C
+                    String level = getCellString(row.getCell(3));                 // Cột D
+                    String unit = getCellString(row.getCell(4));                  // Cột E
+                    String homeTown = getCellString(row.getCell(5));              // Cột F
+                    String note = getCellString(row.getCell(6));                  // Cột G
+                    // Ghi chú
+
+                    Officer officer = new Officer(
+                            fullName,   // tên
+                            birthYear,  // năm sinh
+                            since,      // ngày bắt đầu hưởng
+                            level,      // trình độ
+                            unit,       // đơn vị
+                            homeTown,   // quê quán
+                            note        // ghi chú
+                    );
+                    officerList.add(officer);
+                } catch (Exception e) {
+                    System.err.println("⚠️ Lỗi tại dòng " + row.getRowNum() + ": " + e.getMessage());
                 }
-                Officer officer = new Officer(
-                        getCellString(row.getCell(0)),                        // fullName
-                        getCellString(row.getCell(1)),                        // phone
-                        getCellString(row.getCell(2)),        // level
-                        getCellString(row.getCell(3)),                        // unit
-                        birthYear,                        // identifier
-                        getCellString(row.getCell(5)),
-                        getCellLocalDate( row.getCell(6))// homeTown
-                );
-                officerList.add(officer);
             }
 
             officeService.saveOfficerAll(officerList);
-            Dialog.displaySuccessFully("Đã lưu " + officerList.size() + " cán bộ");
+            Dialog.displaySuccessFully("✅ Đã lưu " + officerList.size() + " cán bộ");
+            loadOfficerAllowance();
 
         } catch (Exception e) {
             e.printStackTrace();
-            Dialog.displayErrorMessage("Không thể đọc file Excel");
+            Dialog.displayErrorMessage("❌ Không thể đọc file Excel");
         }
     }
+
+
+
     @FXML
     private void onAddStudyTime(){
         showAddStudyTime();

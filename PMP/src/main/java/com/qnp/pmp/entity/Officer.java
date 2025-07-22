@@ -23,14 +23,17 @@ public class Officer {
 
 
 
-    public Officer(String fullName, String levelName, String unit, String homeTown, int birthYear, String note,LocalDate since) {
+    public Officer(String fullName,int birthYear, LocalDate since, String levelName, String unit, String homeTown, String note) {
         this.fullName = fullName;
+        this.birthYear = birthYear;
+        this.since = since;
         this.levelName = levelName;
         this.unit = unit;
         this.homeTown = homeTown;
-        this.birthYear = birthYear;
         this.note = note;
     }
+
+
     @Override
     public String toString() {
         return fullName;
