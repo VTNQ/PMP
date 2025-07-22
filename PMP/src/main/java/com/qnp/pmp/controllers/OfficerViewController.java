@@ -7,14 +7,19 @@ import com.qnp.pmp.service.ExcelBackupService;
 import com.qnp.pmp.service.OfficeService;
 import com.qnp.pmp.service.impl.ExcelBackupServiceImpl;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
-import javafx.beans.property.SimpleStringProperty;
+import javax.imageio.ImageIO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
@@ -25,11 +30,19 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import net.sourceforge.tess4j.ITesseract;
+import net.sourceforge.tess4j.Tesseract;
+import net.sourceforge.tess4j.TesseractException;
+
+import javax.imageio.ImageIO;
 
 public class OfficerViewController {
 
@@ -450,6 +463,136 @@ public class OfficerViewController {
             }
         }
     }
+
+    private void showPreviewDialog(List<OfficerViewDTO> extractedData) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/ImportPreview.fxml"));
+            Parent root = loader.load();
+
+            ImportPreviewController controller = loader.getController();
+            controller.setPreviewData(extractedData, confirmedList -> {
+                // gọi officeService.saveOfficerAll(...) sau xác nhận
+                officeService.saveOfficerAll(
+                        confirmedList.stream().map(dto -> dto.toEntity()).collect(Collectors.toList())
+                );
+                Dialog.displaySuccessFully("Đã nhập " + confirmedList.size() + " cán bộ");
+                loadOfficerAllowance();
+            });
+
+            Stage stage = new Stage();
+            stage.setTitle("Xác nhận dữ liệu nhập từ ảnh");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            Dialog.displayErrorMessage("Lỗi khi hiển thị bảng xem trước.");
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void onImportFromImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Chọn ảnh chứa bảng dữ liệu");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Hình ảnh", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        File file = fileChooser.showOpenDialog(officerTable.getScene().getWindow());
+        if (file != null) {
+            // Gọi hàm OCR tách dữ liệu từ ảnh (ví dụ: extractOfficerFromImage)
+            List<OfficerViewDTO> extractedData = extractOfficerFromImage(file);
+
+            if (extractedData != null && !extractedData.isEmpty()) {
+                showPreviewDialog(extractedData);
+            } else {
+                Dialog.displayErrorMessage("Không nhận diện được dữ liệu từ ảnh.");
+            }
+        }
+    }
+
+    private List<OfficerViewDTO> extractOfficerFromImage(File file) {
+        List<OfficerViewDTO> officerList = new ArrayList<>();
+        try {
+            ITesseract instance = new Tesseract();
+            String tessPath = new File(getClass().getClassLoader().getResource("tessdata").getFile()).getAbsolutePath();
+            System.out.println("TESSDATA PATH = " + tessPath);
+            instance.setDatapath(tessPath);
+            instance.setLanguage("vie");
+
+            BufferedImage original = ImageIO.read(file);
+            if (original == null) {
+                Dialog.displayErrorMessage("Không thể đọc ảnh: định dạng ảnh không hợp lệ.");
+                return new ArrayList<>();
+            }
+
+            BufferedImage gray = new BufferedImage(original.getWidth(), original.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+            Graphics2D g = gray.createGraphics();
+            g.drawImage(original, 0, 0, null);
+            g.dispose();
+
+            BufferedImage binarized = new BufferedImage(gray.getWidth(), gray.getHeight(), BufferedImage.TYPE_BYTE_BINARY);
+            Graphics2D g2 = binarized.createGraphics();
+            g2.drawImage(gray, 0, 0, null);
+            g2.dispose();
+
+            String result = instance.doOCR(binarized);
+            System.out.println("OCR OUTPUT:\n" + result);
+            String[] lines = result.split("\\r?\\n");
+
+            // Gom dòng theo cụm (mỗi cán bộ là một group)
+            List<String> groupLines = new ArrayList<>();
+            StringBuilder currentGroup = new StringBuilder();
+            for (String line : lines) {
+                if (line.matches(".*\\b(19|20)\\d{2}\\b.*")) {
+                    if (currentGroup.length() > 0) {
+                        groupLines.add(currentGroup.toString());
+                        currentGroup = new StringBuilder();
+                    }
+                }
+                currentGroup.append(line.trim()).append(" ");
+            }
+            if (currentGroup.length() > 0) {
+                groupLines.add(currentGroup.toString());
+            }
+
+            // Regex để phân tích cụm
+            String provinceRegex = "(?i)(Hà Nội|TP\\. HCM|Hồ Chí Minh|Bắc Quang|Quảng Ninh|Lào Cai|Yên Bái|Nam Định|Nghệ An|Thanh Hóa|Đà Nẵng|Bình Dương|Bình Định|Thừa Thiên Huế|Hải Phòng|Vĩnh Phúc|Hà Giang|Điện Biên|Sơn La|Phú Thọ|Lạng Sơn|Cao Bằng|Bắc Kạn|Thái Nguyên|Bắc Giang|Hòa Bình|Tuyên Quang|Lâm Đồng|Kon Tum|Gia Lai|Đắk Lắk|Đắk Nông|Cần Thơ|Hậu Giang|Sóc Trăng|Trà Vinh|Vĩnh Long|Long An|An Giang|Tiền Giang|Bến Tre|Bạc Liêu|Cà Mau|Kiên Giang|Tây Ninh|Bình Phước|Ninh Thuận|Bình Thuận|Quảng Ngãi|Quảng Nam|Quảng Bình|Quảng Trị|Hà Tĩnh|Hưng Yên|Hải Dương|Thái Bình|Hà Nam|Ninh Bình|Tuyên Quang)";
+            Pattern pattern = Pattern.compile("(?<name>[A-ZÀ-Ỹa-zà-ỹ\\s\\.]+)\\s+(?<birthYear>19\\d{2}|20\\d{2})\\s+(?<level>\\S+(?:\\s+\\S+)*)\\s+(?<unit>CAX\\s+[^\\d]+)\\s+(?<province>" + provinceRegex + ")\\s+(?<note>.+)");
+
+            for (String group : groupLines) {
+                Matcher matcher = pattern.matcher(group);
+                if (matcher.find()) {
+                    String name = matcher.group("name").trim();
+                    int birthYear = Integer.parseInt(matcher.group("birthYear"));
+                    String level = matcher.group("level").trim();
+                    String unit = matcher.group("unit").trim();
+                    String homeTown = matcher.group("province").trim();
+                    String note = matcher.group("note").trim();
+
+                    OfficerViewDTO dto = new OfficerViewDTO(
+                            0, name, 0, level, unit, birthYear, homeTown, note,
+                            LocalDate.of(2025, 4, 1)
+                    );
+                    officerList.add(dto);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialog.displayErrorMessage("Lỗi khi xử lý ảnh OCR.");
+        }
+        return officerList;
+    }
+
+    private int tryParseInt(String input) {
+        try {
+            return Integer.parseInt(input.trim());
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
 
 
 }
