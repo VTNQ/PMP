@@ -1,9 +1,12 @@
 package com.qnp.pmp.entity;
 
+
 import lombok.Data;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Map;
 
 @Data
 public class Officer {
@@ -18,7 +21,7 @@ public class Officer {
     public Officer() {
     }
 
-
+    private Map<Integer, Pair<LocalDate, LocalDate>> studyTimes;
     private String homeTown;
 
 

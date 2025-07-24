@@ -10,6 +10,9 @@ import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javax.imageio.ImageIO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javafx.fxml.FXML;
@@ -26,6 +29,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -305,34 +309,60 @@ public class OfficerViewController {
             String line;
             List<Officer> officerList = new ArrayList<>();
             boolean skipHeader = true;
+
             while ((line = br.readLine()) != null) {
                 if (skipHeader) {
                     skipHeader = false;
-                    continue; // bỏ qua dòng tiêu đề
+                    continue;
                 }
 
-                String[] fields = line.split(",", -1);
-                if (fields.length >= 8) {
-                    Officer officer = new Officer(
-                            fields[0],// fullName
-                            Integer.valueOf(fields[1]),// birthYear
-                            LocalDate.parse(fields[2]),     // since
-                            fields[3],                      // levelName
-                            fields[4],                      // unit
-                            fields[5],                      // homeTown
-                            fields[6]                       // note
-                    );
+                String[] fields = line.split(",", -1); // giữ ô trống
 
+                if (fields.length >= 7) {
+                    String fullName = fields[0].trim();
+                    int birthYear = Integer.parseInt(fields[1].trim());
+                    LocalDate since = parseDate(fields[2].trim());
+                    String levelName = fields[3].trim();
+                    String unit = fields[4].trim();
+                    String homeTown = fields[5].trim();
+                    String note = fields[6].trim();
+
+                    Officer officer = new Officer(fullName, birthYear, since, levelName, unit, homeTown, note);
+
+                    // Bắt đầu từ cột 7 → Lần 1 BĐ, Lần 1 KT, ...
+                    Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
+                    int roundIndex = 1;
+                    for (int i = 7; i + 1 < fields.length; i += 2) {
+                        LocalDate start = parseDate(fields[i].trim());
+                        LocalDate end = parseDate(fields[i + 1].trim());
+
+                        if (start != null && end != null) {
+                            studyTimes.put(roundIndex++, Pair.of(start, end));
+                        }
+                    }
+
+                    officer.setStudyTimes(studyTimes);
                     officerList.add(officer);
                 }
             }
+
             officeService.saveOfficerAll(officerList);
-            Dialog.displaySuccessFully("Đã lưu " + officerList.size() + " cán bộ");
+            Dialog.displaySuccessFully("✅ Đã lưu " + officerList.size() + " cán bộ");
         } catch (Exception e) {
             e.printStackTrace();
-            Dialog.displayErrorMessage("Không thể đọc file CSV");
+            Dialog.displayErrorMessage("❌ Không thể đọc file CSV");
         }
     }
+    private LocalDate parseDate(String dateStr) {
+        try {
+            if (dateStr == null || dateStr.isBlank()) return null;
+            return LocalDate.parse(dateStr); // mặc định theo định dạng ISO: yyyy-MM-dd
+        } catch (Exception e) {
+            System.err.println("⚠️ Không thể parse ngày: " + dateStr);
+            return null;
+        }
+    }
+
     private String getCellString(org.apache.poi.ss.usermodel.Cell cell) {
         if (cell == null) return "";
         return switch (cell.getCellType()) {
@@ -403,6 +433,21 @@ public class OfficerViewController {
                             homeTown,   // quê quán
                             note        // ghi chú
                     );
+
+                    Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
+                    int roundIndex = 1;
+
+                    for (int i = 8; i + 1 < row.getLastCellNum(); i += 2) {
+                        LocalDate startDate = getCellLocalDate(row.getCell(i));
+                        LocalDate endDate = getCellLocalDate(row.getCell(i + 1));
+
+                        if (startDate != null && endDate != null) {
+                            studyTimes.put(roundIndex++, Pair.of(startDate, endDate));
+                        }
+                    }
+
+                    officer.setStudyTimes(studyTimes);
+
                     officerList.add(officer);
                 } catch (Exception e) {
                     System.err.println("⚠️ Lỗi tại dòng " + row.getRowNum() + ": " + e.getMessage());
