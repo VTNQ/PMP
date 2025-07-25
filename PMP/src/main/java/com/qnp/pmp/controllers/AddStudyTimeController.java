@@ -51,14 +51,17 @@ public class AddStudyTimeController {
 
         // Lọc theo tên nhập vào
         officerComboBox.getEditor().textProperty().addListener((obs, oldVal, newVal) -> {
-            final String search = newVal.toLowerCase();
-            filteredItems.setPredicate(officer -> {
-                if (search == null || search.isEmpty()) return true;
-                return officer.getFullName().toLowerCase().contains(search);
-            });
-            if (!filteredItems.isEmpty()) {
-                officerComboBox.show();
-            }
+           if(officerComboBox.getValue()!=null && officerComboBox.getValue().getFullName().equals(newVal)){
+                return;
+           }
+           filteredItems.setPredicate(office->{
+               if(newVal==null || newVal.isEmpty())return true;
+               String lowerCaseFilter = newVal.toLowerCase();
+               return office.getFullName().toLowerCase().contains(lowerCaseFilter);
+           });
+           if(!filteredItems.isEmpty()){
+               officerComboBox.show();
+           }
         });
 
         // Spinner lần học
