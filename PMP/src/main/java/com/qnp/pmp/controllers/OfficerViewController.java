@@ -96,12 +96,16 @@ public class OfficerViewController {
                     if (item == null || empty) {
                         setStyle("");
                     } else {
-//                        long months = item.getThoiGianHuongThuHut(); // tính số tháng từ since đến hiện tại
-//                        if (months >= 57 && months < 60) {
-//                            setStyle("-fx-background-color: yellow;");
-//                        } else {
-//                            setStyle(""); // không bôi nếu không khớp
-//                        }
+                        int months = item.getAllowanceMonths();
+                        if (months >= 120) {
+                            setStyle("-fx-background-color: #d8bfd8;"); // tím nhạt
+                        } else if (months > 60) {
+                            setStyle("-fx-background-color: #f8d7da;"); // đỏ nhạt
+                        } else if (months >= 57) {
+                            setStyle("-fx-background-color: #fff3cd;"); // vàng nhạt
+                        } else {
+                            setStyle(""); // không tô màu
+                        }
                     }
                 }
             };
