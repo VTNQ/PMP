@@ -7,6 +7,7 @@ import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.generic.GeneralService;
 import com.qnp.pmp.service.LevelService;
 import com.qnp.pmp.service.OfficeService;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.File;
 import java.sql.*;
@@ -59,42 +60,50 @@ public class OfficerServiceImpl implements OfficeService {
 
     @Override
     public void saveOfficerAll(List<Officer> officers) {
-        String sql = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, since) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertOfficer = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, since) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertStudy = "INSERT INTO studyTimes(officer_id, round, start_date, end_date) VALUES (?, ?, ?, ?)";
+
         try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement officerStmt = conn.prepareStatement(insertOfficer, Statement.RETURN_GENERATED_KEYS);
+             PreparedStatement studyStmt = conn.prepareStatement(insertStudy)) {
 
             for (Officer officer : officers) {
-                // Lấy level theo tên
                 Level level = levelService.getByName(officer.getLevelName());
-
-                // Nếu không tìm thấy trình độ thì bỏ qua hoặc set default
                 if (level == null) {
-                    System.err.println("⚠ Không tìm thấy trình độ: " + officer.getLevelName() + " → Bỏ qua cán bộ: " + officer.getFullName());
-                    continue; // hoặc throw nếu bạn muốn nghiêm ngặt
+                    System.err.println("⚠ Không tìm thấy trình độ: " + officer.getLevelName());
+                    continue;
                 }
 
-                stmt.setString(1, officer.getFullName());
-                stmt.setInt(2, level.getId());
-                stmt.setString(3, officer.getUnit());
-                stmt.setString(4, officer.getHomeTown());
-                stmt.setInt(5, officer.getBirthYear());
-                stmt.setString(6, officer.getNote());
+                officerStmt.setString(1, officer.getFullName());
+                officerStmt.setInt(2, level.getId());
+                officerStmt.setString(3, officer.getUnit());
+                officerStmt.setString(4, officer.getHomeTown());
+                officerStmt.setInt(5, officer.getBirthYear());
+                officerStmt.setString(6, officer.getNote());
+                officerStmt.setDate(7, officer.getSince() != null ? java.sql.Date.valueOf(officer.getSince()) : null);
 
-                // Kiểm tra null cho trường `since`
-                if (officer.getSince() != null) {
-                    stmt.setDate(7, java.sql.Date.valueOf(officer.getSince()));
-                } else {
-                    stmt.setNull(7, java.sql.Types.DATE);
+                officerStmt.executeUpdate();
+
+                ResultSet rs = officerStmt.getGeneratedKeys();
+                if (rs.next()) {
+                    int officerId = rs.getInt(1);
+
+                    for (Map.Entry<Integer, Pair<LocalDate, LocalDate>> entry : officer.getStudyTimes().entrySet()) {
+                        studyStmt.setInt(1, officerId);
+                        studyStmt.setInt(2, entry.getKey());
+                        studyStmt.setDate(3, java.sql.Date.valueOf(entry.getValue().getLeft()));
+                        studyStmt.setDate(4, java.sql.Date.valueOf(entry.getValue().getRight()));
+                        studyStmt.addBatch();
+                    }
                 }
-
-                stmt.addBatch();
             }
 
-            stmt.executeBatch();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace(); // nên dùng logger thực tế
+            studyStmt.executeBatch();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
+
 
 
 
