@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -92,6 +93,7 @@ public class OfficerViewController {
         // Tải dữ liệu ban đầu
         loadOfficerAllowance();
         addStudyTimeButtonToTable();
+        fullNameCol.getStyleClass().add("col-yellow");
         officerTable.setRowFactory(tv -> {
             TableRow<OfficerViewDTO> row = new TableRow<>() {
                 @Override
@@ -125,6 +127,7 @@ public class OfficerViewController {
             return row;
         });
     }
+
 
     private void showEditDialog(OfficerViewDTO officer) {
         try {
@@ -336,7 +339,7 @@ public class OfficerViewController {
                     // Bắt đầu từ cột 7 → Lần 1 BĐ, Lần 1 KT, ...
                     Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
                     int roundIndex = 1;
-                    for (int i = 7; i + 1 < fields.length; i += 2) {
+                    for (int i = 8; i + 1 < fields.length; i += 2) {
                         LocalDate start = parseDate(fields[i].trim());
                         LocalDate end = parseDate(fields[i + 1].trim());
 
@@ -378,7 +381,7 @@ public class OfficerViewController {
         };
     }
     private LocalDate getCellLocalDate(Cell cell) {
-        if (cell == null || cell.getCellType() != CellType.NUMERIC) {
+        if (cell == null ) {
             return null; // hoặc LocalDate.now() tùy ý bạn
         }
 
@@ -442,8 +445,8 @@ public class OfficerViewController {
                     int roundIndex = 1;
 
                     for (int i = 8; i + 1 < row.getLastCellNum(); i += 2) {
-                        LocalDate startDate = getCellLocalDate(row.getCell(i));
-                        LocalDate endDate = getCellLocalDate(row.getCell(i + 1));
+                        LocalDate startDate = getCellLocalDateString(row.getCell(i));
+                        LocalDate endDate = getCellLocalDateString(row.getCell(i + 1));
 
                         if (startDate != null && endDate != null) {
                             studyTimes.put(roundIndex++, Pair.of(startDate, endDate));
@@ -468,7 +471,54 @@ public class OfficerViewController {
         }
     }
 
+    private LocalDate getCellLocalDateString(Cell cell) {
+        if (cell == null) {
+            return null;
+        }
 
+        try {
+            CellType cellType = cell.getCellType();
+
+            // Trường hợp ô là ngày dạng số
+            if (cellType == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+                return cell.getDateCellValue()
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDate();
+            }
+
+            // Trường hợp ô là chuỗi (String) - ví dụ "12/07/2025"
+            else if (cellType == CellType.STRING) {
+                String dateStr = cell.getStringCellValue().trim();
+
+                if (dateStr.isEmpty()) {
+                    return null;
+                }
+
+                // Cố gắng parse định dạng dd/MM/yyyy
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                return LocalDate.parse(dateStr, formatter);
+            }
+
+            // Có thể xử lý thêm trường hợp công thức (formula) nếu cần
+            else if (cellType == CellType.FORMULA) {
+                FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
+                CellValue evaluated = evaluator.evaluate(cell);
+
+                if (evaluated.getCellType() == CellType.NUMERIC) {
+                    return LocalDate.ofInstant(
+                            DateUtil.getJavaDate(evaluated.getNumberValue()).toInstant(),
+                            ZoneId.systemDefault()
+                    );
+                }
+            }
+
+        } catch (Exception e) {
+            System.out.println("⚠️ Lỗi khi đọc ngày từ ô: " + e.getMessage());
+        }
+
+        return null;
+    }
 
     @FXML
     private void onAddStudyTime(){
