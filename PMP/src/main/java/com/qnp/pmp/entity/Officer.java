@@ -18,6 +18,8 @@ public class Officer {
         private int birthYear;
         private String note;
         private LocalDate since;
+        private LocalDate until;
+        private String identifierCode;
     public Officer() {
     }
 
@@ -26,10 +28,12 @@ public class Officer {
 
 
 
-    public Officer(String fullName,int birthYear, LocalDate since, String levelName, String unit, String homeTown, String note) {
+    public Officer(String fullName,String identifierCode,int birthYear, LocalDate since,LocalDate util, String levelName, String unit, String homeTown, String note) {
         this.fullName = fullName;
+        this.identifierCode = identifierCode;
         this.birthYear = birthYear;
         this.since = since;
+        this.until = util;
         this.levelName = levelName;
         this.unit = unit;
         this.homeTown = homeTown;

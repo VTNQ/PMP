@@ -34,7 +34,7 @@ public class OfficerServiceImpl implements OfficeService {
             conn = MySQLConnection.getConnection();
 
             String sql =
-                    "INSERT INTO officer(full_name,level_id,unit,hometown,birth_year,note,since) VALUES(?,?,?,?,?,?,?);";
+                    "INSERT INTO officer(full_name,level_id,unit,hometown,birth_year,note,since,util,identifierCode) VALUES(?,?,?,?,?,?,?,?,?);";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, officer.getFullName());
             stmt.setInt(2, officer.getLevelId());
@@ -43,6 +43,8 @@ public class OfficerServiceImpl implements OfficeService {
             stmt.setInt(5, officer.getBirthYear());
             stmt.setString(6, officer.getNote());
             stmt.setDate(7, java.sql.Date.valueOf(officer.getSince()));
+            stmt.setDate(8, java.sql.Date.valueOf(officer.getUntil()));
+            stmt.setString(9, officer.getIdentifierCode());
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +62,7 @@ public class OfficerServiceImpl implements OfficeService {
 
     @Override
     public void saveOfficerAll(List<Officer> officers) {
-        String insertOfficer = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, since) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String insertOfficer = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, since,util,identifierCode) VALUES (?, ?, ?, ?, ?,?, ?, ?,?)";
         String insertStudy = "INSERT INTO studyTimes(officer_id, round, start_date, end_date) VALUES (?, ?, ?, ?)";
 
         try (Connection conn = MySQLConnection.getConnection();
@@ -81,6 +83,8 @@ public class OfficerServiceImpl implements OfficeService {
                 officerStmt.setInt(5, officer.getBirthYear());
                 officerStmt.setString(6, officer.getNote());
                 officerStmt.setDate(7, officer.getSince() != null ? java.sql.Date.valueOf(officer.getSince()) : null);
+                officerStmt.setDate(8, officer.getUntil() != null ? java.sql.Date.valueOf(officer.getUntil()) : null);
+                officerStmt.setString(9, officer.getIdentifierCode());
 
                 officerStmt.executeUpdate();
 
@@ -109,7 +113,7 @@ public class OfficerServiceImpl implements OfficeService {
 
     @Override
     public void updateOfficer(int id,Officer officer) {
-        String sql = "UPDATE officer SET full_name = ?, level_id = ?, unit = ?, hometown = ?,birth_year= ?,note= ?,since=? WHERE id = ?";
+        String sql = "UPDATE officer SET full_name = ?, level_id = ?, unit = ?, hometown = ?,birth_year= ?,note= ?,since=?,util=?,identifierCode=? WHERE id = ?";
         try (Connection connection=MySQLConnection.getConnection()){
             PreparedStatement stmt=connection.prepareStatement(sql);
             stmt.setString(1, officer.getFullName());
@@ -119,7 +123,9 @@ public class OfficerServiceImpl implements OfficeService {
             stmt.setInt(5, officer.getBirthYear());
             stmt.setString(6, officer.getNote());
             stmt.setDate(7, java.sql.Date.valueOf(officer.getSince()));
-            stmt.setInt(8, id);
+            stmt.setDate(8, java.sql.Date.valueOf(officer.getUntil()));
+            stmt.setString(9, officer.getIdentifierCode());
+            stmt.setInt(10, id);
             stmt.executeUpdate();
         }catch (Exception e){
             e.printStackTrace();
@@ -144,7 +150,7 @@ public class OfficerServiceImpl implements OfficeService {
 
         String sql = """
         SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
-               o.unit, o.hometown, o.birth_year, o.note, o.since
+               o.unit, o.hometown, o.birth_year, o.note, o.since,o.util,o.identifierCode
         FROM officer o
         JOIN level l ON o.level_id = l.id
         WHERE o.full_name LIKE ?
@@ -167,10 +173,12 @@ public class OfficerServiceImpl implements OfficeService {
                         int birthYear = rs.getInt("birth_year");
                         String note = rs.getString("note");
                         Date sqlSince = rs.getDate("since");
+                        Date sqlUtil = rs.getDate("util");
                         LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
-
+                        LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
+                        String identifierCode = rs.getString("identifierCode");
                         OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                                unit, birthYear, homeTown, note, since);
+                                unit, birthYear, homeTown, note, since,util, identifierCode);
                         officerMap.put(id, dto);
                     }
                 }
@@ -272,7 +280,7 @@ public class OfficerServiceImpl implements OfficeService {
 
         String officerSql = """
         SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
-               o.unit, o.hometown, o.birth_year, o.note, o.since
+               o.unit, o.hometown, o.birth_year, o.note, o.since,o.util,o.identifierCode
         FROM officer o
         JOIN level l ON o.level_id = l.id
     """;
@@ -295,9 +303,11 @@ public class OfficerServiceImpl implements OfficeService {
 
                     Date sqlSince = rs.getDate("since");
                     LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
-
+                    Date sqlUtil = rs.getDate("util");
+                    LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
+                    String identifierCode = rs.getString("identifierCode");
                     OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                            unit, birthYear, homeTown, note, since);
+                            unit, birthYear, homeTown, note, since,util, identifierCode);
                     officerMap.put(id, dto);
                 }
             }
@@ -367,13 +377,20 @@ public class OfficerServiceImpl implements OfficeService {
                 OfficerViewDTO dto = entry.getValue();
                 Map<YearMonth, Integer> daysPerMonth = studyDaysByOfficer.getOrDefault(officerId, Map.of());
 
-                LocalDate sinceDate = dto.getSince();
-                if (sinceDate == null) {
+
+                if (dto.getSince() == null || LocalDate.now().isBefore(dto.getSince()))  {
                     dto.setAllowanceMonths(0);
                     continue;
                 }
 
-                YearMonth sinceMonth = YearMonth.from(sinceDate);
+                YearMonth sinceMonth = YearMonth.from(dto.getSince());
+
+                // 👇 New condition: if since >= currentMonth => set 0 and skip
+                if (!sinceMonth.isBefore(currentMonth)) {
+                    dto.setAllowanceMonths(0);
+                    continue;
+                }
+
                 int totalMonths = (int) ChronoUnit.MONTHS.between(sinceMonth, currentMonth);
 
                 int count = 0;
@@ -387,6 +404,7 @@ public class OfficerServiceImpl implements OfficeService {
 
                 dto.setAllowanceMonths(count);
             }
+
 
         } catch (Exception e) {
             e.printStackTrace(); // Gợi ý: dùng logger thay cho e.printStackTrace() trong ứng dụng thực tế

@@ -23,22 +23,30 @@
         <Label text="Họ tên:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <Label text="Cấp bậc(ID):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <ComboBox fx:id="levelComboBox" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <!-- Mã định danh -->
+        <Label text="Mã định danh:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="identifierField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
-        <Label text="Đơn vị:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-        <TextField fx:id="unitField" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="Cấp bậc(ID):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="levelComboBox" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-        <Label text="Quê quán:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <TextField fx:id="homeTownField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Đơn vị:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextField fx:id="unitField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-        <Label text="Năm sinh:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-        <TextField fx:id="birthYearField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+        <Label text="Quê quán:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <TextField fx:id="homeTownField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+        <Label text="Năm sinh:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <TextField fx:id="birthYearField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
         <Label text="Ngày bắt đầu:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
         <DatePicker fx:id="sinceDatePicker" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
-        <Label text="Ghi chú:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
-        <TextArea fx:id="noteField" GridPane.rowIndex="9" GridPane.columnIndex="1" prefRowCount="3"/>
+        <Label text="Ngày kết thúc:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="utilDatePicker" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
+        <Label text="Ghi chú:" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
+        <TextArea fx:id="noteField" GridPane.rowIndex="10" GridPane.columnIndex="1" prefRowCount="3"/>
     </GridPane>
+
 
     <!-- Nút lưu -->
     <HBox spacing="20" alignment="CENTER_RIGHT">

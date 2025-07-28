@@ -30,11 +30,14 @@ public class AddOfficerController {
         this.levelService = new LevelServiceImpl();
     }
 
-
+    @FXML
+    private TextField identifierField;
     @FXML
     private TextField fullNameField;
     @FXML
     private DatePicker sinceDatePicker;
+    @FXML
+    private DatePicker utilDatePicker;
     @FXML
     private ComboBox<Level> levelComboBox;
     @FXML
@@ -81,7 +84,9 @@ public class AddOfficerController {
             officer.setLevelId(levelComboBox.getValue().getId());
             officer.setHomeTown(homeTownField.getText());
             officer.setBirthYear(Integer.valueOf(birthYearField.getText()));
+            officer.setIdentifierCode(identifierField.getText());
             officer.setSince(LocalDate.parse(sinceDatePicker.getValue().toString()));
+            officer.setUntil(LocalDate.parse(utilDatePicker.getValue().toString()));
             officer.setNote(noteField.getText());
             officeService.saveOfficer(officer);
             fullNameField.clear();
