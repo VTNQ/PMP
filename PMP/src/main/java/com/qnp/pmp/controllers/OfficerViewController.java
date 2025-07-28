@@ -60,9 +60,11 @@ public class OfficerViewController {
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
     @FXML private TableColumn<OfficerViewDTO, Integer> totalAllowance;
     @FXML private TableColumn<OfficerViewDTO, Void> studyTimeButtonCol;
+    @FXML private TableColumn<OfficerViewDTO, String> identifierCodeCol;
     @FXML
     private TableColumn<OfficerViewDTO, LocalDate> sinceCol;
-
+    @FXML
+    private TableColumn<OfficerViewDTO, LocalDate> utilCol;
     @FXML
     private TextField searchField;
 
@@ -81,14 +83,16 @@ public class OfficerViewController {
         fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
         positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
         unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
+        identifierCodeCol.setCellValueFactory(data->data.getValue().identifierCodeProperty());
         homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
         birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
         noteCol.setCellValueFactory(data -> data.getValue().noteProperty());
         totalAllowance.setCellValueFactory(data->data.getValue().allowanceMonthsProperty().asObject());
         sinceCol.setCellValueFactory(cellData -> cellData.getValue().sinceProperty());
+        utilCol.setCellValueFactory(cellData -> cellData.getValue().utilProperty());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
-        centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol,noteCol);
+        centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol,noteCol,identifierCodeCol,sinceCol,utilCol);
 
         // Tải dữ liệu ban đầu
         loadOfficerAllowance();
@@ -323,14 +327,16 @@ public class OfficerViewController {
 
                 if (fields.length >= 7) {
                     String fullName = fields[0].trim();
+                    String identifierCode = fields[1].trim();
                     int birthYear = Integer.parseInt(fields[1].trim());
                     LocalDate since = parseDate(fields[2].trim());
-                    String levelName = fields[3].trim();
-                    String unit = fields[4].trim();
-                    String homeTown = fields[5].trim();
-                    String note = fields[6].trim();
+                    LocalDate util = parseDate(fields[3].trim());
+                    String levelName = fields[4].trim();
+                    String unit = fields[5].trim();
+                    String homeTown = fields[6].trim();
+                    String note = fields[7].trim();
 
-                    Officer officer = new Officer(fullName, birthYear, since, levelName, unit, homeTown, note);
+                    Officer officer = new Officer(fullName,identifierCode, birthYear, since,util, levelName, unit, homeTown, note);
 
                     // Bắt đầu từ cột 7 → Lần 1 BĐ, Lần 1 KT, ...
                     Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
@@ -419,22 +425,26 @@ public class OfficerViewController {
 
                 try {
                     String fullName = getCellString(row.getCell(0));              // Cột A
-                    int birthYear = Integer.parseInt(getCellString(row.getCell(1))); // Cột B
-                    LocalDate since = getCellLocalDate(row.getCell(2));           // Cột C
-                    String level = getCellString(row.getCell(3));                 // Cột D
-                    String unit = getCellString(row.getCell(4));                  // Cột E
-                    String homeTown = getCellString(row.getCell(5));              // Cột F
-                    String note = getCellString(row.getCell(6));                  // Cột G
+                    String identifierCode=getCellString(row.getCell(1));
+                    int birthYear = Integer.parseInt(getCellString(row.getCell(2))); // Cột B
+                    LocalDate since = getCellLocalDate(row.getCell(3));           // Cột C
+                    LocalDate util = getCellLocalDate(row.getCell(4));
+                    String level = getCellString(row.getCell(5));                 // Cột D
+                    String unit = getCellString(row.getCell(6));                  // Cột E
+                    String homeTown = getCellString(row.getCell(7));              // Cột F
+                    String note = getCellString(row.getCell(8));                  // Cột G
                     // Ghi chú
 
                     Officer officer = new Officer(
                             fullName,   // tên
+                            identifierCode,
                             birthYear,  // năm sinh
                             since,      // ngày bắt đầu hưởng
+                            util,
                             level,      // trình độ
                             unit,       // đơn vị
                             homeTown,   // quê quán
-                            note        // ghi chú
+                            note      // ghi chú
                     );
 
                     Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
@@ -677,10 +687,10 @@ public class OfficerViewController {
                     String unit = matcher.group("unit").trim();
                     String homeTown = matcher.group("province").trim();
                     String note = matcher.group("note").trim();
-
+                    String identifierCode = matcher.group("identifierCode");
                     OfficerViewDTO dto = new OfficerViewDTO(
                             0, name, 0, level, unit, birthYear, homeTown, note,
-                            LocalDate.of(2025, 4, 1)
+                            LocalDate.of(2025, 4, 1),LocalDate.of(2025,4,1), identifierCode
                     );
                     officerList.add(dto);
                 }

@@ -65,10 +65,11 @@ public class SuperAdminDashBoardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/" + viewName + ".fxml"));
             Parent view = loader.load();
 
-            // Nếu view là Region (ví dụ AnchorPane, VBox, BorderPane...), đặt kích thước
+            // Gắn chặt kích thước với contentArea
             if (view instanceof Region) {
-                ((Region) view).setPrefWidth(contentArea.getWidth());
-                ((Region) view).setPrefHeight(contentArea.getHeight());
+                Region region = (Region) view;
+                region.prefWidthProperty().bind(contentArea.widthProperty());
+                region.prefHeightProperty().bind(contentArea.heightProperty());
             }
 
             contentArea.getChildren().setAll(view);

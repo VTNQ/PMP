@@ -22,11 +22,12 @@ public class OfficerViewDTO {
     private final StringProperty note;
     private final Map<Integer, StudyRoundDTO> studyRounds = new TreeMap<>();
     private final IntegerProperty allowanceMonths = new SimpleIntegerProperty(0);
-
+    private final StringProperty identifierCode;
     private final ObjectProperty<LocalDate> since = new SimpleObjectProperty<>();
+    private final ObjectProperty<LocalDate> util = new SimpleObjectProperty<>();
     public OfficerViewDTO(int id, String fullName, Integer levelId, String levelName,
                           String unit, Integer birthYear, String homeTown,
-                          String note, LocalDate since) {
+                          String note, LocalDate since,LocalDate util,String identifierCode) {
         this.id = new SimpleIntegerProperty(id);
         this.fullName = new SimpleStringProperty(fullName);
         this.levelId = new SimpleIntegerProperty(levelId);
@@ -34,8 +35,10 @@ public class OfficerViewDTO {
         this.unit = new SimpleStringProperty(unit);
         this.homeTown = new SimpleStringProperty(homeTown);
         this.note = new SimpleStringProperty(note);
+        this.util.set(util);
         this.birthYear = new SimpleIntegerProperty(birthYear);
         this.since.set(since);
+        this.identifierCode = new SimpleStringProperty(identifierCode);
     }
 
     public IntegerProperty getId() {
@@ -50,6 +53,10 @@ public class OfficerViewDTO {
     public LocalDate getSince() { return since.get(); }
     public ObjectProperty<LocalDate> sinceProperty() {
         return since;
+    }
+    public LocalDate getUtil() { return util.get(); }
+    public ObjectProperty<LocalDate> utilProperty() {
+        return util;
     }
     public int getAllowanceMonths() {
         return allowanceMonths.get();
@@ -78,7 +85,9 @@ public class OfficerViewDTO {
     public IntegerProperty birthYearProperty() {
         return birthYear;
     }
-
+    public StringProperty identifierCodeProperty() {
+        return identifierCode;
+    }
     public void addStudyRound(int round, LocalDate start, LocalDate end) {
         studyRounds.put(round, new StudyRoundDTO(round, start, end));
     }
@@ -107,6 +116,7 @@ public class OfficerViewDTO {
         officer.setNote(this.noteProperty().get());
         officer.setHomeTown(this.homeTownProperty().get());
         officer.setSince(this.getSince()); // since là ObjectProperty<LocalDate>
+        officer.setIdentifierCode(this.identifierCodeProperty().get());
         return officer;
     }
 
