@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="420" prefWidth="698.0" style="-fx-background-color: #ffffff; -fx-background-radius: 12;" stylesheets="@work-history.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qnp.pmp.controllers.WorkHistoryController">
+
+    <VBox spacing="15" AnchorPane.bottomAnchor="10" AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+        <padding>
+            <Insets bottom="15" left="15" right="15" top="15" />
+        </padding>
+
+        <!-- Tiêu đề với icon -->
+        <HBox alignment="CENTER_LEFT" spacing="6">
+            <Label style="-fx-font-size:18px;" text="📋" />
+            <Label styleClass="popup-title" text="Lịch sử công tác" />
+        </HBox>
+
+        <!-- Bảng lịch sử công tác -->
+        <TableView fx:id="workTable" styleClass="modern-table" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="roundCol" prefWidth="80" text="🔢 Số lần" />
+                <TableColumn fx:id="startDateCol" prefWidth="202.39995574951172" text="📅 Ngày bắt đầu" />
+                <TableColumn fx:id="endDateCol" prefWidth="185.60003662109375" text="📅 Ngày kết thúc" />
+            </columns>
+        </TableView>
+
+        <!-- Thanh nút -->
+        <HBox alignment="CENTER_RIGHT">
+            <Button styleClass="btn-secondary" text="✖ Đóng" />
+        </HBox>
+    </VBox>
+</AnchorPane>

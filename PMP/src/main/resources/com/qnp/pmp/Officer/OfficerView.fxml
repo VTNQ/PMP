@@ -1,71 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.FlowPane?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.control.*?>
 
-<VBox prefHeight="700" prefWidth="1200" spacing="15" style="-fx-background-color: #f8f9fa;" stylesheets="@officer.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.qnp.pmp.controllers.OfficerViewController">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.qnp.pmp.controllers.OfficerViewController"
+            style="-fx-background-color:#f8f9fa;" stylesheets="@officer.css">
 
-    <!-- Tiêu đề -->
-    <Label alignment="CENTER" maxWidth="Infinity" styleClass="title-label" text="📊 Danh sách cán bộ đang hưởng phụ cấp" VBox.vgrow="NEVER" />
+    <VBox spacing="12" AnchorPane.topAnchor="10" AnchorPane.bottomAnchor="10"
+          AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
 
-    <!-- Ô tìm kiếm -->
-    <HBox alignment="CENTER_LEFT" spacing="10">
-        <padding>
-            <Insets bottom="10" left="10" right="10" top="10" />
-        </padding>
-        <Label text="🔍 Tìm kiếm:" />
-        <TextField fx:id="searchField" onKeyReleased="#onSearch" prefWidth="300" promptText="Nhập họ tên hoặc mã định danh..." />
-    </HBox>
+        <!-- Thanh hành động -->
+        <HBox spacing="10">
+            <Label fx:id="totalLabel" text="Tổng: 0 cán bộ"/>
+            <Region HBox.hgrow="ALWAYS"/>
 
-    <!-- Bảng dữ liệu -->
-    <!-- Bảng dữ liệu -->
-    <TableView fx:id="officerTable" styleClass="officer-table" VBox.vgrow="ALWAYS">
+            <Button text="➕ Thêm mới" styleClass=" add-btn" onAction="#add"/>
+            <Button text="📥 Nhập nhiều" styleClass=" import-btn" onAction="#onImport"/>
+            <Button text="🔄 Làm mới" styleClass=" refresh-btn" onAction="#refreshTable"/>
+            <Button text="🗑 Xóa" styleClass=" delete-btn" onAction="#onDelete"/>
+        </HBox>
 
-        <columns>
-            <TableColumn fx:id="fullNameCol" prefWidth="180" styleClass="col-fullname" text="👤 Họ tên" />
-            <TableColumn fx:id="identifierCodeCol" prefWidth="140" styleClass="col-identifier" text="🆔 Mã định danh" />
-            <TableColumn fx:id="birthYearCol" prefWidth="99.2" styleClass="col-birth" text="📅 Năm sinh" />
-            <TableColumn fx:id="sinceCol" prefWidth="120.8" styleClass="col-start" text="📆 Ngày bắt đầu" />
+        <!-- Tiêu đề -->
+        <Label text="📊 Danh sách cán bộ đang hưởng phụ cấp"
+               style="-fx-font-size:18px; -fx-font-weight:bold;"/>
 
-            <TableColumn fx:id="utilCol" prefWidth="120.8" styleClass="col-until" text="⏳ Ngày kết thúc" />
+        <!-- Thanh tìm kiếm -->
+        <HBox spacing="10">
+            <Label text="🔍 Tìm kiếm:"/>
+            <TextField fx:id="searchField" onKeyReleased="#onSearch"
+                       prefWidth="300"
+                       promptText="Nhập họ tên hoặc mã định danh..."/>
+        </HBox>
 
-            <TableColumn fx:id="positionCol" prefWidth="100" styleClass="col-pos" text="📋 Chức vụ" />
-            <TableColumn fx:id="unitCol" prefWidth="140" styleClass="col-unit" text="🏢 Đơn vị" />
-            <TableColumn fx:id="homeTownCol" prefWidth="120" styleClass="col-hometown" text="📍 Quê quán" />
-            <TableColumn fx:id="noteCol" prefWidth="160" styleClass="col-note" text="📝 Ghi chú" />
-            <TableColumn fx:id="totalAllowance" prefWidth="160" styleClass="col-total" text="🕒 Tổng tháng" />
-            <TableColumn fx:id="studyTimeButtonCol" prefWidth="150" styleClass="col-study" text="⏱ Thời gian học" />
-        </columns>
+        <!-- Bảng dữ liệu -->
+        <TableView fx:id="officerTable" VBox.vgrow="ALWAYS" styleClass="custom-table">
+            <columns>
+                <TableColumn fx:id="fullNameCol" text="👤 Họ tên" prefWidth="180"/>
+                <TableColumn fx:id="identifierCodeCol" text="🆔 Mã định danh" prefWidth="140"/>
+                <TableColumn fx:id="birthYearCol" text="📅 Năm sinh" prefWidth="100"/>
+                <TableColumn fx:id="sinceCol" text="📆 Ngày bắt đầu" prefWidth="140"/>
+                <TableColumn fx:id="unitCol" text="🏢 Đơn vị" prefWidth="140"/>
+                <TableColumn fx:id="detailCol" text="⚙ Thao tác" prefWidth="100"/>
+                <TableColumn fx:id="workCol" text="📋 Công tác" prefWidth="110"/>
+            </columns>
+        </TableView>
 
-    </TableView>
 
-
-
-
-
-    <!-- Thanh hành động -->
-    <VBox spacing="8">
-        <padding>
-            <Insets bottom="10" left="10" right="10" top="10" />
-        </padding>
-        <Label fx:id="totalLabel" styleClass="total-label" text="Tổng: 0 cán bộ" />
-
-        <FlowPane alignment="CENTER_LEFT" hgap="10" vgap="10">
-            <Button onAction="#onImport" prefWidth="180" styleClass="import-button" text="📥 Nhập dữ liệu nhiều" />
-            <Button onAction="#refreshTable" prefWidth="120" styleClass="refresh-button" text="🔄 Làm mới" />
-            <Button onAction="#add" prefWidth="120" styleClass="add-button" text="➕ Thêm mới" />
-            <Button onAction="#onAddStudyTime" prefWidth="200" styleClass="studytime-button" text="⏱ Thêm thời gian học" />
-            <Button onAction="#onDelete" prefWidth="90" styleClass="delete-button" text="🗑 Xoá" />
-            <Button fx:id="btnManualExcelBackup" onAction="#onManualExcelBackup" text="Backup Excel" />
-            <Button onAction="#onImportFromImage" prefWidth="180" styleClass="import-button" text="📸 Nhập từ ảnh" />
-        </FlowPane>
     </VBox>
-
-</VBox>
+</AnchorPane>

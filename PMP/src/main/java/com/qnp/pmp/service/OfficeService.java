@@ -14,4 +14,5 @@ public interface OfficeService {
     List<OfficerViewDTO> findByName(String name);
     List<OfficerViewDTO>getOfficerAllowanceStatus();
     List<Officer>getOfficers();
+    OfficerViewDTO getOfficerById(int officerId);
 }

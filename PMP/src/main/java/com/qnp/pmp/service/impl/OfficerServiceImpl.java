@@ -436,4 +436,110 @@ public class OfficerServiceImpl implements OfficeService {
         }
         return officers;
     }
+
+    @Override
+    public OfficerViewDTO getOfficerById(int officerId) {
+        OfficerViewDTO dto = null;
+
+        String officerSql = """
+        SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
+               o.unit, o.hometown, o.birth_year, o.note, o.since, o.util, o.identifierCode
+        FROM officer o
+        JOIN level l ON o.level_id = l.id
+        WHERE o.id = ?
+    """;
+
+        try (Connection connection = MySQLConnection.getConnection()) {
+
+            // 1️⃣ Lấy thông tin cơ bản
+            try (PreparedStatement stmt = connection.prepareStatement(officerSql)) {
+                stmt.setInt(1, officerId);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        int id = rs.getInt("id");
+                        String fullName = rs.getString("full_name");
+                        int levelId = rs.getInt("levelId");
+                        String levelName = rs.getString("level_name");
+                        String unit = rs.getString("unit");
+                        String homeTown = rs.getString("hometown");
+                        int birthYear = rs.getInt("birth_year");
+                        String note = rs.getString("note");
+
+                        Date sqlSince = rs.getDate("since");
+                        LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
+                        Date sqlUtil = rs.getDate("util");
+                        LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
+                        String identifierCode = rs.getString("identifierCode");
+
+                        dto = new OfficerViewDTO(id, fullName, levelId, levelName,
+                                unit, birthYear, homeTown, note, since, util, identifierCode);
+                    }
+                }
+            }
+
+            if (dto == null) return null;
+
+            // 2️⃣ Lấy thông tin học tập của cán bộ
+            String studySql = """
+            SELECT officer_id, round, start_date, end_date
+            FROM studyTimes
+            WHERE officer_id = ?
+            ORDER BY round
+        """;
+
+            Map<YearMonth, Integer> studyDaysByMonth = new HashMap<>();
+
+            try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
+                stmt.setInt(1, officerId);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int round = rs.getInt("round");
+                        LocalDate start = rs.getDate("start_date").toLocalDate();
+                        LocalDate end = rs.getDate("end_date").toLocalDate();
+
+                        dto.addStudyRound(round, start, end);
+
+                        // Tính số ngày học trong tháng
+                        LocalDate sDate = (dto.getSince() != null && start.isBefore(dto.getSince())) ? dto.getSince() : start;
+                        LocalDate date = sDate;
+                        while (!date.isAfter(end)) {
+                            YearMonth ym = YearMonth.from(date);
+                            studyDaysByMonth.put(ym, studyDaysByMonth.getOrDefault(ym, 0) + 1);
+                            date = date.plusDays(1);
+                        }
+                    }
+                }
+            }
+
+            // 3️⃣ Tính số tháng được hưởng phụ cấp
+            if (dto.getSince() != null && !LocalDate.now().isBefore(dto.getSince())) {
+                YearMonth currentMonth = YearMonth.now();
+                YearMonth sinceMonth = YearMonth.from(dto.getSince());
+
+                if (sinceMonth.isBefore(currentMonth)) {
+                    int totalMonths = (int) ChronoUnit.MONTHS.between(sinceMonth, currentMonth);
+                    int count = 0;
+                    for (int i = 0; i < totalMonths; i++) {
+                        YearMonth month = sinceMonth.plusMonths(i);
+                        int studyDays = studyDaysByMonth.getOrDefault(month, 0);
+                        if (studyDays <= 15) {
+                            count++;
+                        }
+                    }
+                    dto.setAllowanceMonths(count);
+                } else {
+                    dto.setAllowanceMonths(0);
+                }
+            } else {
+                dto.setAllowanceMonths(0);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace(); // Nên dùng Logger trong ứng dụng thật
+        }
+
+        return dto;
+    }
+
 }

@@ -1,13 +1,19 @@
 package com.qnp.pmp.service.impl;
 
 
+import com.qnp.pmp.config.MySQLConnection;
 import com.qnp.pmp.dto.WorkTimeDTO;
+import com.qnp.pmp.dto.WorkTimeViewDTO;
 import com.qnp.pmp.service.WorkTimeService;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -15,10 +21,38 @@ public class WorkTimeServiceImpl implements WorkTimeService {
 
 
     @Override
-    public List<WorkTimeDTO> getWorkTimesByOfficerId(String officerId) {
-        // TODO: Lấy từ repository
-        throw new UnsupportedOperationException("Not implemented yet");
+    public List<WorkTimeViewDTO> getWorkTimesByOfficerId(int officerId) {
+        List<WorkTimeViewDTO> workTimes = new ArrayList<>();
+
+        String sql = """
+        SELECT id, officer_id, round, start_date, end_date
+        FROM studyTimes
+        WHERE officer_id = ?
+        ORDER BY round ASC
+    """;
+
+        try (Connection conn = MySQLConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, officerId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    int round = rs.getInt("round");
+                    LocalDate startDate = rs.getDate("start_date").toLocalDate();
+                    LocalDate endDate = rs.getDate("end_date").toLocalDate();
+
+                    WorkTimeViewDTO dto = new WorkTimeViewDTO(round,startDate,endDate);
+                    workTimes.add(dto);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Hoặc logger
+        }
+        return workTimes;
     }
+
 
     @Override
     public long getTotalValidWorkingDays(List<WorkTimeDTO> workTimes, Set<LocalDate> holidays) {

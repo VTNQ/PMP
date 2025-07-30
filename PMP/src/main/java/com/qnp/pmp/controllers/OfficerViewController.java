@@ -53,18 +53,14 @@ public class OfficerViewController {
 
     @FXML private TableView<OfficerViewDTO> officerTable;
     @FXML private TableColumn<OfficerViewDTO, String> fullNameCol;
-    @FXML private TableColumn<OfficerViewDTO, String> positionCol;
+    @FXML private TableColumn<OfficerViewDTO,Void>detailCol;
     @FXML private TableColumn<OfficerViewDTO, String> unitCol;
     @FXML private TableColumn<OfficerViewDTO, Integer> birthYearCol;
-    @FXML private TableColumn<OfficerViewDTO, String> noteCol;
-    @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
-    @FXML private TableColumn<OfficerViewDTO, Integer> totalAllowance;
-    @FXML private TableColumn<OfficerViewDTO, Void> studyTimeButtonCol;
     @FXML private TableColumn<OfficerViewDTO, String> identifierCodeCol;
     @FXML
     private TableColumn<OfficerViewDTO, LocalDate> sinceCol;
     @FXML
-    private TableColumn<OfficerViewDTO, LocalDate> utilCol;
+    private TableColumn<OfficerViewDTO,Void>workCol;
     @FXML
     private TextField searchField;
 
@@ -81,18 +77,14 @@ public class OfficerViewController {
 
         // Gán dữ liệu cho các cột
         fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
-        positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
+
         unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
         identifierCodeCol.setCellValueFactory(data->data.getValue().identifierCodeProperty());
-        homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());
         birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
-        noteCol.setCellValueFactory(data -> data.getValue().noteProperty());
-        totalAllowance.setCellValueFactory(data->data.getValue().allowanceMonthsProperty().asObject());
         sinceCol.setCellValueFactory(cellData -> cellData.getValue().sinceProperty());
-        utilCol.setCellValueFactory(cellData -> cellData.getValue().utilProperty());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
-        centerAllColumns(fullNameCol, positionCol, unitCol, birthYearCol, homeTownCol,noteCol,identifierCodeCol,sinceCol,utilCol);
+        centerAllColumns(fullNameCol ,unitCol, birthYearCol,identifierCodeCol,sinceCol);
 
         // Tải dữ liệu ban đầu
         loadOfficerAllowance();
@@ -130,9 +122,165 @@ public class OfficerViewController {
 
             return row;
         });
+        addDetailButtonToTable();
+        addWorkButtonToTable();
+    }
+    private void addWorkButtonToTable() {
+        workCol.setCellFactory(param -> new TableCell<>() {
+            private final Button btnWork = new Button("📋 Công tác");
+
+            {
+                btnWork.setStyle(
+                        "-fx-background-color: linear-gradient(to right, #10b981, #059669);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-radius: 20;" +
+                                "-fx-padding: 4 12;" +
+                                "-fx-font-size: 12px;" +
+                                "-fx-font-weight: 600;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-alignment: CENTER_LEFT;" +
+                                "-fx-graphic-text-gap: 6;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0.3, 0, 1);"
+                );
+
+                btnWork.setOnMouseEntered(e -> btnWork.setStyle(
+                        "-fx-background-color: linear-gradient(to right, #059669, #047857);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-radius: 20;" +
+                                "-fx-padding: 4 12;" +
+                                "-fx-font-size: 12px;" +
+                                "-fx-font-weight: 600;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-alignment: CENTER_LEFT;" +
+                                "-fx-graphic-text-gap: 6;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 3, 0.4, 0, 2);"
+                ));
+
+                btnWork.setOnMouseExited(e -> btnWork.setStyle(
+                        "-fx-background-color: linear-gradient(to right, #10b981, #059669);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-radius: 20;" +
+                                "-fx-padding: 4 12;" +
+                                "-fx-font-size: 12px;" +
+                                "-fx-font-weight: 600;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-alignment: CENTER_LEFT;" +
+                                "-fx-graphic-text-gap: 6;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0.3, 0, 1);"
+                ));
+
+                btnWork.setOnAction(event -> {
+                    OfficerViewDTO data = getTableView().getItems().get(getIndex());
+                    if (data != null) {
+                        openWorkHistoryPopup(data.getId().getValue());
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnWork);
+            }
+        });
+    }
+    private void openWorkHistoryPopup(int id) {
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/WorkTime/WorkHistoryPopup.fxml"));
+            Parent root = loader.load();
+
+            WorkHistoryController controller = loader.getController();
+            controller.setOfficeId(id);
+
+            Stage stage = new Stage();
+            stage.setTitle("Lịch sử công tác");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
+    private void addDetailButtonToTable(){
+        detailCol.setCellFactory(param -> new TableCell<>() {
+            private final Button btnView = new Button("👁 Xem chi tiết");
+            {
+                btnView.setStyle(
+                        "-fx-background-color: linear-gradient(to right, #3b82f6, #2563eb);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-radius: 20;" +
+                                "-fx-padding: 4 12;" +
+                                "-fx-font-size: 12px;" +
+                                "-fx-font-weight: 600;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-alignment: CENTER_LEFT;" +
+                                "-fx-graphic-text-gap: 6;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0.3, 0, 1);"
+                );
 
+                btnView.setOnMouseEntered(e -> btnView.setStyle(
+                        "-fx-background-color: linear-gradient(to right, #2563eb, #1d4ed8);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-radius: 20;" +
+                                "-fx-padding: 4 12;" +
+                                "-fx-font-size: 12px;" +
+                                "-fx-font-weight: 600;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-alignment: CENTER_LEFT;" +
+                                "-fx-graphic-text-gap: 6;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 3, 0.4, 0, 2);"
+                ));
+
+                btnView.setOnMouseExited(e -> btnView.setStyle(
+                        "-fx-background-color: linear-gradient(to right, #3b82f6, #2563eb);" +
+                                "-fx-text-fill: white;" +
+                                "-fx-background-radius: 20;" +
+                                "-fx-padding: 4 12;" +
+                                "-fx-font-size: 12px;" +
+                                "-fx-font-weight: 600;" +
+                                "-fx-cursor: hand;" +
+                                "-fx-alignment: CENTER_LEFT;" +
+                                "-fx-graphic-text-gap: 6;" +
+                                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0.3, 0, 1);"
+                ));
+                btnView.setOnAction(event -> {
+                    OfficerViewDTO data = getTableView().getItems().get(getIndex());
+                    if (data != null) {
+                        openDetailPopup(data.getId().getValue());
+                    }
+                });
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    setGraphic(btnView);
+                }
+            }
+        });
+    }
+    private void openDetailPopup(int officerId){
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/OfficerDetailPopup.fxml"));
+            Parent root = loader.load();
+
+            OfficerDetailViewController controller = loader.getController();
+            controller.setOfficerId(officerId);
+
+            Stage stage = new Stage();
+            stage.setTitle("Chi tiết cán bộ");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
+            stage.showAndWait();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
     private void showEditDialog(OfficerViewDTO officer) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/EditOfficer.fxml"));
@@ -206,7 +354,7 @@ public class OfficerViewController {
             }
         };
 
-        studyTimeButtonCol.setCellFactory(cellFactory);
+
     }
 
     private void showStudyTime(OfficerViewDTO officer) {
