@@ -16,6 +16,6 @@
         </VBox>
 
         <!-- Content Area linh hoạt -->
-        <StackPane fx:id="contentArea" style="-fx-background-color: #ecf0f1;" HBox.hgrow="ALWAYS" minWidth="500" />
+        <StackPane fx:id="contentArea" style="-fx-background-color: #ecf0f1;" />
     </HBox>
 </AnchorPane>

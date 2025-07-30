@@ -1,77 +1,157 @@
-.title-label {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
-    -fx-padding: 10 0 5 0;
+/* ===== Toàn bộ giao diện ===== */
+.root {
+    -fx-background-color: #f8f9fa;
+    -fx-font-family: "Segoe UI", Inter, Arial, sans-serif;
 }
 
-.total-label {
+/* ===== Thanh hành động ===== */
+.hbox {
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* Nhãn tổng số */
+.label {
     -fx-font-size: 14px;
-    -fx-text-fill: #34495e;
 }
-.studytime-button {
-    -fx-background-color: #17a2b8;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 8 14;
-    -fx-background-radius: 6;
-}
+
+/* ===== Nút hành động chung ===== */
 .button {
-    -fx-wrap-text: false;
-    -fx-text-overrun: clip; /* hoặc ellipsis nếu bạn muốn cắt chữ */
+    -fx-background-radius: 6px;
+    -fx-padding: 7 14;
     -fx-font-size: 13px;
-    -fx-font-weight: bold;
-}
-
-.studytime-button:hover {
-    -fx-background-color: #138496;
-}
-
-.refresh-button {
-    -fx-background-color: linear-gradient(to bottom, #3498db, #2980b9);
+    -fx-font-weight: 600;
     -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 8px 16px;
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);
-}
-.delete-button {
-    -fx-background-color: #e74c3c;
-    -fx-text-fill: white;
-}
-
-.add-button {
-    -fx-background-color: linear-gradient(to bottom, #2ecc71, #27ae60); /* Xanh lá cây */
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-padding: 8px 16px;
-    -fx-background-radius: 6px;
-    -fx-border-radius: 6px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 4, 0.3, 0, 2);
     -fx-cursor: hand;
+    -fx-background-insets: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 2, 0.3, 0, 1);
+    -fx-min-width: 110px;
 }
 
-.refresh-button:hover {
-    -fx-background-color: #1f6ea5;
-    -fx-cursor: hand;
+/* Thêm mới */
+.add-btn {
+    -fx-background-color: #3b82f6;
 }
-.import-button{
-    -fx-background-color: #4CAF50;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
+.add-btn:hover {
+    -fx-background-color: #2563eb;
 }
-.table-view {
-    -fx-border-color: #e0e0e0;
-    -fx-border-width: 1px;
+
+/* Nhập nhiều */
+.import-btn {
+    -fx-background-color: #10b981;
+}
+.import-btn:hover {
+    -fx-background-color: #059669;
+}
+
+/* Làm mới */
+.refresh-btn {
+    -fx-background-color: #0ea5e9;
+}
+.refresh-btn:hover {
+    -fx-background-color: #0284c7;
+}
+
+/* Xóa */
+.delete-btn {
+    -fx-background-color: #ef4444;
+}
+.delete-btn:hover {
+    -fx-background-color: #dc2626;
+}
+
+/* Khi nút bị vô hiệu hóa */
+.button:disabled {
+    -fx-background-color: #cbd5e1;
+    -fx-text-fill: #f1f5f9;
+    -fx-effect: none;
+}
+
+/* ===== Thanh tìm kiếm ===== */
+.text-field {
     -fx-background-color: white;
-    -fx-table-cell-border-color: #f0f0f0;
-    -fx-padding: 5;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 3, 0.1, 0, 1);
+    -fx-border-color: #93c5fd;
+    -fx-border-radius: 6px;
+    -fx-padding: 6 12;
+    -fx-font-size: 13px;
+}
+.text-field:focused {
+    -fx-border-color: #2563eb;
+    -fx-background-color: #f0f9ff;
+}
+/* ===== Table tổng thể ===== */
+.custom-table {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+    -fx-table-cell-border-color: #e2e8f0;
+    -fx-font-size: 13px;
 }
 
-.table-column {
-    -fx-alignment: CENTER;
+.custom-table .column-header-background {
+    -fx-background-color: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
+    -fx-background-radius: 6px 6px 0 0;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 0 0 1 0;
+}
+
+.custom-table .column-header,
+.custom-table .filler {
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
     -fx-font-size: 13px;
-    -fx-text-fill: #2c3e50;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.custom-table .table-row-cell:odd {
+    -fx-background-color: #f9fafb;
+}
+.custom-table .table-row-cell:even {
+    -fx-background-color: #ffffff;
+}
+
+.custom-table .table-row-cell:hover {
+    -fx-background-color: #e0f2fe;
+    -fx-cursor: hand;
+}
+
+.custom-table .table-row-cell:filled:selected {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+}
+
+.table-cell .button {
+    -fx-background-radius: 6px;
+    -fx-padding: 3 10;
+    -fx-background-color: #f1f5f9;
+    -fx-text-fill: #1e293b;
+    -fx-font-size: 12px;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 6px;
+}
+.table-cell .button:hover {
+    -fx-background-color: #dbeafe;
+}
+
+/* Chỉ áp dụng cho nút có text "Xem chi tiết" */
+.button[text="👁 Xem chi tiết"] {
+    -fx-background-color: linear-gradient(to right, #3b82f6, #2563eb);
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 4 12;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+    -fx-graphic-text-gap: 6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0.3, 0, 1);
+}
+
+.button[text="👁 Xem chi tiết"]:hover {
+    -fx-background-color: linear-gradient(to right, #2563eb, #1d4ed8);
+}
+
+.button[text="👁 Xem chi tiết"]:pressed {
+    -fx-background-color: #1e40af;
+    -fx-scale-x: 0.96;
+    -fx-scale-y: 0.96;
 }

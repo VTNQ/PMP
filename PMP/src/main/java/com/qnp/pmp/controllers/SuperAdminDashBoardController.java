@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -15,7 +16,9 @@ public class SuperAdminDashBoardController {
     private ListView<String> menuList;
 
     @FXML
-    private StackPane contentArea;
+
+    private AnchorPane contentArea;
+
 
     @FXML
     public void initialize() {
@@ -64,6 +67,8 @@ public class SuperAdminDashBoardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/" + viewName + ".fxml"));
             Parent view = loader.load();
+
+            contentArea.getChildren().add(view);
 
             // Gắn chặt kích thước với contentArea
             if (view instanceof Region) {
