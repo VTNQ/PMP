@@ -27,18 +27,18 @@
 
         <!-- Tiêu đề -->
         <Label text="📊 Danh sách cán bộ đang hưởng phụ cấp"
-               style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+               style="-fx-font-size:18px; -fx-font-weight:bold;" styleClass="main-title"/>
 
         <!-- Thanh tìm kiếm -->
         <HBox spacing="10">
             <Label text="🔍 Tìm kiếm:"/>
             <TextField fx:id="searchField" onKeyReleased="#onSearch"
                        prefWidth="300"
-                       promptText="Nhập họ tên hoặc mã định danh..."/>
+                       promptText="Nhập họ tên hoặc mã định danh..." />
         </HBox>
 
         <!-- Bảng dữ liệu -->
-        <TableView fx:id="officerTable" VBox.vgrow="ALWAYS" styleClass="custom-table">
+        <TableView fx:id="officerTable" VBox.vgrow="ALWAYS" styleClass="modern-table" >
             <columns>
                 <TableColumn fx:id="fullNameCol" text="👤 Họ tên" prefWidth="180"/>
                 <TableColumn fx:id="identifierCodeCol" text="🆔 Mã định danh" prefWidth="140"/>

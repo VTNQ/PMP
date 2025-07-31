@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -13,7 +14,7 @@ public class UserDashboardController {
     @FXML
     private ListView<String> menuList;
     @FXML
-    private StackPane contentArea;
+    private AnchorPane contentArea;
     @FXML
     public void initialize() {
             menuList.getItems().addAll(
