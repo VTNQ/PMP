@@ -39,6 +39,7 @@ public class UserManagementController {
         usernameCol.setCellValueFactory(cell -> cell.getValue().usernameProperty());
         fullNameCol.setCellValueFactory(cell -> cell.getValue().fullNameProperty());
         IndexCol.setCellValueFactory(cell->cell.getValue().indexProperty().asObject());
+        userTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
     centerAllColumns(fullNameCol, IndexCol,usernameCol);
     loadUserData();
     }

@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.ListView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 
@@ -14,7 +15,7 @@ public class AdminDashBoardController {
     private ListView<String> menuList;
 
     @FXML
-    private StackPane contentArea;
+    private AnchorPane contentArea;
     @FXML
     public void initialize() {
         menuList.getItems().addAll(
@@ -59,10 +60,13 @@ public class AdminDashBoardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/" + viewName + ".fxml"));
             Parent view = loader.load();
 
-            // Nếu view là Region (ví dụ AnchorPane, VBox, BorderPane...), đặt kích thước
+            contentArea.getChildren().add(view);
+
+            // Gắn chặt kích thước với contentArea
             if (view instanceof Region) {
-                ((Region) view).setPrefWidth(contentArea.getWidth());
-                ((Region) view).setPrefHeight(contentArea.getHeight());
+                Region region = (Region) view;
+                region.prefWidthProperty().bind(contentArea.widthProperty());
+                region.prefHeightProperty().bind(contentArea.heightProperty());
             }
 
             contentArea.getChildren().setAll(view);

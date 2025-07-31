@@ -1,48 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.control.*?>
 
-<VBox xmlns="http://javafx.com/javafx/23.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.qnp.pmp.controllers.OfficerUserController"
-      stylesheets="@officer.css"
-      spacing="15"
-      prefWidth="1200" prefHeight="700"
-      style="-fx-background-color: #f8f9fa;">
+<AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.qnp.pmp.controllers.OfficerUserController"
+            style="-fx-background-color:#f8f9fa;" stylesheets="@officer.css">
 
-    <!-- Tiêu đề -->
-    <Label text="📊 Danh sách cán bộ đang hưởng phụ cấp"
-           styleClass="title-label"
-           alignment="CENTER"
-           maxWidth="Infinity"
-           VBox.vgrow="NEVER"/>
+    <VBox spacing="12" AnchorPane.topAnchor="10" AnchorPane.bottomAnchor="10"
+          AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
 
-    <!-- Ô tìm kiếm -->
-    <HBox spacing="10" alignment="CENTER_LEFT">
-        <padding>
-            <Insets top="10" right="10" bottom="10" left="10"/>
-        </padding>
-        <Label text="🔍 Tìm kiếm:"/>
-        <TextField fx:id="searchField"
-                   promptText="Nhập họ tên hoặc mã định danh..."
-                   onKeyReleased="#onSearch"
-                   prefWidth="300"/>
-    </HBox>
 
-    <!-- Bảng dữ liệu -->
-    <TableView fx:id="officerUserTable" VBox.vgrow="ALWAYS">
-        <columns>
-            <TableColumn fx:id="fullNameCol" text="Họ tên" prefWidth="180"/>
-            <TableColumn fx:id="birthYearCol" text="Năm sinh" prefWidth="120"/>
-            <TableColumn fx:id="sinceCol" text="Ngày bắt đầu" prefWidth="140"/>
-            <TableColumn fx:id="positionCol" text="Chức vụ" prefWidth="140"/>
-            <TableColumn fx:id="unitCol" text="Đơn vị" prefWidth="140"/>
-            <TableColumn fx:id="homeTownCol" text="Quê quán" prefWidth="140"/>
-            <TableColumn fx:id="noteCol" text="Ghi chú" prefWidth="160"/>
-            <TableColumn fx:id="totalAllowance" text="Tổng tháng phụ cấp" prefWidth="180"/>
-            <TableColumn fx:id="studyTimeButtonCol" text="Thời gian học" prefWidth="150"/>
-        </columns>
-    </TableView>
-</VBox>
+
+        <!-- Tiêu đề -->
+        <Label text="📊 Danh sách cán bộ đang hưởng phụ cấp"   styleClass="main-title"
+               style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+
+        <!-- Thanh tìm kiếm -->
+        <HBox spacing="10">
+            <Label text="🔍 Tìm kiếm:"/>
+            <TextField fx:id="searchField" onKeyReleased="#onSearch"
+                       prefWidth="300"
+                       promptText="Nhập họ tên hoặc mã định danh..."/>
+        </HBox>
+
+        <!-- Bảng dữ liệu -->
+        <TableView fx:id="officerTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+            <columns>
+                <TableColumn fx:id="fullNameCol" text="👤 Họ tên" prefWidth="180"/>
+                <TableColumn fx:id="identifierCodeCol" text="🆔 Mã định danh" prefWidth="140"/>
+                <TableColumn fx:id="birthYearCol" text="📅 Năm sinh" prefWidth="100"/>
+                <TableColumn fx:id="sinceCol" text="📆 Ngày bắt đầu" prefWidth="140"/>
+                <TableColumn fx:id="unitCol" text="🏢 Đơn vị" prefWidth="140"/>
+                <TableColumn fx:id="detailCol" text="⚙ Thao tác" prefWidth="100"/>
+                <TableColumn fx:id="workCol" text="📋 Công tác" prefWidth="110"/>
+            </columns>
+        </TableView>
+
+
+    </VBox>
+</AnchorPane>
