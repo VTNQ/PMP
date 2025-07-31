@@ -1,0 +1,100 @@
+.root, .anchor-pane {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-font-family: "Segoe UI", Inter, Arial, sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 8, 0.3, 0, 2);
+}
+
+/* Tiêu đề */
+.popup-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* Bảng hiện đại */
+
+/* Nút Đóng */
+.btn-secondary {
+    -fx-background-color: #e5e7eb;
+    -fx-text-fill: #111827;
+    -fx-background-radius: 6;
+    -fx-padding: 6 14;
+    -fx-font-weight: 600;
+}
+.btn-secondary:hover {
+    -fx-background-color: #d1d5db;
+}
+/* ============================
+   🌟 Bảng hiện đại nâng cấp
+=============================== */
+.modern-table {-fx-background-color: #ffffff;
+    -fx-border-color: #d1d5db;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-table-cell-border-color: #e2e8f0;
+    -fx-font-size: 13px;
+    -fx-padding: 0;
+
+}
+
+/* ===== Header ===== */
+.modern-table .column-header-background {
+    -fx-background-color: linear-gradient(to right, #3b82f6, #2563eb);
+    -fx-background-radius: 14 14 0 0;
+    -fx-background-insets: 0;
+    -fx-padding: 8 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0.3, 0, 1);
+}
+
+.modern-table .column-header,
+.modern-table .filler {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-size: 50px;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.modern-table .column-header .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 0 8;
+}
+
+/* ===== Nội dung bảng ===== */
+.modern-table .table-row-cell:odd {
+    -fx-background-color: #dbeafe;
+}
+.modern-table .table-row-cell:even {
+    -fx-background-color: #ffffff;
+}
+
+.modern-table .table-row-cell:hover {
+    -fx-background-color: #dbeafe;
+    -fx-cursor: hand;
+}
+
+/* Hàng được chọn */
+.modern-table .table-row-cell:filled:selected {
+    -fx-background-color: #dbeafe;
+    -fx-text-fill: white;
+}
+
+/* ===== Scrollbar ===== */
+.modern-table .scroll-bar:vertical .thumb,
+.modern-table .scroll-bar:horizontal .thumb {
+    -fx-background-color: #dbeafe;
+    -fx-background-radius: 6;
+}
+.modern-table .scroll-bar:vertical .track,
+.modern-table .scroll-bar:horizontal .track {
+    -fx-background-color: #dbeafe;
+}
+
+/* ===== Hiệu ứng bóng bảng ===== */
+.modern-table {
+    -fx-effect: dropshadow(gaussian, #DBEAFEFF, 8, 0.3, 0, 2);
+
+}
