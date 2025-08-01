@@ -6,6 +6,15 @@
 .label {
     -fx-text-fill: #2c3e50;
 }
+.close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+.close-button:hover {
+    -fx-text-fill: red;
+}
 
 .text-field {
     -fx-font-size: 14px;

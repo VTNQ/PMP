@@ -58,7 +58,7 @@ public class OfficerViewController {
     @FXML private TableColumn<OfficerViewDTO, Integer> birthYearCol;
     @FXML private TableColumn<OfficerViewDTO, String> identifierCodeCol;
     @FXML
-    private TableColumn<OfficerViewDTO, LocalDate> sinceCol;
+    private TableColumn<OfficerViewDTO, Integer> allowanceCol;
     @FXML
     private TableColumn<OfficerViewDTO,Void>workCol;
     @FXML
@@ -81,10 +81,10 @@ public class OfficerViewController {
         unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
         identifierCodeCol.setCellValueFactory(data->data.getValue().identifierCodeProperty());
         birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
-        sinceCol.setCellValueFactory(cellData -> cellData.getValue().sinceProperty());
+        allowanceCol.setCellValueFactory(cellData -> cellData.getValue().allowanceMonthsProperty().asObject());
         officerTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         // Căn giữa dữ liệu cho tất cả cột
-        centerAllColumns(fullNameCol ,unitCol, birthYearCol,identifierCodeCol,sinceCol);
+        centerAllColumns(fullNameCol ,unitCol, birthYearCol,identifierCodeCol,allowanceCol);
 
         // Tải dữ liệu ban đầu
         loadOfficerAllowance();
@@ -196,6 +196,8 @@ public class OfficerViewController {
             stage.setTitle("Lịch sử công tác");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
             stage.setResizable(false);
             stage.showAndWait();
         }catch (Exception e){
@@ -275,6 +277,8 @@ public class OfficerViewController {
             stage.setTitle("Chi tiết cán bộ");
             stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
             stage.setResizable(false);
             stage.showAndWait();
         }catch (Exception e){
@@ -292,6 +296,8 @@ public class OfficerViewController {
             Stage stage = new Stage();
             stage.setTitle("Chỉnh sửa cán bộ");
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
             stage.setScene(new Scene(root));
             stage.showAndWait();
 
@@ -403,6 +409,20 @@ public class OfficerViewController {
         loadOfficerAllowance();
     }
 
+    private void enableWindowDragging(Stage stage, Parent root) {
+        final double[] xOffset = {0};
+        final double[] yOffset = {0};
+
+        root.setOnMousePressed(event -> {
+            xOffset[0] = event.getSceneX();
+            yOffset[0] = event.getSceneY();
+        });
+
+        root.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - xOffset[0]);
+            stage.setY(event.getScreenY() - yOffset[0]);
+        });
+    }
 
 
     @FXML
@@ -413,6 +433,8 @@ public class OfficerViewController {
             Stage stage = new Stage();
             stage.setTitle("Thêm cán bộ");
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
             stage.setScene(new Scene(root));
             stage.showAndWait();
             loadOfficerAllowance();

@@ -29,7 +29,7 @@ public class UserDashboardController {
                 String viewKey = newValue.replaceAll("[^a-zA-Z ]", "").trim();
                 switch (viewKey) {
                     case "Dashboard":
-                        loadView("UserDashboard//DefaultDashboard");
+                        loadView("UserDashboard/DefaultDashboard");
                         break;
                     case "Can bo":  // "👨‍💼 Cán bộ" sau khi loại emoji và dấu
                         loadView("Officer/OfficerUserView");
@@ -49,10 +49,13 @@ public class UserDashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/" + viewName + ".fxml"));
             Parent view = loader.load();
 
-            // Nếu view là Region (ví dụ AnchorPane, VBox, BorderPane...), đặt kích thước
+            contentArea.getChildren().add(view);
+
+            // Gắn chặt kích thước với contentArea
             if (view instanceof Region) {
-                ((Region) view).setPrefWidth(contentArea.getWidth());
-                ((Region) view).setPrefHeight(contentArea.getHeight());
+                Region region = (Region) view;
+                region.prefWidthProperty().bind(contentArea.widthProperty());
+                region.prefHeightProperty().bind(contentArea.heightProperty());
             }
 
             contentArea.getChildren().setAll(view);

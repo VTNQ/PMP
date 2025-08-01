@@ -4,7 +4,9 @@ import com.qnp.pmp.dto.OfficerViewDTO;
 import com.qnp.pmp.service.OfficeService;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Stage;
 
 public class OfficerDetailViewController {
     @FXML
@@ -15,6 +17,9 @@ public class OfficerDetailViewController {
     private Label birthYearLabel;
     @FXML
     private Label sinceLabel;
+    @FXML
+    private Button btnClose;
+
     @FXML
     private Label utilLabel;
     @FXML
@@ -47,5 +52,10 @@ public class OfficerDetailViewController {
             levelNameLabel.setText(dto.levelNameProperty().getValue());
             unitLabel.setText(dto.unitProperty().getValue());
         }
+    }
+    @FXML
+    private void onClose(){
+        Stage stage = (Stage) btnClose.getScene().getWindow();
+        stage.close();
     }
 }

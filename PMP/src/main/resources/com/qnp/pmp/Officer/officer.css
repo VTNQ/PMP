@@ -134,15 +134,7 @@
     -fx-background-color: #3b82f6;
     -fx-text-fill: white;
 }
-.modern-table {-fx-background-color: #ffffff;
-    -fx-border-color: #a3d9a5;
-    -fx-border-radius: 14;
-    -fx-background-radius: 14;
-    -fx-table-cell-border-color: #d1fae5;
-    -fx-font-size: 13px;
-    -fx-padding: 0;
 
-}
 
 /* ===== Header ===== */
 .modern-table .column-header-background {
@@ -168,11 +160,7 @@
     -fx-padding: 0 8;
 }
 
-/* ===== Nội dung bảng ===== */
-.modern-table .table-row-cell:odd {
-    -fx-background-color: #6366f1;
 
-}
 .modern-table .table-row-cell:even {
     -fx-background-color: #ffffff;
 }
@@ -181,11 +169,14 @@
     -fx-background-color: #6366f1;
     -fx-cursor: hand;
 }
+.modern-table {-fx-background-color: #ffffff;
+    -fx-border-color: #a3d9a5;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-table-cell-border-color: #d1fae5;
+    -fx-font-size: 13px;
+    -fx-padding: 0;
 
-/* Hàng được chọn */
-.modern-table .table-row-cell:filled:selected {
-    -fx-background-color: #6366f1;
-    -fx-text-fill: white;
 }
 
 /* ===== Scrollbar ===== */

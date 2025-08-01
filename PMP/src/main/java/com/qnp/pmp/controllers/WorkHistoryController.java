@@ -6,8 +6,10 @@ import com.qnp.pmp.service.impl.WorkTimeServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Stage;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -22,6 +24,8 @@ public class WorkHistoryController {
     private TableColumn<WorkTimeViewDTO, String> startDateCol;
     @FXML
     private TableColumn<WorkTimeViewDTO, String> endDateCol;
+    @FXML
+    private Button btnClose;
     private final WorkTimeService workTimeService = new WorkTimeServiceImpl();
     private int officeId;
 
@@ -34,7 +38,7 @@ public class WorkHistoryController {
         List<WorkTimeViewDTO> list = workTimeService.getWorkTimesByOfficerId(officeId);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+        workTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         roundCol.setCellValueFactory(data -> data.getValue().roundProperty());
         startDateCol.setCellValueFactory(data ->
                 new javafx.beans.property.SimpleStringProperty(
@@ -54,5 +58,9 @@ public class WorkHistoryController {
         ObservableList<WorkTimeViewDTO> observableList = FXCollections.observableArrayList(list);
         workTable.setItems(observableList);
     }
-
+    @FXML
+    private void  onClose(){
+        Stage stage = (Stage) btnClose.getScene().getWindow();
+        stage.close();
+    }
 }

@@ -9,21 +9,30 @@
       fx:controller="com.qnp.pmp.controllers.EditOfficerController"
       spacing="15"
       prefHeight="500.0" prefWidth="600.0"
-      styleClass="root-container" stylesheets="@AddOffice.css">
+      styleClass="root-container"
+      stylesheets="@AddOffice.css">
 
     <padding>
-        <Insets top="30" bottom="30" left="30" right="30"/>
+        <Insets top="20" bottom="20" left="20" right="20"/>
     </padding>
 
-    <!-- Tiêu đề -->
-    <Label text="✏️ Cập nhật cán bộ" styleClass="form-title"/>
+    <!-- ======= PHẦN TIÊU ĐỀ ======= -->
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label text="✏️ Cập nhật cán bộ" styleClass="form-title"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="✖" onAction="#onClose" styleClass="close-button"/>
+    </HBox>
 
-    <!-- Form nhập liệu -->
+    <!-- ======= FORM NHẬP LIỆU ======= -->
     <GridPane hgap="15" vgap="12" styleClass="form-grid">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="30"/>
+            <ColumnConstraints percentWidth="70"/>
+        </columnConstraints>
+
         <Label text="Họ tên:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <!-- Mã định danh -->
         <Label text="Mã định danh:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
         <TextField fx:id="identifierField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
 
@@ -33,22 +42,23 @@
         <Label text="Đơn vị:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
         <TextField fx:id="unitField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
 
-        <Label text="Quê quán:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-        <TextField fx:id="homeTownField" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+        <Label text="Quê quán:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextField fx:id="homeTownField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
 
-        <Label text="Năm sinh:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-        <TextField fx:id="birthYearField" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+        <Label text="Năm sinh:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+        <TextField fx:id="birthYearField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
 
-        <Label text="Ngày bắt đầu:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="sinceDatePicker" GridPane.rowIndex="8" GridPane.columnIndex="1"/>
-        <Label text="Ngày kết thúc:" GridPane.rowIndex="9" GridPane.columnIndex="0"/>
-        <DatePicker fx:id="utilDatePicker" GridPane.rowIndex="9" GridPane.columnIndex="1"/>
-        <Label text="Ghi chú:" GridPane.rowIndex="10" GridPane.columnIndex="0"/>
-        <TextArea fx:id="noteField" GridPane.rowIndex="10" GridPane.columnIndex="1" prefRowCount="3"/>
+        <Label text="Ngày bắt đầu:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="sinceDatePicker" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
+
+        <Label text="Ngày kết thúc:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="utilDatePicker" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
+
+        <Label text="Ghi chú:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
+        <TextArea fx:id="noteField" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="3"/>
     </GridPane>
 
-
-    <!-- Nút lưu -->
+    <!-- ======= NÚT HÀNH ĐỘNG ======= -->
     <HBox spacing="20" alignment="CENTER_RIGHT">
         <Button fx:id="saveButton" text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
     </HBox>

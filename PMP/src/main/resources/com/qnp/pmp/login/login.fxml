@@ -11,14 +11,25 @@
            stylesheets="@login.css"
            prefWidth="1000.0" prefHeight="600.0">
 
-    <!-- Khung login -->
+    <!-- Khung login chính -->
     <VBox alignment="CENTER" spacing="15.0" styleClass="login-container">
         <Text text="🔐 ĐĂNG NHẬP HỆ THỐNG" styleClass="heading"/>
-
         <TextField fx:id="usernameField" promptText="Tên đăng nhập" styleClass="form-field"/>
         <PasswordField fx:id="passwordField" promptText="Mật khẩu" styleClass="form-field"/>
-
         <Button fx:id="loginButton" text="Đăng nhập" onAction="#onLoginClick" styleClass="login-button"/>
         <Label fx:id="messageLabel" textFill="red"/>
     </VBox>
+
+    <!-- Nút đóng góc phải (đặt sau để hiển thị trên cùng) -->
+    <Button fx:id="closeButton"
+            text="X"
+            onAction="#onCloseClick"
+            styleClass="close-button"
+            StackPane.alignment="TOP_RIGHT">
+        <StackPane.margin>
+            <Insets top="10" right="10"/>
+        </StackPane.margin>
+    </Button>
 </StackPane>
+
+

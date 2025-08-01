@@ -29,15 +29,14 @@
         </HBox>
 
         <!-- Bảng dữ liệu -->
-        <TableView fx:id="officerTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
+        <TableView fx:id="officerUserTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
             <columns>
-                <TableColumn fx:id="fullNameCol" text="👤 Họ tên" prefWidth="180"/>
-                <TableColumn fx:id="identifierCodeCol" text="🆔 Mã định danh" prefWidth="140"/>
-                <TableColumn fx:id="birthYearCol" text="📅 Năm sinh" prefWidth="100"/>
-                <TableColumn fx:id="sinceCol" text="📆 Ngày bắt đầu" prefWidth="140"/>
-                <TableColumn fx:id="unitCol" text="🏢 Đơn vị" prefWidth="140"/>
-                <TableColumn fx:id="detailCol" text="⚙ Thao tác" prefWidth="100"/>
-                <TableColumn fx:id="workCol" text="📋 Công tác" prefWidth="110"/>
+                <TableColumn fx:id="fullNameCol" text="Họ tên" prefWidth="200"/>
+                <TableColumn fx:id="positionCol" text="Chức vụ" prefWidth="200"/>
+                <TableColumn fx:id="unitCol" text="Đơn vị" prefWidth="200"/>
+                <TableColumn fx:id="allowanceCol" text="Tháng trợ cấp" prefWidth="200"/>
+                <TableColumn fx:id="detailButtonCol" text="Chi tiết" prefWidth="120"/>
+                <TableColumn fx:id="studyTimeButtonCol" text="📋 Công tác" prefWidth="110"/>
             </columns>
         </TableView>
 
