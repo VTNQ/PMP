@@ -72,6 +72,21 @@ public class UserAdminController {
         ObservableList<UserViewDTO> userViewModels= FXCollections.observableArrayList(data);
         userTable.setItems(userViewModels);
     }
+    private void enableWindowDragging(Stage stage, Parent root) {
+        final double[] xOffset = {0};
+        final double[] yOffset = {0};
+
+        root.setOnMousePressed(event -> {
+            xOffset[0] = event.getSceneX();
+            yOffset[0] = event.getSceneY();
+        });
+
+        root.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - xOffset[0]);
+            stage.setY(event.getScreenY() - yOffset[0]);
+        });
+    }
+
     @FXML
     private void addAction(){
         try {
@@ -81,6 +96,8 @@ public class UserAdminController {
             Stage stage = new Stage();
             stage.setTitle("Thêm User");
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
             stage.setScene(new Scene(root));
             stage.showAndWait();
         }catch (IOException e){

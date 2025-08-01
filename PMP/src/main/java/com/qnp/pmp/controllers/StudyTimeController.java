@@ -7,10 +7,13 @@ import com.qnp.pmp.service.StudyTimeService;
 import com.qnp.pmp.service.impl.StudyTimeServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.util.List;
@@ -62,6 +65,11 @@ public class StudyTimeController {
         for (TableColumn<StudyRoundViewDTO, ?> col : columns) {
             centerCell(col);
         }
+    }
+    @FXML
+    private void handleClose(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
     }
 
 }

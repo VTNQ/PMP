@@ -115,7 +115,7 @@ public class EditOfficerController {
     }
 
     @FXML
-    private void onCancel() {
+    private void onClose() {
         closeWindow();
     }
 

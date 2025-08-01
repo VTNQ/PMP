@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.qnp.pmp.controllers.OfficerUserDetailViewController"
+            prefHeight="400.0" prefWidth="600.0" stylesheets="@officer-detail.css" styleClass="detail-container">
+    <Label text="📌 Thông tin chi tiết cán bộ" styleClass="detail-title"/>
+    <Label fx:id="lblFullName" styleClass="detail-label"/>
+    <Label fx:id="lblBirthYear" styleClass="detail-label"/>
+    <Label fx:id="lblSince" styleClass="detail-label"/>
+    <Label fx:id="lblPosition" styleClass="detail-label"/>
+    <Label fx:id="lblUnit" styleClass="detail-label"/>
+    <Label fx:id="lblHomeTown" styleClass="detail-label"/>
+    <Label fx:id="lblNote" styleClass="detail-label"/>
+    <Label fx:id="lblTotalAllowance" styleClass="detail-label"/>
+
+
+
+
+    <Button fx:id="btnClose" text="Đóng" onAction="#closePopup" styleClass="btn-close"/>
+</VBox>

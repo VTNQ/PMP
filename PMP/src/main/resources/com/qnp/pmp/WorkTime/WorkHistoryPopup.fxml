@@ -25,15 +25,16 @@
         <!-- Bảng lịch sử công tác -->
         <TableView fx:id="workTable" styleClass="modern-table" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="roundCol" prefWidth="80" text="🔢 Số lần" />
-                <TableColumn fx:id="startDateCol" prefWidth="202.39995574951172" text="📅 Ngày bắt đầu" />
-                <TableColumn fx:id="endDateCol" prefWidth="185.60003662109375" text="📅 Ngày kết thúc" />
+                <TableColumn fx:id="roundCol" text="🔢 Số lần" />
+                <TableColumn fx:id="startDateCol" text="📅 Ngày bắt đầu" />
+                <TableColumn fx:id="endDateCol" text="📅 Ngày kết thúc" />
             </columns>
         </TableView>
 
+
         <!-- Thanh nút -->
         <HBox alignment="CENTER_RIGHT">
-            <Button styleClass="btn-secondary" text="✖ Đóng" />
+            <Button fx:id="btnClose" onAction="#onClose" styleClass="btn-secondary" text="✖ Đóng" />
         </HBox>
     </VBox>
 </AnchorPane>

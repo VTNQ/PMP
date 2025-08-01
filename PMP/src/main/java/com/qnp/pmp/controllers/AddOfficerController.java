@@ -24,7 +24,8 @@ import java.util.List;
 public class AddOfficerController {
     private final OfficeService officeService;
     private final LevelService levelService;
-
+    @FXML
+    private Button closeButton;
     public AddOfficerController() {
         this.officeService = new OfficerServiceImpl();
         this.levelService = new LevelServiceImpl();
@@ -71,6 +72,11 @@ public class AddOfficerController {
     @FXML
     private void handleCancel() {
         Stage stage=(Stage) fullNameField.getScene().getWindow();
+        stage.close();
+    }
+    @FXML
+    private void onClose() {
+        Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.close();
     }
 

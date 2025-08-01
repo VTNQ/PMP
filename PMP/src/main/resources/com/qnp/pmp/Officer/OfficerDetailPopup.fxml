@@ -73,8 +73,8 @@
 
         <!-- Footer button -->
         <HBox alignment="CENTER_RIGHT" spacing="10">
-            <Button  styleClass="btn-primary" text="📋 Danh sách công tác" />
-            <Button  styleClass="btn-secondary" text="✖ Đóng" />
+
+            <Button fx:id="btnClose" onAction="#onClose"  styleClass="btn-secondary" text="✖ Đóng" />
         </HBox>
     </VBox>
 </AnchorPane>

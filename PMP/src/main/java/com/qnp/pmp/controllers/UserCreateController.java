@@ -4,9 +4,12 @@ import com.qnp.pmp.dialog.Dialog;
 import com.qnp.pmp.entity.User;
 import com.qnp.pmp.service.UserService;
 import com.qnp.pmp.service.impl.UserServiceImpl;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class UserCreateController {
     @FXML
@@ -41,4 +44,10 @@ public class UserCreateController {
             Dialog.displayErrorMessage( "Tạo tài khoản bị lỗi");
         }
     }
+    @FXML
+    private void handleClose(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
+    }
+
 }

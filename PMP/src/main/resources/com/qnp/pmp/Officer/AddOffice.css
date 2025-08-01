@@ -1,42 +1,59 @@
 .root-container {
-    -fx-background-color: #f9f9f9;
+    -fx-background-color: linear-gradient(to bottom right, #f8fbff, #e8f0ff);
     -fx-background-radius: 12;
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 12, 0.3, 5, 5);
     -fx-font-family: "Segoe UI", sans-serif;
 }
 
+/* Nút X */
+.close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ff1744;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+.close-button:hover {
+    -fx-text-fill: #d50000;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+/* Tiêu đề */
 .form-title {
-    -fx-font-size: 22px;
+    -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #333;
-    -fx-padding: 0 0 10 0;
+    -fx-text-fill: #2a3d8f;
 }
 
+/* Form grid */
 .form-grid Label {
-    -fx-font-weight: bold;
-    -fx-text-fill: #444;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+    -fx-font-weight: 600;
 }
-
-TextField, ComboBox, DatePicker {
-    -fx-pref-width: 300;
+.form-grid TextField,
+.form-grid ComboBox,
+.form-grid DatePicker,
+.form-grid TextArea {
+    -fx-pref-width: 280px;
     -fx-background-radius: 6;
     -fx-border-radius: 6;
-    -fx-padding: 6 8;
+    -fx-border-color: #cfd8dc;
+    -fx-padding: 4 10 4 10;
     -fx-background-color: white;
-    -fx-border-color: #ccc;
-    -fx-font-size: 13px;
 }
 
+/* Nút lưu */
 .save-button {
-    -fx-background-color: #4CAF50;
+    -fx-background-color: #3f51b5;
     -fx-text-fill: white;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
-    -fx-padding: 8 16;
     -fx-background-radius: 6;
-    -fx-border-radius: 6;
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
 }
-
 .save-button:hover {
-    -fx-background-color: #45a049;
+    -fx-background-color: #2c3e99;
 }
