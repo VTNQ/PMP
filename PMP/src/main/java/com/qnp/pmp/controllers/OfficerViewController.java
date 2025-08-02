@@ -591,6 +591,7 @@ public class OfficerViewController {
 
             Sheet sheet = workbook.getSheetAt(0);
             boolean skipHeader = true;
+
             for (Row row : sheet) {
                 if (skipHeader) {
                     skipHeader = false;
@@ -598,35 +599,38 @@ public class OfficerViewController {
                 }
 
                 try {
-                    String fullName = getCellString(row.getCell(0));              // Cột A
-                    String identifierCode=getCellString(row.getCell(1));
-                    int birthYear = Integer.parseInt(getCellString(row.getCell(2))); // Cột B
-                    LocalDate since = getCellLocalDate(row.getCell(3));           // Cột C
-                    LocalDate util = getCellLocalDate(row.getCell(4));
-                    String level = getCellString(row.getCell(5));                 // Cột D
-                    String unit = getCellString(row.getCell(6));                  // Cột E
-                    String homeTown = getCellString(row.getCell(7));              // Cột F
-                    String note = getCellString(row.getCell(8));                  // Cột G
-                    // Ghi chú
+                    int col = 0;
+                    int id = tryParseInt(getCellString(row.getCell(col++)));              // ID (không dùng)
+                    String fullName = getCellString(row.getCell(col++));                  // Họ tên
+                    String identifierCode = getCellString(row.getCell(col++));            // Mã định danh (⚠️ String)
+                    String level = getCellString(row.getCell(col++));                     // Trình độ
+                    String unit = getCellString(row.getCell(col++));                      // Đơn vị
+                    int birthYear = tryParseInt(getCellString(row.getCell(col++)));       // Năm sinh
+                    String homeTown = getCellString(row.getCell(col++));                  // Quê quán
+                    String note = getCellString(row.getCell(col++));                      // Ghi chú
+                    LocalDate since = getCellLocalDateString(row.getCell(col++));         // Ngày bắt đầu hưởng
+                    LocalDate util = getCellLocalDateString(row.getCell(col++));          // Ngày kết thúc hưởng
+                    col++; // Bỏ qua cột "Số tháng hưởng" vì không cần nhập
 
                     Officer officer = new Officer(
-                            fullName,   // tên
+                            fullName,
                             identifierCode,
-                            birthYear,  // năm sinh
-                            since,      // ngày bắt đầu hưởng
+                            birthYear,
+                            since,
                             util,
-                            level,      // trình độ
-                            unit,       // đơn vị
-                            homeTown,   // quê quán
-                            note      // ghi chú
+                            level,
+                            unit,
+                            homeTown,
+                            note
                     );
 
+                    // Xử lý các lần công tác
                     Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
                     int roundIndex = 1;
 
-                    for (int i = 8; i + 1 < row.getLastCellNum(); i += 2) {
-                        LocalDate startDate = getCellLocalDateString(row.getCell(i));
-                        LocalDate endDate = getCellLocalDateString(row.getCell(i + 1));
+                    for (; col + 1 < row.getLastCellNum(); col += 2) {
+                        LocalDate startDate = getCellLocalDateString(row.getCell(col));
+                        LocalDate endDate = getCellLocalDateString(row.getCell(col + 1));
 
                         if (startDate != null && endDate != null) {
                             studyTimes.put(roundIndex++, Pair.of(startDate, endDate));
@@ -634,8 +638,8 @@ public class OfficerViewController {
                     }
 
                     officer.setStudyTimes(studyTimes);
-
                     officerList.add(officer);
+
                 } catch (Exception e) {
                     System.err.println("⚠️ Lỗi tại dòng " + row.getRowNum() + ": " + e.getMessage());
                 }
@@ -650,6 +654,7 @@ public class OfficerViewController {
             Dialog.displayErrorMessage("❌ Không thể đọc file Excel");
         }
     }
+
 
     private LocalDate getCellLocalDateString(Cell cell) {
         if (cell == null) {
