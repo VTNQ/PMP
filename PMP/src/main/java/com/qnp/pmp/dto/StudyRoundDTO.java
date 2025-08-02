@@ -1,8 +1,10 @@
 package com.qnp.pmp.dto;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
+@Getter
 public class StudyRoundDTO {
     private final LocalDate startDate;
     private final LocalDate endDate;
@@ -16,4 +18,5 @@ public class StudyRoundDTO {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return startDate.format(formatter) + " → " + endDate.format(formatter);
     }
+
 }
