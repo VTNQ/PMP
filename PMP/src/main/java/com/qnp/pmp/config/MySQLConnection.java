@@ -14,7 +14,7 @@ public class MySQLConnection {
     private static String url="jdbc:mysql://" + host + ":" + port + "/" + database + "?sslmode=require";
     public static Connection getConnection() throws SQLException, ClassNotFoundException {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             return DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
             e.printStackTrace();
