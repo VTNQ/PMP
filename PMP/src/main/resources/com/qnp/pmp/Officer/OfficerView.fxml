@@ -19,6 +19,7 @@
             <Label fx:id="totalLabel" text="Tổng: 0 cán bộ"/>
             <Region HBox.hgrow="ALWAYS"/>
 
+            <Button text="💾 Backup thủ công" styleClass="export-btn" onAction="#onManualExcelBackup"/>
             <Button text="➕ Thêm mới" styleClass=" add-btn" onAction="#add"/>
             <Button text="📥 Nhập nhiều" styleClass=" import-btn" onAction="#onImport"/>
             <Button text="📅 Thêm lịch công tác" styleClass="calendar-btn" onAction="#addSchedule"/>
