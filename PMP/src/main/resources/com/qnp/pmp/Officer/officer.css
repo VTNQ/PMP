@@ -13,6 +13,44 @@
 .label {
     -fx-font-size: 14px;
 }
+.calendar-btn {
+    -fx-background-color: #4CAF50;      /* Màu nền xanh lá */
+    -fx-text-fill: white;              /* Chữ màu trắng */
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 6px 14px;
+    -fx-background-radius: 6px;
+    -fx-cursor: hand;
+    -fx-border-color: #388E3C;
+    -fx-border-width: 1px;
+}
+.rank-btn {
+    -fx-background-color: #9C27B0; /* Màu tím nổi bật */
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6px;
+    -fx-padding: 6px 14px;
+    -fx-cursor: hand;
+}
+.rank-btn:hover {
+    -fx-background-color: #7B1FA2;
+}
+.rank-btn:pressed {
+    -fx-background-color: #4A148C;
+}
+
+.calendar-btn:hover {
+    -fx-background-color: #45a049;     /* Màu xanh đậm hơn khi hover */
+}
+
+.calendar-btn:pressed {
+    -fx-background-color: #2e7031;     /* Màu tối hơn khi bấm */
+}
+
+.calendar-btn:focused {
+    -fx-border-color: #81C784;         /* Hiệu ứng viền khi focus */
+    -fx-border-width: 2px;
+}
 
 /* ===== Nút hành động chung ===== */
 .button {

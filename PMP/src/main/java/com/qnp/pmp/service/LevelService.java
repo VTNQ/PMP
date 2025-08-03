@@ -1,5 +1,6 @@
 package com.qnp.pmp.service;
 
+import com.qnp.pmp.dto.LevelDTO;
 import com.qnp.pmp.entity.Level;
 
 import java.util.List;
@@ -7,4 +8,5 @@ import java.util.List;
 public interface LevelService {
     List<Level>getAll();
     Level getByName(String levelName);
+    void save(LevelDTO level);
 }

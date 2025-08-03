@@ -21,6 +21,8 @@
 
             <Button text="➕ Thêm mới" styleClass=" add-btn" onAction="#add"/>
             <Button text="📥 Nhập nhiều" styleClass=" import-btn" onAction="#onImport"/>
+            <Button text="📅 Thêm lịch công tác" styleClass="calendar-btn" onAction="#addSchedule"/>
+            <Button text="🛡️ Thêm cấp bậc" styleClass="rank-btn" onAction="#addRank"/>
             <Button text="🔄 Làm mới" styleClass=" refresh-btn" onAction="#refreshTable"/>
             <Button text="🗑 Xóa" styleClass=" delete-btn" onAction="#onDelete"/>
         </HBox>

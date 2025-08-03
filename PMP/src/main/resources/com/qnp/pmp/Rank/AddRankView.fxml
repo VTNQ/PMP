@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.qnp.pmp.controllers.AddRankController"
+      spacing="20"
+      alignment="TOP_CENTER"
+      prefWidth="420" prefHeight="220"
+      stylesheets="@AddRank.css">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <!-- Tiêu đề -->
+    <Label text="🛡️ Thêm cấp bậc" styleClass="form-title"/>
+
+    <!-- Lưới nhập dữ liệu -->
+    <GridPane hgap="15" vgap="15" styleClass="form-grid">
+        <Label text="Tên cấp bậc:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="rankNameField" promptText="Nhập tên cấp bậc" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Lương (VNĐ):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <TextField fx:id="salaryField" promptText="Nhập mức lương" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <!-- Hàng nút bấm -->
+    <HBox spacing="20" alignment="CENTER_RIGHT">
+        <Button text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
+        <Button text="❌ Hủy" onAction="#onCancel" styleClass="cancel-button"/>
+    </HBox>
+
+</VBox>
