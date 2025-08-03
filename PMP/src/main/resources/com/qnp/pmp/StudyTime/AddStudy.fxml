@@ -16,10 +16,10 @@
         <Insets top="25" right="25" bottom="25" left="25"/>
     </padding>
 
-    <Label text="➕ Thêm đợt học" styleClass="form-title"/>
+    <Label text="➕ Thêm đợt công tác" styleClass="form-title"/>
 
     <GridPane hgap="15" vgap="15" styleClass="form-grid">
-        <Label text="Lần học:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label text="Lần công tác:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <Spinner fx:id="roundSpinner" editable="true" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
         <Label text="Cán bộ:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>

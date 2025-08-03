@@ -1,6 +1,7 @@
 package com.qnp.pmp.service.impl;
 
 import com.qnp.pmp.config.MySQLConnection;
+import com.qnp.pmp.dto.LevelDTO;
 import com.qnp.pmp.dto.OfficerViewDTO;
 import com.qnp.pmp.entity.Level;
 import com.qnp.pmp.service.LevelService;
@@ -12,7 +13,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class LevelServiceImpl implements LevelService {
+public class LevelServiceImpl implements LevelService
+{
     @Override
     public List<Level> getAll() {
         List<Level> levelList = new ArrayList<Level>();
@@ -50,5 +52,31 @@ public class LevelServiceImpl implements LevelService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public void save(LevelDTO level) {
+        Connection conn=null;
+        PreparedStatement stmt=null;
+        try {
+            conn=MySQLConnection.getConnection();
+            String sql="insert into level(name,salary) values(?,?)";
+            stmt=conn.prepareStatement(sql);
+            stmt.setString(1,level.getName());
+            stmt.setDouble(2,level.getSalary());
+            stmt.executeUpdate();
+
+        }catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (Exception e) {
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (Exception e) {
+            }
+        }
     }
 }

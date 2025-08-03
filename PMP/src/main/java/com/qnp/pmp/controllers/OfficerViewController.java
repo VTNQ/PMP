@@ -423,7 +423,23 @@ public class OfficerViewController {
             stage.setY(event.getScreenY() - yOffset[0]);
         });
     }
-
+    @FXML
+    private void addRank(){
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/Rank/AddRankView.fxml"));
+            Parent root=loader.load();
+            Stage stage=new Stage();
+            stage.setTitle("Thêm cấp bậc");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            loadOfficerAllowance();
+        }catch (IOException e){
+            Dialog.displayErrorMessage("Không thể mở cửa sổ thêm cấp bậc.");
+        }
+    }
 
     @FXML
     private void add() {
@@ -442,7 +458,23 @@ public class OfficerViewController {
             Dialog.displayErrorMessage("Không thể mở cửa sổ thêm cán bộ.");
         }
     }
-
+    @FXML
+    private void addSchedule(){
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/AddStudy.fxml"));
+            Parent root=loader.load();
+            Stage stage=new Stage();
+            stage.setTitle("Thêm lịch công tác");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            loadOfficerAllowance();
+        }catch (IOException e){
+            Dialog.displayErrorMessage("Không thể mở cửa sổ thêm lịch công tác");
+        }
+    }
     @FXML
     private void onDelete() {
         OfficerViewDTO selected = officerTable.getSelectionModel().getSelectedItem();

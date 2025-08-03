@@ -9,9 +9,12 @@ import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import com.qnp.pmp.service.impl.StudyTimeServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 import java.util.List;
@@ -100,7 +103,9 @@ public class AddStudyTimeController {
     }
 
     @FXML
-    private void onCancel() {
+    private void onCancel(ActionEvent event) {
         // có thể thêm stage.close() nếu bạn muốn
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.close();
     }
 }
