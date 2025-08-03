@@ -33,10 +33,7 @@ public class ExcelBackupServiceImpl implements ExcelBackupService {
         }, 0, 24, TimeUnit.HOURS);// chạy mỗi 24h
     }
 
-    @Override
-    public void manualBackup(String filePath) {
-        doBackup(filePath);
-    }
+
 
     private void doBackup(String filePath) {
         List<OfficerViewDTO> officers = officeService.getOfficerAllowanceStatus();
