@@ -8,6 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
+import java.time.LocalDate;
+
 public class OfficerDetailViewController {
     @FXML
     private Label fullNameLabel;
@@ -45,7 +47,8 @@ public class OfficerDetailViewController {
             identifierLabel.setText(dto.identifierCodeProperty().getValue());
             birthYearLabel.setText(dto.birthYearProperty().getValue().toString());
             sinceLabel.setText(dto.sinceProperty().getValue().toString());
-            utilLabel.setText(dto.utilProperty().getValue().toString());
+            LocalDate utilDate = dto.utilProperty().getValue();
+            utilLabel.setText(utilDate != null ? utilDate.toString() : "Chưa xác định");
             homeTownLabel.setText(dto.homeTownProperty().getValue());
             allowanceLabel.setText(dto.allowanceMonthsProperty().getValue().toString());
             noteLabel.setText(dto.noteProperty().getValue());

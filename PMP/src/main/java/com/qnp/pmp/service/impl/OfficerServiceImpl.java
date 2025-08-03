@@ -42,8 +42,9 @@ public class OfficerServiceImpl implements OfficeService {
             stmt.setString(4,officer.getHomeTown() );
             stmt.setInt(5, officer.getBirthYear());
             stmt.setString(6, officer.getNote());
+
             stmt.setDate(7, java.sql.Date.valueOf(officer.getSince()));
-            stmt.setDate(8, java.sql.Date.valueOf(officer.getUntil()));
+            stmt.setDate(8, officer.getUntil() != null ? java.sql.Date.valueOf(officer.getUntil()) : null);
             stmt.setString(9, officer.getIdentifierCode());
             stmt.executeUpdate();
         } catch (Exception e) {
@@ -123,7 +124,7 @@ public class OfficerServiceImpl implements OfficeService {
             stmt.setInt(5, officer.getBirthYear());
             stmt.setString(6, officer.getNote());
             stmt.setDate(7, java.sql.Date.valueOf(officer.getSince()));
-            stmt.setDate(8, java.sql.Date.valueOf(officer.getUntil()));
+            stmt.setDate(8, officer.getUntil() != null ? java.sql.Date.valueOf(officer.getUntil()) : null);
             stmt.setString(9, officer.getIdentifierCode());
             stmt.setInt(10, id);
             stmt.executeUpdate();
@@ -173,7 +174,7 @@ public class OfficerServiceImpl implements OfficeService {
                         int birthYear = rs.getInt("birth_year");
                         String note = rs.getString("note");
                         Date sqlSince = rs.getDate("since");
-                        Date sqlUtil = rs.getDate("util");
+                        Date sqlUtil = rs.getDate("util") !=null ?rs.getDate("util") : null;
                         LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
                         LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
                         String identifierCode = rs.getString("identifierCode");
@@ -467,7 +468,7 @@ public class OfficerServiceImpl implements OfficeService {
 
                         Date sqlSince = rs.getDate("since");
                         LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
-                        Date sqlUtil = rs.getDate("util");
+                        Date sqlUtil = rs.getDate("util")!=null ? rs.getDate("util"):null;
                         LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
                         String identifierCode = rs.getString("identifierCode");
 

@@ -40,10 +40,7 @@ public class ExcelBackupServiceImpl implements ExcelBackupService {
         }, 24, 24, TimeUnit.HOURS);
     }
 
-    @Override
-    public void manualBackup(String filePath) {
-        doBackup(filePath);
-    }
+
 
     private void doBackup(String filePath) {
         List<OfficerViewDTO> officers = officeService.getOfficerAllowanceStatus();

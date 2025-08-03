@@ -92,7 +92,8 @@ public class AddOfficerController {
             officer.setBirthYear(Integer.valueOf(birthYearField.getText()));
             officer.setIdentifierCode(identifierField.getText());
             officer.setSince(LocalDate.parse(sinceDatePicker.getValue().toString()));
-            officer.setUntil(LocalDate.parse(utilDatePicker.getValue().toString()));
+            LocalDate untilDate = utilDatePicker.getValue();
+            officer.setUntil(untilDate != null ? untilDate : null);
             officer.setNote(noteField.getText());
             officeService.saveOfficer(officer);
             fullNameField.clear();
