@@ -90,8 +90,6 @@ public class ExcelBackupServiceImpl implements ExcelBackupService {
                 row.createCell(col++).setCellValue(o.birthYearProperty().get());
                 row.createCell(col++).setCellValue(o.homeTownProperty().get());
                 row.createCell(col++).setCellValue(o.noteProperty().get());
-                row.createCell(col++).setCellValue(o.getSince() != null ? o.getSince().format(formatter) : "");
-                row.createCell(col++).setCellValue(o.getUtil() != null ? o.getUtil().format(formatter) : "");
                 row.createCell(col++).setCellValue(o.getAllowanceMonths());
 
                 for (int j = 1; j <= maxStudyRounds; j++) {

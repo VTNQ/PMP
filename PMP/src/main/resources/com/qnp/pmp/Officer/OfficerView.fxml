@@ -23,6 +23,7 @@
             <Button text="➕ Thêm mới" styleClass=" add-btn" onAction="#add"/>
             <Button text="📥 Nhập nhiều" styleClass=" import-btn" onAction="#onImport"/>
             <Button text="📅 Thêm lịch công tác" styleClass="calendar-btn" onAction="#addSchedule"/>
+            <Button text="⏳ Thời gian được hưởng" styleClass="time-btn" onAction="#onAllowanceTime"/>
             <Button text="🛡️ Thêm cấp bậc" styleClass="rank-btn" onAction="#addRank"/>
             <Button text="🔄 Làm mới" styleClass=" refresh-btn" onAction="#refreshTable"/>
             <Button text="🗑 Xóa" styleClass=" delete-btn" onAction="#onDelete"/>
@@ -44,7 +45,7 @@
         <TableView fx:id="officerTable" VBox.vgrow="ALWAYS" styleClass="modern-table" >
             <columns>
                 <TableColumn fx:id="fullNameCol" text="👤 Họ tên" prefWidth="180"/>
-                <TableColumn fx:id="identifierCodeCol" text="🆔 Mã định danh" prefWidth="140"/>
+                <TableColumn fx:id="identifierCodeCol" text="🆔 Số hiệu CAND" prefWidth="140"/>
                 <TableColumn fx:id="birthYearCol" text="📅 Năm sinh" prefWidth="100"/>
                 <TableColumn fx:id="allowanceCol" text="Tháng trợ cấp" prefWidth="140"/>
                 <TableColumn fx:id="unitCol" text="🏢 Đơn vị" prefWidth="140"/>

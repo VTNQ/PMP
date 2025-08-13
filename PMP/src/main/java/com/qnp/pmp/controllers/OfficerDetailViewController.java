@@ -17,13 +17,9 @@ public class OfficerDetailViewController {
     private Label identifierLabel;
     @FXML
     private Label birthYearLabel;
-    @FXML
-    private Label sinceLabel;
-    @FXML
-    private Button btnClose;
 
     @FXML
-    private Label utilLabel;
+    private Button btnClose;
     @FXML
     private Label homeTownLabel;
     @FXML
@@ -46,9 +42,6 @@ public class OfficerDetailViewController {
             fullNameLabel.setText(dto.fullNameProperty().getValue());
             identifierLabel.setText(dto.identifierCodeProperty().getValue());
             birthYearLabel.setText(dto.birthYearProperty().getValue().toString());
-            sinceLabel.setText(dto.sinceProperty().getValue().toString());
-            LocalDate utilDate = dto.utilProperty().getValue();
-            utilLabel.setText(utilDate != null ? utilDate.toString() : "Chưa xác định");
             homeTownLabel.setText(dto.homeTownProperty().getValue());
             allowanceLabel.setText(dto.allowanceMonthsProperty().getValue().toString());
             noteLabel.setText(dto.noteProperty().getValue());

@@ -21,13 +21,13 @@ public class OfficerViewDTO {
     private final StringProperty homeTown;
     private final StringProperty note;
     private final Map<Integer, StudyRoundDTO> studyRounds = new TreeMap<>();
+    private final Map<Integer,AllowanceDTO> allowances = new TreeMap<>();
     private final IntegerProperty allowanceMonths = new SimpleIntegerProperty(0);
     private final StringProperty identifierCode;
-    private final ObjectProperty<LocalDate> since = new SimpleObjectProperty<>();
-    private final ObjectProperty<LocalDate> util = new SimpleObjectProperty<>();
+
     public OfficerViewDTO(int id, String fullName, Integer levelId, String levelName,
                           String unit, Integer birthYear, String homeTown,
-                          String note, LocalDate since,LocalDate util,String identifierCode) {
+                          String note,String identifierCode) {
         this.id = new SimpleIntegerProperty(id);
         this.fullName = new SimpleStringProperty(fullName);
         this.levelId = new SimpleIntegerProperty(levelId);
@@ -35,9 +35,8 @@ public class OfficerViewDTO {
         this.unit = new SimpleStringProperty(unit);
         this.homeTown = new SimpleStringProperty(homeTown);
         this.note = new SimpleStringProperty(note);
-        this.util.set(util);
         this.birthYear = new SimpleIntegerProperty(birthYear);
-        this.since.set(since);
+
         this.identifierCode = new SimpleStringProperty(identifierCode);
     }
 
@@ -49,14 +48,6 @@ public class OfficerViewDTO {
     }
     public IntegerProperty allowanceMonthsProperty() {
         return allowanceMonths;
-    }
-    public LocalDate getSince() { return since.get(); }
-    public ObjectProperty<LocalDate> sinceProperty() {
-        return since;
-    }
-    public LocalDate getUtil() { return util.get(); }
-    public ObjectProperty<LocalDate> utilProperty() {
-        return util;
     }
     public int getAllowanceMonths() {
         return allowanceMonths.get();
@@ -74,6 +65,10 @@ public class OfficerViewDTO {
     }
     public StringProperty unitProperty() {
         return unit;
+    }
+
+    public Map<Integer, AllowanceDTO> getAllowances() {
+        return allowances;
     }
 
     public StringProperty homeTownProperty() {
@@ -114,8 +109,7 @@ public class OfficerViewDTO {
         officer.setUnit(this.unitProperty().get());
         officer.setBirthYear(this.birthYearProperty().get());
         officer.setNote(this.noteProperty().get());
-        officer.setHomeTown(this.homeTownProperty().get());
-        officer.setSince(this.getSince()); // since là ObjectProperty<LocalDate>
+        officer.setHomeTown(this.homeTownProperty().get());// since là ObjectProperty<LocalDate>
         officer.setIdentifierCode(this.identifierCodeProperty().get());
         return officer;
     }

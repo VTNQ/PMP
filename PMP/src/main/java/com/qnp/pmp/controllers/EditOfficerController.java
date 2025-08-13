@@ -56,8 +56,6 @@ public class EditOfficerController {
         unitField.setText(officer.unitProperty().getValue());
         noteField.setText(officer.noteProperty().getValue());
         homeTownField.setText(officer.homeTownProperty().getValue());
-        sinceDatePicker.setValue(officer.getSince());
-        utilDatePicker.setValue(officer.getUtil());
         identifierField.setText(officer.identifierCodeProperty().getValue());
         this.id=officer.getId().getValue();
 

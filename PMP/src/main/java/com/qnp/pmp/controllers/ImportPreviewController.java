@@ -15,7 +15,6 @@ import java.util.function.Consumer;
 public class ImportPreviewController {
     @FXML private TableColumn<OfficerViewDTO, String> fullNameCol;
     @FXML private TableColumn<OfficerViewDTO, Integer> birthYearCol;
-    @FXML private TableColumn<OfficerViewDTO, LocalDate> sinceCol;
     @FXML private TableColumn<OfficerViewDTO, String> positionCol;
     @FXML private TableColumn<OfficerViewDTO, String> unitCol;
     @FXML private TableColumn<OfficerViewDTO, String> homeTownCol;
@@ -26,7 +25,6 @@ public class ImportPreviewController {
     public void initialize() {
         fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
         birthYearCol.setCellValueFactory(data -> data.getValue().birthYearProperty().asObject());
-        sinceCol.setCellValueFactory(cellData -> cellData.getValue().sinceProperty());
         positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
         unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
         homeTownCol.setCellValueFactory(data -> data.getValue().homeTownProperty());

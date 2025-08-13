@@ -27,7 +27,7 @@
             <Label text="Họ tên:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <Label fx:id="fullNameLabel" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
-            <Label text="Mã định danh:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+            <Label text="Số hiệu CAND:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
             <Label fx:id="identifierLabel" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
             <Label text="Chức vụ:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
@@ -42,17 +42,11 @@
             <Label text="Quê quán:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
             <Label fx:id="homeTownLabel" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
-            <Label text="Ngày bắt đầu:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
-            <Label fx:id="sinceLabel" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Label text="Phụ cấp (tháng):" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+            <Label fx:id="allowanceLabel" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
-            <Label text="Ngày kết thúc:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
-            <Label fx:id="utilLabel" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-
-            <Label text="Phụ cấp (tháng):" GridPane.columnIndex="0" GridPane.rowIndex="8" />
-            <Label fx:id="allowanceLabel" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-
-            <Label text="Ghi chú:" GridPane.columnIndex="0" GridPane.rowIndex="9" />
-            <Label fx:id="noteLabel" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+            <Label text="Ghi chú:" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+            <Label fx:id="noteLabel" GridPane.columnIndex="1" GridPane.rowIndex="7" />
          <columnConstraints>
             <ColumnConstraints />
             <ColumnConstraints />
