@@ -476,6 +476,22 @@ public class OfficerViewController {
         }
     }
     @FXML
+    private void onAllowanceTime(){
+        try {
+            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/AllowanceTime/AddAllowanceTime.fxml"));
+            Parent root=loader.load();
+            Stage stage=new Stage();
+            stage.setTitle("Thêm thời gian được hưởng");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        }catch (IOException e){
+            Dialog.displayErrorMessage("không thể mở  Thơi gian dc hưởng");
+        }
+    }
+    @FXML
     private void onDelete() {
         OfficerViewDTO selected = officerTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
@@ -798,8 +814,6 @@ public class OfficerViewController {
                     row.createCell(col++).setCellValue(o.birthYearProperty().get());
                     row.createCell(col++).setCellValue(o.homeTownProperty().get());
                     row.createCell(col++).setCellValue(o.noteProperty().get());
-                    row.createCell(col++).setCellValue(o.getSince() != null ? o.getSince().format(formatter) : "");
-                    row.createCell(col++).setCellValue(o.getUtil() != null ? o.getUtil().format(formatter) : "");
                     row.createCell(col++).setCellValue(o.getAllowanceMonths());
 
                     // Ghi từng lần công tác
@@ -936,8 +950,7 @@ public class OfficerViewController {
                     String note = matcher.group("note").trim();
                     String identifierCode = matcher.group("identifierCode");
                     OfficerViewDTO dto = new OfficerViewDTO(
-                            0, name, 0, level, unit, birthYear, homeTown, note,
-                            LocalDate.of(2025, 4, 1),LocalDate.of(2025,4,1), identifierCode
+                            0, name, 0, level, unit, birthYear, homeTown, note, identifierCode
                     );
                     officerList.add(dto);
                 }

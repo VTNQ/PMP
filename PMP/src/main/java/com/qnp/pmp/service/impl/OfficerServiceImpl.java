@@ -1,6 +1,7 @@
 package com.qnp.pmp.service.impl;
 
 import com.qnp.pmp.config.MySQLConnection;
+import com.qnp.pmp.dto.AllowanceDTO;
 import com.qnp.pmp.dto.OfficerViewDTO;
 import com.qnp.pmp.entity.Level;
 import com.qnp.pmp.entity.Officer;
@@ -151,7 +152,7 @@ public class OfficerServiceImpl implements OfficeService {
 
         String sql = """
         SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
-               o.unit, o.hometown, o.birth_year, o.note, o.since,o.util,o.identifierCode
+               o.unit, o.hometown, o.birth_year, o.note,o.identifierCode
         FROM officer o
         JOIN level l ON o.level_id = l.id
         WHERE o.full_name LIKE ?
@@ -173,13 +174,9 @@ public class OfficerServiceImpl implements OfficeService {
                         String homeTown = rs.getString("hometown");
                         int birthYear = rs.getInt("birth_year");
                         String note = rs.getString("note");
-                        Date sqlSince = rs.getDate("since");
-                        Date sqlUtil = rs.getDate("util") !=null ?rs.getDate("util") : null;
-                        LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
-                        LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
                         String identifierCode = rs.getString("identifierCode");
                         OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                                unit, birthYear, homeTown, note, since,util, identifierCode);
+                                unit, birthYear, homeTown, note, identifierCode);
                         officerMap.put(id, dto);
                     }
                 }
@@ -199,6 +196,7 @@ public class OfficerServiceImpl implements OfficeService {
 
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
 
+
             try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
                 int index = 1;
                 for (Integer id : officerMap.keySet()) {
@@ -215,21 +213,14 @@ public class OfficerServiceImpl implements OfficeService {
                         OfficerViewDTO dto = officerMap.get(officerId);
                         if (dto == null) continue;
 
-                        LocalDate sinceDate = dto.getSince();
-                        if (sinceDate == null) continue;
-
-                        // Cắt bỏ phần học trước since nếu có
-                        LocalDate start = originalStart.isBefore(sinceDate) ? sinceDate : originalStart;
-                        LocalDate end = originalEnd;
-                        if (end.isBefore(start)) continue;
-
+                        // Lưu lại thông tin học tập
                         dto.addStudyRound(round, originalStart, originalEnd);
 
                         Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
                                 .computeIfAbsent(officerId, k -> new HashMap<>());
 
-                        LocalDate date = start;
-                        while (!date.isAfter(end)) {
+                        LocalDate date = originalStart;
+                        while (!date.isAfter(originalEnd)) {
                             YearMonth ym = YearMonth.from(date);
                             monthlyDays.put(ym, monthlyDays.getOrDefault(ym, 0) + 1);
                             date = date.plusDays(1);
@@ -238,7 +229,7 @@ public class OfficerServiceImpl implements OfficeService {
                 }
             }
 
-            // Bước 3: Tính số tháng phụ cấp từ since → hiện tại
+            // Bước 3: Tính allowanceMonths từ tháng học đầu tiên -> tháng hiện tại
             YearMonth currentMonth = YearMonth.now();
 
             for (Map.Entry<Integer, OfficerViewDTO> entry : officerMap.entrySet()) {
@@ -246,18 +237,20 @@ public class OfficerServiceImpl implements OfficeService {
                 OfficerViewDTO dto = entry.getValue();
                 Map<YearMonth, Integer> daysPerMonth = studyDaysByOfficer.getOrDefault(officerId, Map.of());
 
-                LocalDate sinceDate = dto.getSince();
-                if (sinceDate == null) {
+                if (daysPerMonth.isEmpty()) {
                     dto.setAllowanceMonths(0);
                     continue;
                 }
 
-                YearMonth sinceMonth = YearMonth.from(sinceDate);
-                int totalMonths = (int) ChronoUnit.MONTHS.between(sinceMonth, currentMonth);
+                YearMonth firstMonth = daysPerMonth.keySet().stream()
+                        .min(YearMonth::compareTo)
+                        .orElse(currentMonth);
+
+                int totalMonths = (int) ChronoUnit.MONTHS.between(firstMonth, currentMonth) + 1;
 
                 int count = 0;
                 for (int i = 0; i < totalMonths; i++) {
-                    YearMonth month = sinceMonth.plusMonths(i);
+                    YearMonth month = firstMonth.plusMonths(i);
                     int studyDays = daysPerMonth.getOrDefault(month, 0);
                     if (studyDays <= 15) {
                         count++;
@@ -266,7 +259,6 @@ public class OfficerServiceImpl implements OfficeService {
 
                 dto.setAllowanceMonths(count);
             }
-
         } catch (Exception e) {
             e.printStackTrace(); // nên thay bằng logger
         }
@@ -274,21 +266,20 @@ public class OfficerServiceImpl implements OfficeService {
         return new ArrayList<>(officerMap.values());
     }
 
-
     @Override
     public List<OfficerViewDTO> getOfficerAllowanceStatus() {
         Map<Integer, OfficerViewDTO> officerMap = new HashMap<>();
 
         String officerSql = """
         SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
-               o.unit, o.hometown, o.birth_year, o.note, o.since,o.util,o.identifierCode
+               o.unit, o.hometown, o.birth_year, o.note, o.identifierCode
         FROM officer o
         JOIN level l ON o.level_id = l.id
     """;
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
-            // Bước 1: Lấy danh sách cán bộ
+            // ===== Bước 1: Lấy danh sách cán bộ =====
             try (PreparedStatement stmt = connection.prepareStatement(officerSql);
                  ResultSet rs = stmt.executeQuery()) {
 
@@ -301,14 +292,10 @@ public class OfficerServiceImpl implements OfficeService {
                     String homeTown = rs.getString("hometown");
                     int birthYear = rs.getInt("birth_year");
                     String note = rs.getString("note");
-
-                    Date sqlSince = rs.getDate("since");
-                    LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
-                    Date sqlUtil = rs.getDate("util");
-                    LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
                     String identifierCode = rs.getString("identifierCode");
+
                     OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                            unit, birthYear, homeTown, note, since,util, identifierCode);
+                            unit, birthYear, homeTown, note, identifierCode);
                     officerMap.put(id, dto);
                 }
             }
@@ -317,17 +304,20 @@ public class OfficerServiceImpl implements OfficeService {
                 return new ArrayList<>();
             }
 
-            // Bước 2: Lấy thông tin học tập, chỉ tính từ ngày since
+            // Chuẩn bị placeholder cho IN (...)
             String idPlaceholders = officerMap.keySet().stream()
                     .map(id -> "?")
                     .collect(Collectors.joining(", "));
 
-            String studySql = "SELECT officer_id, round, start_date, end_date " +
-                    "FROM studyTimes " +
-                    "WHERE officer_id IN (" + idPlaceholders + ") " +
-                    "ORDER BY officer_id, round";
-
+            // ===== Bước 2: Lấy studyTimes và tính số ngày học từng tháng =====
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
+            String studySql = """
+            SELECT officer_id, round, start_date, end_date
+            FROM studyTimes
+            WHERE officer_id IN (""" + idPlaceholders + """
+            )
+            ORDER BY officer_id, round
+        """;
 
             try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
                 int index = 1;
@@ -339,23 +329,13 @@ public class OfficerServiceImpl implements OfficeService {
                     while (rs.next()) {
                         int officerId = rs.getInt("officer_id");
                         int round = rs.getInt("round");
-                        LocalDate originalStart = rs.getDate("start_date").toLocalDate();
-                        LocalDate originalEnd = rs.getDate("end_date").toLocalDate();
+                        LocalDate start = rs.getDate("start_date").toLocalDate();
+                        LocalDate end = rs.getDate("end_date").toLocalDate();
 
                         OfficerViewDTO dto = officerMap.get(officerId);
                         if (dto == null) continue;
 
-                        LocalDate sinceDate = dto.getSince();
-                        if (sinceDate == null) continue;
-
-                        // Cắt bỏ phần học trước sinceDate nếu có
-                        LocalDate start = originalStart.isBefore(sinceDate) ? sinceDate : originalStart;
-                        LocalDate end = originalEnd;
-
-                        // Nếu sau khi cắt thì không còn gì để tính
-                        if (end.isBefore(start)) continue;
-
-                        dto.addStudyRound(round, originalStart, originalEnd);
+                        dto.addStudyRound(round, start, end);
 
                         Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
                                 .computeIfAbsent(officerId, k -> new HashMap<>());
@@ -370,68 +350,124 @@ public class OfficerServiceImpl implements OfficeService {
                 }
             }
 
-            // Bước 3: Tính số tháng phụ cấp từ tháng since đến currentMonth
-            YearMonth currentMonth = YearMonth.now();
+            // ===== Bước 3: Lấy allowances =====
+            String allowanceSql = """
+    SELECT officer_id, start_date, end_date
+    FROM allowance
+    WHERE officer_id IN (""" + idPlaceholders + """
+    )
+""";
 
+            try (PreparedStatement stmt = connection.prepareStatement(allowanceSql)) {
+                int index = 1;
+                for (Integer id : officerMap.keySet()) {
+                    stmt.setInt(index++, id);
+                }
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int officerId = rs.getInt("officer_id");
+                        LocalDate start = rs.getDate("start_date").toLocalDate();
+                        LocalDate end = rs.getDate("end_date") != null
+                                ? rs.getDate("end_date").toLocalDate()
+                                : LocalDate.now();
+
+                        OfficerViewDTO dto = officerMap.get(officerId);
+                        if (dto == null) continue;
+
+                        // Lấy dữ liệu số ngày học theo tháng
+                        Map<YearMonth, Integer> studyDays = studyDaysByOfficer
+                                .getOrDefault(officerId, Map.of());
+
+                        // Đếm số ngày học thật sự trong khoảng start → end
+                        Map<YearMonth, Integer> daysInRange = new HashMap<>();
+                        LocalDate date = start.plusDays(1);
+                        while (!date.isAfter(end)) {
+                            YearMonth ym = YearMonth.from(date);
+                            // Chỉ tính ngày nếu tháng đó có học
+                            if (studyDays.getOrDefault(ym, 0) > 0) {
+                                daysInRange.put(ym, daysInRange.getOrDefault(ym, 0) + 1);
+                            }
+                            date = date.plusDays(1);
+                        }
+
+                        // Kiểm tra nếu bất kỳ tháng nào trong khoảng có >= 15 ngày học
+                        boolean hasMonthWithEnoughDays = daysInRange.values().stream()
+                                .anyMatch(count -> count >= 15);
+
+                        if (hasMonthWithEnoughDays) {
+                            int key = dto.getAllowances().size() + 1;
+                            dto.getAllowances().put(key, new AllowanceDTO(start, end));
+                        }
+                    }
+                }
+            }
+
+
+            // ===== Bước 4: Tính allowanceMonths (bỏ tháng có >= 15 ngày học) =====
             for (Map.Entry<Integer, OfficerViewDTO> entry : officerMap.entrySet()) {
                 int officerId = entry.getKey();
                 OfficerViewDTO dto = entry.getValue();
-                Map<YearMonth, Integer> daysPerMonth = studyDaysByOfficer.getOrDefault(officerId, Map.of());
+                Map<YearMonth, Integer> studyDays = studyDaysByOfficer
+                        .getOrDefault(officerId, Map.of());
 
-
-                if (dto.getSince() == null || LocalDate.now().isBefore(dto.getSince()))  {
+                if (dto.getAllowances().isEmpty()) {
                     dto.setAllowanceMonths(0);
                     continue;
                 }
-
-                YearMonth sinceMonth = YearMonth.from(dto.getSince());
-
-                // 👇 New condition: if since >= currentMonth => set 0 and skip
-                if (!sinceMonth.isBefore(currentMonth)) {
-                    dto.setAllowanceMonths(0);
-                    continue;
-                }
-
-                int totalMonths = (int) ChronoUnit.MONTHS.between(sinceMonth, currentMonth);
 
                 int count = 0;
-                for (int i = 0; i < totalMonths; i++) {
-                    YearMonth month = sinceMonth.plusMonths(i);
-                    int studyDays = daysPerMonth.getOrDefault(month, 0);
-                    if (studyDays <= 15) {
-                        count++;
+                for (AllowanceDTO allowance : dto.getAllowances().values()) {
+                    LocalDate allowanceStart = allowance.getStartDate();
+                    LocalDate allowanceEnd = allowance.getEndDate() != null
+                            ? allowance.getEndDate()
+                            : LocalDate.now();
+
+                    YearMonth ymStart = YearMonth.from(allowanceStart);
+                    YearMonth ymEnd = YearMonth.from(allowanceEnd);
+
+                    long monthsBetween = ChronoUnit.MONTHS.between(ymStart, ymEnd) + 1;
+
+                    for (int i = 0; i < monthsBetween; i++) {
+                        YearMonth ym = ymStart.plusMonths(i);
+                        int studyDayCount = studyDays.getOrDefault(ym, 0);
+
+                        // Chỉ tính nếu tháng đó học dưới 15 ngày
+                        if (studyDayCount < 15) {
+                            count++;
+                        }
                     }
                 }
 
                 dto.setAllowanceMonths(count);
             }
 
-
         } catch (Exception e) {
-            e.printStackTrace(); // Gợi ý: dùng logger thay cho e.printStackTrace() trong ứng dụng thực tế
+            e.printStackTrace(); // Thực tế nên dùng logger
         }
 
         return new ArrayList<>(officerMap.values());
     }
+
 
     @Override
     public List<Officer> getOfficers() {
         List<Officer> officers = new ArrayList<>();
         String sql = "SELECT * FROM officer";
         try(Connection connection=MySQLConnection.getConnection()) {
-                PreparedStatement stmt = connection.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
-                while (rs.next()) {
-                    Officer officer = new Officer();
-                    officer.setId(rs.getInt("id"));
-                    officer.setFullName(rs.getString("full_name"));
-                    officer.setLevelId(rs.getInt("level_id"));
-                    officer.setUnit(rs.getString("unit"));
-                    officer.setHomeTown(rs.getString("hometown"));
-                    officer.setBirthYear(rs.getInt("birth_year"));
-                    officer.setNote(rs.getString("note"));
-                    officers.add(officer);
-                }
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Officer officer = new Officer();
+                officer.setId(rs.getInt("id"));
+                officer.setFullName(rs.getString("full_name"));
+                officer.setLevelId(rs.getInt("level_id"));
+                officer.setUnit(rs.getString("unit"));
+                officer.setHomeTown(rs.getString("hometown"));
+                officer.setBirthYear(rs.getInt("birth_year"));
+                officer.setNote(rs.getString("note"));
+                officers.add(officer);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -452,7 +488,7 @@ public class OfficerServiceImpl implements OfficeService {
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
-            // 1️⃣ Lấy thông tin cơ bản
+            // 1) Lấy thông tin cán bộ
             try (PreparedStatement stmt = connection.prepareStatement(officerSql)) {
                 stmt.setInt(1, officerId);
                 try (ResultSet rs = stmt.executeQuery()) {
@@ -466,21 +502,21 @@ public class OfficerServiceImpl implements OfficeService {
                         int birthYear = rs.getInt("birth_year");
                         String note = rs.getString("note");
 
-                        Date sqlSince = rs.getDate("since");
-                        LocalDate since = (sqlSince != null) ? sqlSince.toLocalDate() : null;
-                        Date sqlUtil = rs.getDate("util")!=null ? rs.getDate("util"):null;
-                        LocalDate util = (sqlUtil != null) ? sqlUtil.toLocalDate() : null;
+                        LocalDate since = rs.getDate("since") != null ? rs.getDate("since").toLocalDate() : null;
+                        LocalDate util = rs.getDate("util") != null ? rs.getDate("util").toLocalDate() : null;
                         String identifierCode = rs.getString("identifierCode");
 
                         dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                                unit, birthYear, homeTown, note, since, util, identifierCode);
+                                unit, birthYear, homeTown, note, identifierCode);
+                        // keep since/util in DTO if needed, but we will NOT use 'since' to compute allowance
+
                     }
                 }
             }
 
             if (dto == null) return null;
 
-            // 2️⃣ Lấy thông tin học tập của cán bộ
+            // 2) Lấy thông tin học tập (và dùng nguyên original start/end để tính)
             String studySql = """
             SELECT officer_id, round, start_date, end_date
             FROM studyTimes
@@ -496,15 +532,14 @@ public class OfficerServiceImpl implements OfficeService {
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         int round = rs.getInt("round");
-                        LocalDate start = rs.getDate("start_date").toLocalDate();
-                        LocalDate end = rs.getDate("end_date").toLocalDate();
+                        LocalDate originalStart = rs.getDate("start_date").toLocalDate();
+                        LocalDate originalEnd = rs.getDate("end_date").toLocalDate();
 
-                        dto.addStudyRound(round, start, end);
+                        dto.addStudyRound(round, originalStart, originalEnd);
 
-                        // Tính số ngày học trong tháng
-                        LocalDate sDate = (dto.getSince() != null && start.isBefore(dto.getSince())) ? dto.getSince() : start;
-                        LocalDate date = sDate;
-                        while (!date.isAfter(end)) {
+                        // Use originalStart/originalEnd (DO NOT cut by since)
+                        LocalDate date = originalStart;
+                        while (!date.isAfter(originalEnd)) {
                             YearMonth ym = YearMonth.from(date);
                             studyDaysByMonth.put(ym, studyDaysByMonth.getOrDefault(ym, 0) + 1);
                             date = date.plusDays(1);
@@ -513,34 +548,36 @@ public class OfficerServiceImpl implements OfficeService {
                 }
             }
 
-            // 3️⃣ Tính số tháng được hưởng phụ cấp
-            if (dto.getSince() != null && !LocalDate.now().isBefore(dto.getSince())) {
-                YearMonth currentMonth = YearMonth.now();
-                YearMonth sinceMonth = YearMonth.from(dto.getSince());
-
-                if (sinceMonth.isBefore(currentMonth)) {
-                    int totalMonths = (int) ChronoUnit.MONTHS.between(sinceMonth, currentMonth);
-                    int count = 0;
-                    for (int i = 0; i < totalMonths; i++) {
-                        YearMonth month = sinceMonth.plusMonths(i);
-                        int studyDays = studyDaysByMonth.getOrDefault(month, 0);
-                        if (studyDays <= 15) {
-                            count++;
-                        }
-                    }
-                    dto.setAllowanceMonths(count);
-                } else {
-                    dto.setAllowanceMonths(0);
-                }
-            } else {
+            // 3) Tính số tháng được hưởng phụ cấp dựa trên toàn bộ dữ liệu học (không dùng since)
+            if (studyDaysByMonth.isEmpty()) {
                 dto.setAllowanceMonths(0);
+            } else {
+                YearMonth currentMonth = YearMonth.now();
+                YearMonth firstMonth = studyDaysByMonth.keySet().stream()
+                        .min(YearMonth::compareTo)
+                        .orElse(currentMonth);
+
+                // totalMonths = inclusive count from firstMonth to currentMonth
+                int totalMonths = (int) ChronoUnit.MONTHS.between(firstMonth, currentMonth) + 1;
+
+                int count = 0;
+                for (int i = 0; i < totalMonths; i++) {
+                    YearMonth month = firstMonth.plusMonths(i);
+                    int studyDays = studyDaysByMonth.getOrDefault(month, 0);
+                    if (studyDays <= 15) {
+                        count++;
+                    }
+                }
+
+                dto.setAllowanceMonths(count);
             }
 
         } catch (Exception e) {
-            e.printStackTrace(); // Nên dùng Logger trong ứng dụng thật
+            e.printStackTrace(); // production: use logger
         }
 
         return dto;
     }
+
 
 }

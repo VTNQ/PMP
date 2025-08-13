@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.qnp.pmp.controllers.AddAllowanceTimeController"
+      spacing="20"
+      alignment="TOP_CENTER"
+      prefWidth="460" prefHeight="400"
+      stylesheets="@AddAllowanceTime.css">
+
+    <padding>
+        <Insets top="25" right="25" bottom="25" left="25"/>
+    </padding>
+
+    <!-- Tiêu đề -->
+    <Label text="⏳ Thêm thời gian được hưởng" styleClass="form-title"/>
+
+    <!-- Nội dung form -->
+    <GridPane hgap="14" vgap="16" styleClass="form-grid">
+        <columnConstraints>
+            <ColumnConstraints minWidth="110" halignment="RIGHT"/>
+            <ColumnConstraints minWidth="250" hgrow="ALWAYS"/>
+        </columnConstraints>
+
+        <Label text="Cán bộ:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <ComboBox fx:id="officerComboBox" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+        <Label text="Từ tháng:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="fromDatePicker" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+        <Label text="Đến tháng:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <DatePicker fx:id="toDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+        <Label text="Quyết định:" alignment="TOP_RIGHT" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextArea fx:id="decisionTextArea"
+                  GridPane.rowIndex="3" GridPane.columnIndex="1"
+                  prefRowCount="3" wrapText="true"/>
+    </GridPane>
+
+    <!-- Nút hành động -->
+    <HBox spacing="15" alignment="CENTER_RIGHT">
+        <Button text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
+        <Button text="❌ Hủy" onAction="#onCancel" styleClass="cancel-button"/>
+    </HBox>
+
+</VBox>

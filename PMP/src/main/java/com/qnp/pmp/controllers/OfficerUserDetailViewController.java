@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 public class OfficerUserDetailViewController {
     @FXML private Label lblFullName;
     @FXML private Label lblBirthYear;
-    @FXML private Label lblSince;
     @FXML private Label lblPosition;
     @FXML private Label lblUnit;
     @FXML private Label lblHomeTown;
@@ -20,7 +19,6 @@ public class OfficerUserDetailViewController {
     public void setOfficer(OfficerViewDTO officer){
         lblFullName.setText("Họ tên:"+officer.fullNameProperty().getValue());
         lblBirthYear.setText("Năm sinh:"+officer.birthYearProperty().getValue());
-        lblSince.setText("Ngày bắt đầu:"+officer.sinceProperty().getValue());
         lblPosition.setText("Chức vụ:"+officer.levelNameProperty().getValue());
         lblUnit.setText("Đơn vị:"+officer.unitProperty().getValue());
         lblHomeTown.setText("Quê quán:"+officer.homeTownProperty().getValue());
