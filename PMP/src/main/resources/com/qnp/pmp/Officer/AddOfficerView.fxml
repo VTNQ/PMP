@@ -7,62 +7,75 @@
 <StackPane xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="com.qnp.pmp.controllers.AddOfficerController"
-           prefHeight="520.0" prefWidth="640.0"
-           styleClass="root-container" stylesheets="@AddOffice.css">
+           prefHeight="660.0" prefWidth="880.0"
+           styleClass="root-container"
+           stylesheets="@AddOffice.css">
 
-    <!-- Nút X đóng cửa sổ -->
-    <Button fx:id="closeButton"
-            text="✖"
-            onAction="#onClose"
-            styleClass="close-button"
-            StackPane.alignment="TOP_RIGHT">
-        <StackPane.margin>
-            <Insets top="8" right="8"/>
-        </StackPane.margin>
-    </Button>
-
-    <!-- Nội dung chính -->
-    <VBox spacing="18" alignment="TOP_CENTER" maxWidth="580">
-        <padding>
-            <Insets top="35" bottom="25" left="30" right="30"/>
-        </padding>
-
-        <!-- Tiêu đề -->
-        <Label text="🧑‍💼 Thêm cán bộ mới" styleClass="form-title"/>
-
-        <!-- Form nhập liệu -->
-        <GridPane hgap="15" vgap="12" styleClass="form-grid">
-            <Label text="Họ tên:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-            <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
-
-            <Label text="Mã định danh:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-            <TextField fx:id="identifierField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
-
-            <Label text="Cấp bậc(ID):" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-            <ComboBox fx:id="levelComboBox" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-
-            <Label text="Đơn vị:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-            <TextField fx:id="unitField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-
-            <Label text="Quê quán:" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-            <TextField fx:id="homeTownField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-
-            <Label text="Năm sinh:" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-            <TextField fx:id="birthYearField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
-
-            <Label text="Ngày bắt đầu:" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-            <DatePicker fx:id="sinceDatePicker" GridPane.rowIndex="6" GridPane.columnIndex="1"/>
-
-            <Label text="Ngày kết thúc:" GridPane.rowIndex="7" GridPane.columnIndex="0"/>
-            <DatePicker fx:id="utilDatePicker" GridPane.rowIndex="7" GridPane.columnIndex="1"/>
-
-            <Label text="Ghi chú:" GridPane.rowIndex="8" GridPane.columnIndex="0"/>
-            <TextArea fx:id="noteField" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="3"/>
-        </GridPane>
-
-        <!-- Nút lưu -->
-        <HBox spacing="20" alignment="CENTER_RIGHT">
-            <Button text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
+    <!-- Thanh tiêu đề có nút tắt -->
+    <VBox>
+        <HBox alignment="CENTER_RIGHT" styleClass="title-bar">
+            <Button fx:id="closeButton" text="✖" onAction="#onClose" styleClass="close-button"/>
         </HBox>
+
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+
+            <!-- TAB 1: Nhập tay -->
+            <Tab text="📝 Nhập tay">
+                <content>
+                    <VBox alignment="TOP_CENTER" spacing="20" >
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+                        <Label text="🧑‍💼 Thêm cán bộ mới" styleClass="form-title" />
+
+                        <GridPane hgap="15" vgap="12" styleClass="form-grid">
+                            <Label text="Họ tên:" GridPane.rowIndex="0" GridPane.columnIndex="0" styleClass="form-label"/>
+                            <TextField fx:id="fullNameField" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                            <Label text="Mã định danh:" GridPane.rowIndex="1" GridPane.columnIndex="0" styleClass="form-label"/>
+                            <TextField fx:id="identifierField" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                            <Label text="Cấp bậc:" GridPane.rowIndex="2" GridPane.columnIndex="0" styleClass="form-label"/>
+                            <ComboBox fx:id="levelComboBox" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                            <Label text="Đơn vị:" GridPane.rowIndex="3" GridPane.columnIndex="0" styleClass="form-label"/>
+                            <TextField fx:id="unitField" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+
+                            <Label text="Quê quán:" GridPane.rowIndex="4" GridPane.columnIndex="0" styleClass="form-label"/>
+                            <TextField fx:id="homeTownField" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+
+                            <Label text="Năm sinh:" GridPane.rowIndex="5" GridPane.columnIndex="0" styleClass="form-label"/>
+                            <TextField fx:id="birthYearField" GridPane.rowIndex="5" GridPane.columnIndex="1"/>
+
+                            <Label text="Ghi chú:" GridPane.rowIndex="8" GridPane.columnIndex="0" styleClass="form-label"/>
+                            <TextArea fx:id="noteField" GridPane.rowIndex="8" GridPane.columnIndex="1" prefRowCount="3"/>
+                        </GridPane>
+
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
+                            <Button text="❌ Đóng" onAction="#onClose" styleClass="cancel-button"/>
+                        </HBox>
+                    </VBox>
+                </content>
+            </Tab>
+
+            <!-- TAB 2: Import dữ liệu -->
+            <Tab text="📂 Import dữ liệu">
+                <content>
+                    <VBox spacing="20" alignment="CENTER" >
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+                        <Label text="Chọn file Excel hoặc CSV để import cán bộ" style="-fx-font-size: 14px;"/>
+                        <HBox spacing="10" alignment="CENTER">
+                            <Button text="📁 Chọn file" onAction="#onChooseFile"/>
+                            <Label fx:id="fileLabel"  text="Chưa chọn file"/>
+                        </HBox>
+                        <Button text="⬆ Import" onAction="#onImport" styleClass="save-button"/>
+                    </VBox>
+                </content>
+            </Tab>
+
+        </TabPane>
     </VBox>
 </StackPane>

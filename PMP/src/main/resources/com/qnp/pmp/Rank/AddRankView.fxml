@@ -24,8 +24,7 @@
         <Label text="Tên cấp bậc:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
         <TextField fx:id="rankNameField" promptText="Nhập tên cấp bậc" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
 
-        <Label text="Lương (VNĐ):" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-        <TextField fx:id="salaryField" promptText="Nhập mức lương" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
     </GridPane>
 
     <!-- Hàng nút bấm -->

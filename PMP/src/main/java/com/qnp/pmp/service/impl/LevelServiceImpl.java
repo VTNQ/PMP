@@ -60,10 +60,9 @@ public class LevelServiceImpl implements LevelService
         PreparedStatement stmt=null;
         try {
             conn=MySQLConnection.getConnection();
-            String sql="insert into level(name,salary) values(?,?)";
+            String sql="insert into level(name) values(?)";
             stmt=conn.prepareStatement(sql);
             stmt.setString(1,level.getName());
-            stmt.setDouble(2,level.getSalary());
             stmt.executeUpdate();
 
         }catch (Exception e) {

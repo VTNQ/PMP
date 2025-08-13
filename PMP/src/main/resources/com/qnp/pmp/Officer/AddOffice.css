@@ -1,59 +1,109 @@
+/* ===== Root Container ===== */
 .root-container {
-    -fx-background-color: linear-gradient(to bottom right, #f8fbff, #e8f0ff);
-    -fx-background-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 12, 0.3, 5, 5);
+    -fx-background-color: #f8faff;
+    -fx-padding: 20;
     -fx-font-family: "Segoe UI", sans-serif;
 }
 
-/* Nút X */
-.close-button {
-    -fx-background-color: transparent;
-    -fx-text-fill: #ff1744;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-cursor: hand;
-}
-.close-button:hover {
-    -fx-text-fill: #d50000;
-    -fx-scale-x: 1.1;
-    -fx-scale-y: 1.1;
-}
-
-/* Tiêu đề */
+/* ===== Tiêu đề Form ===== */
 .form-title {
     -fx-font-size: 20px;
     -fx-font-weight: bold;
-    -fx-text-fill: #2a3d8f;
+    -fx-text-fill: #2a4d8f;
 }
 
-/* Form grid */
-.form-grid Label {
+/* ===== Label của form ===== */
+.form-label {
     -fx-font-size: 14px;
     -fx-text-fill: #333;
-    -fx-font-weight: 600;
-}
-.form-grid TextField,
-.form-grid ComboBox,
-.form-grid DatePicker,
-.form-grid TextArea {
-    -fx-pref-width: 280px;
-    -fx-background-radius: 6;
-    -fx-border-radius: 6;
-    -fx-border-color: #cfd8dc;
-    -fx-padding: 4 10 4 10;
-    -fx-background-color: white;
 }
 
-/* Nút lưu */
+/* ===== GridPane form ===== */
+.form-grid {
+    -fx-background-color: #ffffff;
+    -fx-padding: 20;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 4, 0, 0, 2);
+}
+
+/* ===== Nút Save ===== */
 .save-button {
-    -fx-background-color: #3f51b5;
+    -fx-background-color: #4CAF50;
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-padding: 8 18;
     -fx-background-radius: 6;
-    -fx-padding: 8 20 8 20;
     -fx-cursor: hand;
 }
+
 .save-button:hover {
-    -fx-background-color: #2c3e99;
+    -fx-background-color: #45a049;
+}
+
+/* ===== Nút Cancel ===== */
+.cancel-button {
+    -fx-background-color: #f44336;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 8 18;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #e53935;
+}
+
+/* ===== TabPane Style ===== */
+.tab-pane .tab-header-area {
+    -fx-background-color: #e3eaf5;
+}
+
+.tab {
+    -fx-background-color: transparent;
+}
+
+.tab-label {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.tab:selected {
+    -fx-background-color: #ffffff;
+    -fx-border-color: transparent transparent #2a4d8f transparent;
+    -fx-border-width: 0 0 3 0;
+}
+
+/* ===== TextField, ComboBox, DatePicker ===== */
+.text-field, .combo-box, .date-picker {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 4;
+}
+.title-bar {
+    -fx-background-color: transparent;
+    -fx-padding: 5 5 0 0;
+}
+
+.close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #666;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-background-radius: 50%;
+}
+
+.close-button:hover {
+    -fx-background-color: #ff4d4f;
+    -fx-text-fill: white;
+}
+
+.text-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #2a4d8f;
+    -fx-effect: dropshadow(gaussian, rgba(42,77,143,0.3), 4, 0, 0, 0);
 }

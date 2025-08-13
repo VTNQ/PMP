@@ -20,29 +20,21 @@ public class AddRankController {
     }
     @FXML
     private TextField rankNameField;
-    @FXML
-    private TextField salaryField;
+
     @FXML
     private void onSave(){
         String name = rankNameField.getText().trim();
-        String salaryText = salaryField.getText().trim();
-        if (name.isEmpty() || salaryText.isEmpty()) {
-            Dialog.displayErrorMessage("Thiếu dữ liệu,Vui lòng nhập đầy đủ tên cấp bậc và lương.");
+
+        if (name.isEmpty() ) {
+            Dialog.displayErrorMessage("Thiếu dữ liệu,Vui lòng nhập đầy đủ tên cấp bậc .");
             return;
         }
-        Double salary=null;
-        try {
-          salary = Double.parseDouble(salaryText);
-        } catch (NumberFormatException e) {
-            Dialog.displayErrorMessage("Sai định dạng,Lương phải là số hợp lệ.");
-            return;
-        }
+
         LevelDTO level = new LevelDTO();
         level.setName(name);
-        level.setSalary(salary);
+
         levelService.save(level);
         rankNameField.setText("");
-        salaryField.setText("");
         Dialog.displaySuccessFully("Thêm cấp bậc thành công");
     }
     @FXML
