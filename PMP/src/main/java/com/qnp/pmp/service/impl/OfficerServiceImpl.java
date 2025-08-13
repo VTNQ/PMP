@@ -455,19 +455,19 @@ public class OfficerServiceImpl implements OfficeService {
         List<Officer> officers = new ArrayList<>();
         String sql = "SELECT * FROM officer";
         try(Connection connection=MySQLConnection.getConnection()) {
-                PreparedStatement stmt = connection.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery();
-                while (rs.next()) {
-                    Officer officer = new Officer();
-                    officer.setId(rs.getInt("id"));
-                    officer.setFullName(rs.getString("full_name"));
-                    officer.setLevelId(rs.getInt("level_id"));
-                    officer.setUnit(rs.getString("unit"));
-                    officer.setHomeTown(rs.getString("hometown"));
-                    officer.setBirthYear(rs.getInt("birth_year"));
-                    officer.setNote(rs.getString("note"));
-                    officers.add(officer);
-                }
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Officer officer = new Officer();
+                officer.setId(rs.getInt("id"));
+                officer.setFullName(rs.getString("full_name"));
+                officer.setLevelId(rs.getInt("level_id"));
+                officer.setUnit(rs.getString("unit"));
+                officer.setHomeTown(rs.getString("hometown"));
+                officer.setBirthYear(rs.getInt("birth_year"));
+                officer.setNote(rs.getString("note"));
+                officers.add(officer);
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
