@@ -72,6 +72,28 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 2, 0.3, 0, 1);
     -fx-min-width: 110px;
 }
+.tab-pane {
+    -fx-background-color: #f4f4f4;
+    -fx-tab-min-width: 120px;
+    -fx-tab-max-width: 200px;
+    -fx-tab-min-height: 35px;
+}
+
+.tab {
+    -fx-background-color: #e0e0e0;
+    -fx-background-radius: 8 8 0 0;
+    -fx-font-weight: bold;
+}
+
+.tab:hover {
+    -fx-background-color: #d6d6d6;
+}
+
+.tab:selected {
+    -fx-background-color: #4CAF50; /* Màu xanh lá khi chọn */
+    -fx-text-base-color: white;    /* Chữ trắng khi chọn */
+    -fx-background-radius: 8 8 0 0;
+}
 
 /* Thêm mới */
 .add-btn {

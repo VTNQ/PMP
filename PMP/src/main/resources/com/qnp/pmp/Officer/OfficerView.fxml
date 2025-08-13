@@ -42,17 +42,37 @@
         </HBox>
 
         <!-- Bảng dữ liệu -->
-        <TableView fx:id="officerTable" VBox.vgrow="ALWAYS" styleClass="modern-table" >
-            <columns>
-                <TableColumn fx:id="fullNameCol" text="👤 Họ tên" prefWidth="180"/>
-                <TableColumn fx:id="identifierCodeCol" text="🆔 Số hiệu CAND" prefWidth="140"/>
-                <TableColumn fx:id="birthYearCol" text="📅 Năm sinh" prefWidth="100"/>
-                <TableColumn fx:id="allowanceCol" text="Tháng trợ cấp" prefWidth="140"/>
-                <TableColumn fx:id="unitCol" text="🏢 Đơn vị" prefWidth="140"/>
-                <TableColumn fx:id="detailCol" text="⚙ Thao tác" prefWidth="100"/>
-                <TableColumn fx:id="workCol" text="📋 Công tác" prefWidth="110"/>
-            </columns>
-        </TableView>
+        <TabPane VBox.vgrow="ALWAYS">
+            <tabs>
+                <Tab text="Trên 60 tháng">
+                    <TableView fx:id="officerTableAbove60" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="fullNameColAbove" text="👤 Họ tên" prefWidth="180"/>
+                            <TableColumn fx:id="identifierCodeColAbove" text="🆔 Số hiệu CAND" prefWidth="140"/>
+                            <TableColumn fx:id="birthYearColAbove" text="📅 Năm sinh" prefWidth="100"/>
+                            <TableColumn fx:id="allowanceColAbove" text="Tháng trợ cấp" prefWidth="140"/>
+                            <TableColumn fx:id="unitColAbove" text="🏢 Đơn vị" prefWidth="140"/>
+                            <TableColumn fx:id="detailColAbove" text="⚙ Thao tác" prefWidth="140"/>
+                            <TableColumn fx:id="workColAbove" text="📋 Công tác" prefWidth="110"/>
+                        </columns>
+                    </TableView>
+                </Tab>
+
+                <Tab text="Dưới hoặc bằng 60 tháng">
+                    <TableView fx:id="officerTableBelow60" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="fullNameColBelow" text="👤 Họ tên" prefWidth="180"/>
+                            <TableColumn fx:id="identifierCodeColBelow" text="🆔 Số hiệu CAND" prefWidth="140"/>
+                            <TableColumn fx:id="birthYearColBelow" text="📅 Năm sinh" prefWidth="100"/>
+                            <TableColumn fx:id="allowanceColBelow" text="Tháng trợ cấp" prefWidth="140"/>
+                            <TableColumn fx:id="unitColBelow" text="🏢 Đơn vị" prefWidth="140"/>
+                            <TableColumn fx:id="detailColBelow" text="⚙ Thao tác" prefWidth="140"/>
+                            <TableColumn fx:id="workColBelow" text="📋 Công tác" prefWidth="110"/>
+                        </columns>
+                    </TableView>
+                </Tab>
+            </tabs>
+        </TabPane>
 
 
     </VBox>
