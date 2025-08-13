@@ -150,13 +150,12 @@ public class OfficerServiceImpl implements OfficeService {
     public List<OfficerViewDTO> findByName(String name) {
         Map<Integer, OfficerViewDTO> officerMap = new HashMap<>();
 
-        String sql = """
-        SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
-               o.unit, o.hometown, o.birth_year, o.note,o.identifierCode
-        FROM officer o
-        JOIN level l ON o.level_id = l.id
-        WHERE o.full_name LIKE ?
-    """;
+        String sql =
+                "SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name, " +
+                        "       o.unit, o.hometown, o.birth_year, o.note, o.identifierCode " +
+                        "FROM officer o " +
+                        "JOIN level l ON o.level_id = l.id " +
+                        "WHERE o.full_name LIKE ?";
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
@@ -175,6 +174,7 @@ public class OfficerServiceImpl implements OfficeService {
                         int birthYear = rs.getInt("birth_year");
                         String note = rs.getString("note");
                         String identifierCode = rs.getString("identifierCode");
+
                         OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
                                 unit, birthYear, homeTown, note, identifierCode);
                         officerMap.put(id, dto);
@@ -189,13 +189,13 @@ public class OfficerServiceImpl implements OfficeService {
                     .map(id -> "?")
                     .collect(Collectors.joining(", "));
 
-            String studySql = "SELECT officer_id, round, start_date, end_date " +
-                    "FROM studyTimes " +
-                    "WHERE officer_id IN (" + idPlaceholders + ") " +
-                    "ORDER BY officer_id, round";
+            String studySql =
+                    "SELECT officer_id, round, start_date, end_date " +
+                            "FROM studyTimes " +
+                            "WHERE officer_id IN (" + idPlaceholders + ") " +
+                            "ORDER BY officer_id, round";
 
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
-
 
             try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
                 int index = 1;
@@ -252,19 +252,21 @@ public class OfficerServiceImpl implements OfficeService {
                 for (int i = 0; i < totalMonths; i++) {
                     YearMonth month = firstMonth.plusMonths(i);
                     int studyDays = daysPerMonth.getOrDefault(month, 0);
-                    if (studyDays <= 15) {
+                    if (studyDays <= 15) { // logic hiện tại: tháng <= 15 ngày học
                         count++;
                     }
                 }
 
                 dto.setAllowanceMonths(count);
             }
+
         } catch (Exception e) {
-            e.printStackTrace(); // nên thay bằng logger
+            e.printStackTrace(); // TODO: thay bằng logger
         }
 
         return new ArrayList<>(officerMap.values());
     }
+
 
     @Override
     public List<OfficerViewDTO> getOfficerAllowanceStatus() {

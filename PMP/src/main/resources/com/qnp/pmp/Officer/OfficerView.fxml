@@ -22,7 +22,7 @@
             <Button text="💾 Backup thủ công" styleClass="export-btn" onAction="#onManualExcelBackup"/>
             <Button text="➕ Thêm mới" styleClass=" add-btn" onAction="#add"/>
             <Button text="📥 Nhập nhiều" styleClass=" import-btn" onAction="#onImport"/>
-            <Button text="📅 Thêm lịch công tác" styleClass="calendar-btn" onAction="#addSchedule"/>
+            <Button text="📅 Thêm Thời gian thôi hưởng" styleClass="calendar-btn" onAction="#addSchedule"/>
             <Button text="⏳ Thời gian được hưởng" styleClass="time-btn" onAction="#onAllowanceTime"/>
             <Button text="🛡️ Thêm cấp bậc" styleClass="rank-btn" onAction="#addRank"/>
             <Button text="🔄 Làm mới" styleClass=" refresh-btn" onAction="#refreshTable"/>
