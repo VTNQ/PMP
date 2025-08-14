@@ -11,5 +11,6 @@ public class Allowance {
     private int officerId;
     private LocalDate startDate;
     private LocalDate endDate;
-    private String decision;
+    private String decisionStart;
+    private String decisionEnd;
 }

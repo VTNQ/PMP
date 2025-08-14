@@ -1,14 +1,17 @@
 package com.qnp.pmp.controllers;
 
+import com.qnp.pmp.dialog.Dialog;
 import com.qnp.pmp.dto.OfficerViewDTO;
 import com.qnp.pmp.service.OfficeService;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.time.LocalDate;
 
 public class OfficerDetailViewController {
     @FXML
@@ -54,4 +57,38 @@ public class OfficerDetailViewController {
         Stage stage = (Stage) btnClose.getScene().getWindow();
         stage.close();
     }
+    private void enableWindowDragging(Stage stage, Parent root) {
+        final double[] xOffset = {0};
+        final double[] yOffset = {0};
+
+        root.setOnMousePressed(event -> {
+            xOffset[0] = event.getSceneX();
+            yOffset[0] = event.getSceneY();
+        });
+
+        root.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - xOffset[0]);
+            stage.setY(event.getScreenY() - yOffset[0]);
+        });
+    }
+    @FXML
+    private void onBenefitDetails(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/AllowanceTime/benefit-detail.fxml"));
+            Parent root = loader.load();
+            BenefitDetailsController controller = loader.getController();
+            controller.loadData(officerId);
+            Stage stage = new Stage();
+            stage.setTitle("Chi tiết được hưởng");
+
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        }catch (Exception e){
+            Dialog.displayErrorMessage("Không thể mở cửa sổ chi tiết được hưởng");
+        }
+    }
+
 }

@@ -25,7 +25,9 @@ public class AddAllowanceTimeController {
     @FXML private DatePicker toDatePicker;
     @FXML private ComboBox<Officer> officerComboBox;
     @FXML
-    private TextArea decisionTextArea;
+    private TextArea decisionStartTextArea;
+    @FXML
+    private TextArea decisionEndTextArea;
     @FXML
     public void initialize() {
         List<Officer> officerList = officeService.getOfficers();
@@ -70,13 +72,15 @@ public class AddAllowanceTimeController {
             allowance.setOfficerId(officerComboBox.getValue().getId());
             allowance.setStartDate(fromDatePicker.getValue());
             allowance.setEndDate(toDatePicker.getValue());
-            allowance.setDecision(decisionTextArea.getText());
+            allowance.setDecisionStart(decisionStartTextArea.getText());
+            allowance.setDecisionEnd(decisionEndTextArea.getText());
             allowanceService.insert(allowance);
             Dialog.displaySuccessFully("Lưu thời giản hưởng thành công");
             officerComboBox.getSelectionModel().clearSelection();
             fromDatePicker.setValue(null);
             toDatePicker.setValue(null);
-            decisionTextArea.clear();
+            decisionStartTextArea.clear();
+            decisionEndTextArea.clear();
         }catch (Exception e){
             e.printStackTrace();
             Dialog.displayErrorMessage("Lưu thời gian hưởng thấp bải");
