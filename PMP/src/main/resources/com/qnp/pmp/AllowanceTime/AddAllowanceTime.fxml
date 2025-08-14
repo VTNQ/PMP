@@ -9,7 +9,7 @@
       fx:controller="com.qnp.pmp.controllers.AddAllowanceTimeController"
       spacing="20"
       alignment="TOP_CENTER"
-      prefWidth="460" prefHeight="400"
+      prefWidth="460" prefHeight="520"
       stylesheets="@AddAllowanceTime.css">
 
     <padding>
@@ -22,7 +22,7 @@
     <!-- Nội dung form -->
     <GridPane hgap="14" vgap="16" styleClass="form-grid">
         <columnConstraints>
-            <ColumnConstraints minWidth="110" halignment="RIGHT"/>
+            <ColumnConstraints minWidth="130" halignment="RIGHT"/>
             <ColumnConstraints minWidth="250" hgrow="ALWAYS"/>
         </columnConstraints>
 
@@ -35,10 +35,19 @@
         <Label text="Đến tháng:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
         <DatePicker fx:id="toDatePicker" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
 
-        <Label text="Quyết định:" alignment="TOP_RIGHT" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-        <TextArea fx:id="decisionTextArea"
+        <!-- Quyết định BẮT ĐẦU -->
+        <Label text="QĐ bắt đầu:" alignment="TOP_RIGHT" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <TextArea fx:id="decisionStartTextArea"
                   GridPane.rowIndex="3" GridPane.columnIndex="1"
-                  prefRowCount="3" wrapText="true"/>
+                  prefRowCount="3" wrapText="true"
+                  promptText="VD: Số QĐ, ngày QĐ, trích yếu…"/>
+
+        <!-- Quyết định KẾT THÚC -->
+        <Label text="QĐ kết thúc:" alignment="TOP_RIGHT" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <TextArea fx:id="decisionEndTextArea"
+                  GridPane.rowIndex="4" GridPane.columnIndex="1"
+                  prefRowCount="3" wrapText="true"
+                  promptText="VD: Số QĐ, ngày QĐ, trích yếu…"/>
     </GridPane>
 
     <!-- Nút hành động -->
