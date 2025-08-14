@@ -1,0 +1,123 @@
+/* ========= Root theme ========= */
+.root {
+    -color-bg:        #ffffff;
+    -color-text:      #2a2e34;
+    -color-muted:     #7a8594;
+    -color-primary:   #10b981; /* Xanh ngọc */
+    -radius:          14px;
+    -radius-sm:       8px;
+    -fx-font-size:    13px;
+    -fx-text-fill:    -color-text;
+    -fx-background-color: -color-bg;
+}
+
+/* ========= Containers ========= */
+.vbox, .hbox, .anchor-pane {
+    -fx-background-color: transparent;
+}
+.label {
+    -fx-text-fill: -color-text;
+    -fx-font-smoothing-type: lcd;
+}
+
+/* ========= Inputs ========= */
+.text-field, .date-picker, .combo-box-base {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: -radius-sm;
+    -fx-border-color: #a3d9a5;
+    -fx-border-radius: -radius-sm;
+    -fx-padding: 8 12;
+    -fx-prompt-text-fill: derive(-color-muted, 20%);
+}
+.text-field:hover, .date-picker:hover, .combo-box-base:hover {
+    -fx-border-color: #10b981;
+}
+.text-field:focused, .date-picker:focused, .combo-box-base:focused {
+    -fx-border-color: #059669;
+    -fx-effect: dropshadow(gaussian, rgba(16,185,129,0.4), 8, 0.2, 0, 0);
+}
+
+/* ========= Buttons ========= */
+.button {
+    -fx-background-color: linear-gradient(to right, #34d399, #059669);
+    -fx-text-fill: white;
+    -fx-padding: 8 14;
+    -fx-background-radius: -radius-sm;
+    -fx-cursor: hand;
+    -fx-font-weight: 700;
+}
+.button:hover {
+    -fx-background-color: linear-gradient(to right, #059669, #047857);
+}
+#btnClose {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-text;
+    -fx-border-color: #a3d9a5;
+}
+#btnClose:hover {
+    -fx-background-color: rgba(16,185,129,0.08);
+}
+
+/* ========= Modern Table ========= */
+.modern-table {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #a3d9a5;
+    -fx-border-radius: 14;
+    -fx-background-radius: 14;
+    -fx-table-cell-border-color: #d1fae5;
+    -fx-font-size: 13px;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, #d1fae5, 8, 0.3, 0, 2);
+}
+
+/* Header */
+.modern-table .column-header-background {
+    -fx-background-color: linear-gradient(to right, #34d399, #059669);
+    -fx-background-radius: 14 14 0 0;
+    -fx-padding: 8 0;
+}
+.modern-table .column-header,
+.modern-table .filler {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-alignment: CENTER_LEFT;
+}
+.modern-table .column-header .label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 0 8;
+}
+
+/* Nội dung bảng */
+.modern-table .table-row-cell:odd {
+    -fx-background-color: #ecfdf5;
+}
+.modern-table .table-row-cell:even {
+    -fx-background-color: #ffffff;
+}
+.modern-table .table-row-cell:hover {
+    -fx-background-color: #bbf7d0;
+    -fx-cursor: hand;
+}
+.modern-table .table-row-cell:filled:selected {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+}
+
+/* Scrollbar */
+.modern-table .scroll-bar:vertical .thumb,
+.modern-table .scroll-bar:horizontal .thumb {
+    -fx-background-color: #10b981;
+    -fx-background-radius: 6;
+}
+.modern-table .scroll-bar:vertical .track,
+.modern-table .scroll-bar:horizontal .track {
+    -fx-background-color: #d1fae5;
+}
+
+/* Placeholder */
+.modern-table .placeholder .label {
+    -fx-text-fill: -color-muted;
+    -fx-font-style: italic;
+}

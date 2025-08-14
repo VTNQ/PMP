@@ -21,7 +21,6 @@
 
             <Button text="💾 Backup thủ công" styleClass="export-btn" onAction="#onManualExcelBackup"/>
             <Button text="➕ Thêm mới" styleClass=" add-btn" onAction="#add"/>
-            <Button text="📥 Nhập nhiều" styleClass=" import-btn" onAction="#onImport"/>
             <Button text="📅 Thêm Thời gian thôi hưởng" styleClass="calendar-btn" onAction="#addSchedule"/>
             <Button text="⏳ Thời gian được hưởng" styleClass="time-btn" onAction="#onAllowanceTime"/>
             <Button text="🛡️ Thêm cấp bậc" styleClass="rank-btn" onAction="#addRank"/>
@@ -42,7 +41,7 @@
         </HBox>
 
         <!-- Bảng dữ liệu -->
-        <TabPane VBox.vgrow="ALWAYS">
+        <TabPane  fx:id="officerTabPane" VBox.vgrow="ALWAYS">
             <tabs>
                 <Tab text="Trên 60 tháng">
                     <TableView fx:id="officerTableAbove60" styleClass="modern-table">

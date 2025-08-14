@@ -14,6 +14,7 @@ module com.qnp.pmp {
     requires tess4j;
     requires mysql.connector.j;
     requires org.apache.commons.lang3;
+    requires com.google.protobuf;
     opens com.qnp.pmp to javafx.fxml;
     exports com.qnp.pmp;
 
