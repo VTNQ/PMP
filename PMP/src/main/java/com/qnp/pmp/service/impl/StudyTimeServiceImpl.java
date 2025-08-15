@@ -19,12 +19,13 @@ public class StudyTimeServiceImpl implements StudyTimeService {
         PreparedStatement stmt = null;
         try {
             conn = MySQLConnection.getConnection();
-            String sql = "INSERT INTO studyTimes(officer_id,round,start_date,end_date) VALUES(?,?,?,?)";
+            String sql = "INSERT INTO studyTimes(officer_id,round,start_date,end_date,decision) VALUES(?,?,?,?,?)";
             stmt = conn.prepareStatement(sql);
             stmt.setInt(1, studyTime.getOfficerId());
             stmt.setInt(2, studyTime.getRound());
             stmt.setDate(3, Date.valueOf(studyTime.getStartDate()));
             stmt.setDate(4, Date.valueOf(studyTime.getEndDate()));
+            stmt.setString(5, studyTime.getDecision());
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();

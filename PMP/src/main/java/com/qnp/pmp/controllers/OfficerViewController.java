@@ -35,28 +35,45 @@ import java.util.stream.Collectors;
 
 public class OfficerViewController {
 
-    @FXML private Label totalLabel;
+    @FXML
+    private Label totalLabel;
     @FXML
     private TabPane officerTabPane;
     // === Bảng trên 60 tháng ===
-    @FXML private TableView<OfficerViewDTO> officerTableAbove60;
-    @FXML private TableColumn<OfficerViewDTO, String> fullNameColAbove;
-    @FXML private TableColumn<OfficerViewDTO, String> identifierCodeColAbove;
-    @FXML private TableColumn<OfficerViewDTO, Integer> birthYearColAbove;
-    @FXML private TableColumn<OfficerViewDTO, Integer> allowanceColAbove;
-    @FXML private TableColumn<OfficerViewDTO, String> unitColAbove;
-    @FXML private TableColumn<OfficerViewDTO, Void> detailColAbove;
-    @FXML private TableColumn<OfficerViewDTO, Void> workColAbove;
+    @FXML
+    private TableView<OfficerViewDTO> officerTableAbove60;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> fullNameColAbove;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> identifierCodeColAbove;
+    @FXML
+    private TableColumn<OfficerViewDTO, Integer> birthYearColAbove;
+    @FXML
+    private TableColumn<OfficerViewDTO, Integer> allowanceColAbove;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> unitColAbove;
+    @FXML
+    private TableColumn<OfficerViewDTO, Void> detailColAbove;
+    @FXML
+    private TableColumn<OfficerViewDTO, Void> workColAbove;
 
     // === Bảng ≤ 60 tháng ===
-    @FXML private TableView<OfficerViewDTO> officerTableBelow60;
-    @FXML private TableColumn<OfficerViewDTO, String> fullNameColBelow;
-    @FXML private TableColumn<OfficerViewDTO, String> identifierCodeColBelow;
-    @FXML private TableColumn<OfficerViewDTO, Integer> birthYearColBelow;
-    @FXML private TableColumn<OfficerViewDTO, Integer> allowanceColBelow;
-    @FXML private TableColumn<OfficerViewDTO, String> unitColBelow;
-    @FXML private TableColumn<OfficerViewDTO, Void> detailColBelow;
-    @FXML private TableColumn<OfficerViewDTO, Void> workColBelow;
+    @FXML
+    private TableView<OfficerViewDTO> officerTableBelow60;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> fullNameColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> identifierCodeColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Integer> birthYearColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Integer> allowanceColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> unitColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Void> detailColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Void> workColBelow;
 
     private final OfficeService officeService = new OfficerServiceImpl();
 
@@ -65,12 +82,15 @@ public class OfficerViewController {
         // Khởi tạo cấu hình cho 2 bảng
         setupTable(fullNameColAbove, identifierCodeColAbove, birthYearColAbove, allowanceColAbove, unitColAbove, detailColAbove, workColAbove);
         setupTable(fullNameColBelow, identifierCodeColBelow, birthYearColBelow, allowanceColBelow, unitColBelow, detailColBelow, workColBelow);
-
+        attachRowClickHandler(officerTableAbove60);
+        attachRowClickHandler(officerTableBelow60);
         // Nạp dữ liệu ban đầu
         loadData();
     }
 
-    /** Khởi tạo cấu hình cho bảng */
+    /**
+     * Khởi tạo cấu hình cho bảng
+     */
     private void setupTable(TableColumn<OfficerViewDTO, String> fullNameCol,
                             TableColumn<OfficerViewDTO, String> identifierCodeCol,
                             TableColumn<OfficerViewDTO, Integer> birthYearCol,
@@ -89,7 +109,9 @@ public class OfficerViewController {
         addButtonToColumn(workCol, "Công tác", this::showOfficerWorkHistory);
     }
 
-    /** Load dữ liệu và chia vào 2 bảng */
+    /**
+     * Load dữ liệu và chia vào 2 bảng
+     */
     private void loadData() {
         List<OfficerViewDTO> allData = officeService.getOfficerAllowanceStatus();
 
@@ -107,12 +129,28 @@ public class OfficerViewController {
         totalLabel.setText("Tổng: " + allData.size() + " cán bộ");
     }
 
-    /** Thêm nút vào cột thao tác */
+    private void attachRowClickHandler(TableView<OfficerViewDTO> table) {
+        table.setRowFactory(tv -> {
+            TableRow<OfficerViewDTO> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    OfficerViewDTO item = row.getItem();
+                    openEditPopup(item);
+                }
+            });
+            return row;
+        });
+    }
+
+    /**
+     * Thêm nút vào cột thao tác
+     */
     private void addButtonToColumn(TableColumn<OfficerViewDTO, Void> column,
                                    String buttonText,
                                    Consumer<OfficerViewDTO> action) {
         column.setCellFactory(tc -> new TableCell<>() {
             private final Button btn = new Button(buttonText);
+
             {
                 btn.setOnAction(e -> {
                     OfficerViewDTO officer = getTableView().getItems().get(getIndex());
@@ -120,6 +158,7 @@ public class OfficerViewController {
                 });
                 btn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12px;");
             }
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -128,11 +167,14 @@ public class OfficerViewController {
         });
     }
 
-    /** Xử lý khi nhấn nút "Chi tiết" */
+    /**
+     * Xử lý khi nhấn nút "Chi tiết"
+     */
     private void showOfficerDetail(OfficerViewDTO officer) {
 
         openDetailPopup(officer.getId().getValue());
     }
+
     private void enableWindowDragging(Stage stage, Parent root) {
         final double[] xOffset = {0};
         final double[] yOffset = {0};
@@ -147,9 +189,30 @@ public class OfficerViewController {
             stage.setY(event.getScreenY() - yOffset[0]);
         });
     }
-    private void openDetailPopup(int officerId){
+
+    private void openEditPopup(OfficerViewDTO officer) {
         try {
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/OfficerDetailPopup.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/EditOfficer.fxml"));
+            Parent root = loader.load();
+            EditOfficerController controller = loader.getController();
+            controller.setOfficer(officer);
+            Stage stage = new Stage();
+            stage.setTitle("Sửa cán bộ");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
+            stage.setResizable(false);
+            stage.showAndWait();
+            loadData();
+        } catch (IOException e) {
+            Dialog.displayErrorMessage("Không thể mở cửa sổ sửa cán bộ.");
+        }
+    }
+
+    private void openDetailPopup(int officerId) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/OfficerDetailPopup.fxml"));
             Parent root = loader.load();
 
             OfficerDetailViewController controller = loader.getController();
@@ -163,16 +226,20 @@ public class OfficerViewController {
             enableWindowDragging(stage, root);
             stage.setResizable(false);
             stage.showAndWait();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    /** Xử lý khi nhấn nút "Công tác" */
+
+    /**
+     * Xử lý khi nhấn nút "Công tác"
+     */
     private void showOfficerWorkHistory(OfficerViewDTO officer) {
 
         // TODO: Mở popup hoặc scene mới
         showStudyTime(officer);
     }
+
     private void showStudyTime(OfficerViewDTO officer) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/StudyTimeView.fxml"));
@@ -196,25 +263,26 @@ public class OfficerViewController {
     }
 
     @FXML
-    private void onManualExcelBackup(){
-        List<OfficerViewDTO>above60=new ArrayList<>(officerTableAbove60.getItems());
-        List<OfficerViewDTO>below60=new ArrayList<>(officerTableBelow60.getItems());
-        FileChooser fileChooser=new FileChooser();
+    private void onManualExcelBackup() {
+        List<OfficerViewDTO> above60 = new ArrayList<>(officerTableAbove60.getItems());
+        List<OfficerViewDTO> below60 = new ArrayList<>(officerTableBelow60.getItems());
+        FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn nơi lưu file Excel");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel file", "*.xlsx"));
         File file = fileChooser.showSaveDialog(officerTableAbove60.getScene().getWindow());
         if (file == null) return;
         try (Workbook workbook = new XSSFWorkbook()) {
-            createSheet(workbook, "Trên 60",  above60);
+            createSheet(workbook, "Trên 60", above60);
             createSheet(workbook, "Dưới 60", below60);
             try (OutputStream os = new FileOutputStream(file)) {
                 workbook.write(os);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.err.println("Lỗi khi xuất Excel: " + e.getMessage());
         }
     }
+
     private void createSheet(Workbook wb, String sheetName, List<OfficerViewDTO> data) {
         Sheet sheet = wb.createSheet(sheetName);
 
@@ -294,10 +362,10 @@ public class OfficerViewController {
 
                 // writeLocalDate đã tự set blank nếu giá trị null
                 java.time.LocalDate start = (r != null) ? r.getStartDate() : null;
-                java.time.LocalDate end   = (r != null) ? r.getEndDate()   : null;
+                java.time.LocalDate end = (r != null) ? r.getEndDate() : null;
 
                 writeLocalDate(row, col++, start, dateStyle);
-                writeLocalDate(row, col++, end,   dateStyle);
+                writeLocalDate(row, col++, end, dateStyle);
             }
 
         }
@@ -339,11 +407,13 @@ public class OfficerViewController {
         }
     }
 
-    private String safeStr(Object o) { return o == null ? "" : String.valueOf(o); }
+    private String safeStr(Object o) {
+        return o == null ? "" : String.valueOf(o);
+    }
 
 
     @FXML
-    private void add(){
+    private void add() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/AddOfficerView.fxml"));
             Parent root = loader.load();
@@ -359,16 +429,18 @@ public class OfficerViewController {
             Dialog.displayErrorMessage("Không thể mở cửa sổ thêm cán bộ.");
         }
     }
+
     @FXML
-    private void onImport(){
+    private void onImport() {
 
     }
+
     @FXML
-    private void addSchedule(){
+    private void addSchedule() {
         try {
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/AddStudy.fxml"));
-            Parent root=loader.load();
-            Stage stage=new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/StudyTime/AddStudy.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
             stage.setTitle("Thêm lịch công tác");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
@@ -376,16 +448,17 @@ public class OfficerViewController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
             loadData();
-        }catch (IOException e){
+        } catch (IOException e) {
             Dialog.displayErrorMessage("Không thể mở cửa sổ thêm lịch công tác");
         }
     }
+
     @FXML
-    private void onAllowanceTime(){
+    private void onAllowanceTime() {
         try {
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/AllowanceTime/AddAllowanceTime.fxml"));
-            Parent root=loader.load();
-            Stage stage=new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/AllowanceTime/AddAllowanceTime.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
             stage.setTitle("Thêm cấp bậc");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
@@ -393,16 +466,17 @@ public class OfficerViewController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
             loadData();
-        }catch (IOException e){
+        } catch (IOException e) {
             Dialog.displayErrorMessage("Không thể mở cửa sổ thêm thời gian được hưởng.");
         }
     }
+
     @FXML
-    private void addRank(){
+    private void addRank() {
         try {
-            FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/qnp/pmp/Rank/AddRankView.fxml"));
-            Parent root=loader.load();
-            Stage stage=new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Rank/AddRankView.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
             stage.setTitle("Thêm cấp bậc");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
@@ -410,16 +484,18 @@ public class OfficerViewController {
             stage.setScene(new Scene(root));
             stage.showAndWait();
             loadData();
-        }catch (IOException e){
+        } catch (IOException e) {
             Dialog.displayErrorMessage("Không thể mở cửa sổ thêm cấp bậc.");
         }
     }
+
     @FXML
-    private void refreshTable(){
+    private void refreshTable() {
 
     }
+
     @FXML
-    private void onDelete(){
+    private void onDelete() {
         Tab selectedTab = officerTabPane.getSelectionModel().getSelectedItem();
 
         OfficerViewDTO selected = null;
@@ -445,8 +521,9 @@ public class OfficerViewController {
             loadData(); // reload lại dữ liệu cho cả 2 bảng
         }
     }
+
     @FXML
-    private void onSearch(){
+    private void onSearch() {
 
     }
 }

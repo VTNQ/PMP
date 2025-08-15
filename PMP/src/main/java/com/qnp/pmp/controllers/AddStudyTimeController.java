@@ -27,6 +27,7 @@ public class AddStudyTimeController {
     @FXML private ComboBox<Officer> officerComboBox;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
+    @FXML private TextArea decisionTextArea;
 
     @FXML
     public void initialize() {
@@ -85,13 +86,14 @@ public class AddStudyTimeController {
             studyTime.setRound(roundSpinner.getValue());
             studyTime.setStartDate(startDatePicker.getValue());
             studyTime.setEndDate(endDatePicker.getValue());
-
+            studyTime.setDecision(decisionTextArea.getText());
             studyTimeService.saveStudyTime(studyTime);
 
             // Reset form
             officerComboBox.getSelectionModel().clearSelection();
             officerComboBox.getEditor().clear();
             roundSpinner.getValueFactory().setValue(1);
+            decisionTextArea.clear();
             startDatePicker.setValue(null);
             endDatePicker.setValue(null);
 

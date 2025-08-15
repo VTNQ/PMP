@@ -13,4 +13,5 @@ public class StudyTime {
     private int round;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String decision;
 }

@@ -3,6 +3,7 @@ package com.qnp.pmp.service.impl;
 import com.qnp.pmp.config.MySQLConnection;
 import com.qnp.pmp.dto.AllowanceDTO;
 import com.qnp.pmp.dto.OfficerViewDTO;
+import com.qnp.pmp.entity.Allowance;
 import com.qnp.pmp.entity.Level;
 import com.qnp.pmp.entity.Officer;
 import com.qnp.pmp.generic.GeneralService;
@@ -22,30 +23,43 @@ import java.util.stream.Collectors;
 public class OfficerServiceImpl implements OfficeService {
     private GeneralService generalService;
     private LevelService levelService;
+
     public OfficerServiceImpl() {
         this.generalService = new GeneralService();
-        this.levelService=new LevelServiceImpl();
+        this.levelService = new LevelServiceImpl();
     }
 
     @Override
     public void saveOfficer(Officer officer) {
         Connection conn = null;
         PreparedStatement stmt = null;
+        ResultSet rs = null;
         try {
             conn = MySQLConnection.getConnection();
 
-            String sql =
-                    "INSERT INTO officer(full_name,level_id,unit,hometown,birth_year,note,identifierCode) VALUES(?,?,?,?,?,?,?);";
+            String sql = "INSERT INTO officer(full_name,level_id,unit,hometown,birth_year,note,identifierCode) VALUES(?,?,?,?,?,?,?);";
             stmt = conn.prepareStatement(sql);
             stmt.setString(1, officer.getFullName());
             stmt.setInt(2, officer.getLevelId());
             stmt.setString(3, officer.getUnit());
-            stmt.setString(4,officer.getHomeTown() );
+            stmt.setString(4, officer.getHomeTown());
             stmt.setInt(5, officer.getBirthYear());
             stmt.setString(6, officer.getNote());
 
             stmt.setString(7, officer.getIdentifierCode());
             stmt.executeUpdate();
+            rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                int newOfficerId = rs.getInt(1);
+                Allowance allowance = new Allowance();
+                allowance.setOfficerId(newOfficerId);
+                allowance.setStartDate(LocalDate.now());
+                allowance.setEndDate(LocalDate.now().plusMonths(1));
+                allowance.setDecisionStart("Quyết định mặc định");
+                allowance.setDecisionEnd("Quyết định mặc định");
+
+                insertAllowance(allowance);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -60,24 +74,63 @@ public class OfficerServiceImpl implements OfficeService {
         }
     }
 
+    private void insertAllowance(Allowance allowance) {
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try {
+            conn = MySQLConnection.getConnection();
+            String sql = "INSERT INTO allowance(officer_id,start_date,end_date,decision_start,decision_end) VALUES (?,?,?,?,?)";
+            stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, allowance.getOfficerId());
+            stmt.setDate(2, java.sql.Date.valueOf(allowance.getStartDate()));
+            stmt.setDate(3, java.sql.Date.valueOf(allowance.getEndDate()));
+            stmt.setString(4, allowance.getDecisionStart());
+            stmt.setString(5, allowance.getDecisionEnd());
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+
     @Override
     public void saveOfficerAll(List<Officer> officers) {
         String insertOfficer = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, since,util,identifierCode) VALUES (?, ?, ?, ?, ?,?, ?, ?,?)";
         String insertStudy = "INSERT INTO studyTimes(officer_id, round, start_date, end_date) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = MySQLConnection.getConnection();
-             PreparedStatement officerStmt = conn.prepareStatement(insertOfficer, Statement.RETURN_GENERATED_KEYS);
-             PreparedStatement studyStmt = conn.prepareStatement(insertStudy)) {
-
+        String insertAllow = "INSERT INTO allowance(officer_id, start_date, end_date, decision_start, decision_end) VALUES (?, ?, ?, ?, ?)";
+        java.util.Map<String, Integer> levelCache = new java.util.HashMap<>();
+        Connection conn = null;
+        PreparedStatement officerStmt = null;
+        PreparedStatement studyStmt = null;
+        PreparedStatement allowanceStmt = null;
+        try {
+            conn = MySQLConnection.getConnection();
+            conn.setAutoCommit(false);
+            officerStmt = conn.prepareStatement(insertOfficer, Statement.RETURN_GENERATED_KEYS);
+            studyStmt = conn.prepareStatement(insertStudy);
+            allowanceStmt = conn.prepareStatement(insertAllow);
             for (Officer officer : officers) {
-                Level level = levelService.getByName(officer.getLevelName());
-                if (level == null) {
-                    System.err.println("⚠ Không tìm thấy trình độ: " + officer.getLevelName());
-                    continue;
+                Integer levelId = levelCache.get(officer.getLevelName());
+                if (levelId == null) {
+                    Level level = levelService.getByName(officer.getLevelName());
+                    if (level == null) {
+                        System.err.println("⚠ Không tìm thấy trình độ: " + officer.getLevelName());
+                        continue;
+                    }
+                    levelId = level.getId();
+                    levelCache.put(officer.getLevelName(), levelId);
                 }
-
                 officerStmt.setString(1, officer.getFullName());
-                officerStmt.setInt(2, level.getId());
+                officerStmt.setInt(2, levelId);
                 officerStmt.setString(3, officer.getUnit());
                 officerStmt.setString(4, officer.getHomeTown());
                 officerStmt.setInt(5, officer.getBirthYear());
@@ -85,37 +138,73 @@ public class OfficerServiceImpl implements OfficeService {
                 officerStmt.setDate(7, officer.getSince() != null ? java.sql.Date.valueOf(officer.getSince()) : null);
                 officerStmt.setDate(8, officer.getUntil() != null ? java.sql.Date.valueOf(officer.getUntil()) : null);
                 officerStmt.setString(9, officer.getIdentifierCode());
-
                 officerStmt.executeUpdate();
-
-                ResultSet rs = officerStmt.getGeneratedKeys();
-                if (rs.next()) {
-                    int officerId = rs.getInt(1);
-
-                    for (Map.Entry<Integer, Pair<LocalDate, LocalDate>> entry : officer.getStudyTimes().entrySet()) {
-                        studyStmt.setInt(1, officerId);
-                        studyStmt.setInt(2, entry.getKey());
-                        studyStmt.setDate(3, java.sql.Date.valueOf(entry.getValue().getLeft()));
-                        studyStmt.setDate(4, java.sql.Date.valueOf(entry.getValue().getRight()));
-                        studyStmt.addBatch();
+                try (ResultSet rs = officerStmt.getGeneratedKeys()) {
+                    if (!rs.next()) {
+                        System.err.println("⚠ Không lấy được ID sau khi insert officer: " + officer.getFullName());
+                        continue;
                     }
+                    int officerId = rs.getInt(1);
+                    if (officer.getStudyTimes() != null) {
+                        for (Map.Entry<Integer, Pair<LocalDate, LocalDate>> entry : officer.getStudyTimes().entrySet()) {
+                            Pair<LocalDate, LocalDate> pair = entry.getValue();
+                            if (pair == null) continue;
+                            studyStmt.setInt(1, officerId);
+                            studyStmt.setInt(2, entry.getKey());
+                            studyStmt.setDate(3, pair.getLeft() != null ? java.sql.Date.valueOf(pair.getLeft()) : null);
+                            studyStmt.setDate(4, pair.getRight() != null ? java.sql.Date.valueOf(pair.getRight()) : null);
+                            studyStmt.executeUpdate();
+                        }
+                    }
+                    LocalDate start = LocalDate.now();
+                    LocalDate end = start.plusMonths(1);
+                    allowanceStmt.setInt(1, officerId);
+                    allowanceStmt.setDate(2, java.sql.Date.valueOf(start));
+                    allowanceStmt.setDate(3, java.sql.Date.valueOf(end));
+                    allowanceStmt.setString(4, "Quyết định mặc định"); // có thể thay từ file/import
+                    allowanceStmt.setString(5, "Quyết định mặc định");
+                    allowanceStmt.addBatch();
                 }
             }
-
             studyStmt.executeBatch();
+            allowanceStmt.executeBatch();
+            conn.commit();
         } catch (Exception e) {
             e.printStackTrace();
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                    System.err.println("❌ Transaction đã rollback do lỗi.");
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        } finally {
+            try {
+                if (officerStmt != null) officerStmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (studyStmt != null) studyStmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (allowanceStmt != null) allowanceStmt.close();
+            } catch (Exception ignored) {
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (Exception ignored) {
+            }
         }
     }
 
 
-
-
     @Override
-    public void updateOfficer(int id,Officer officer) {
+    public void updateOfficer(int id, Officer officer) {
         String sql = "UPDATE officer SET full_name = ?, level_id = ?, unit = ?, hometown = ?,birth_year= ?,note= ?,since=?,util=?,identifierCode=? WHERE id = ?";
-        try (Connection connection=MySQLConnection.getConnection()){
-            PreparedStatement stmt=connection.prepareStatement(sql);
+        try (Connection connection = MySQLConnection.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, officer.getFullName());
             stmt.setInt(2, officer.getLevelId());
             stmt.setString(3, officer.getUnit());
@@ -127,19 +216,19 @@ public class OfficerServiceImpl implements OfficeService {
             stmt.setString(9, officer.getIdentifierCode());
             stmt.setInt(10, id);
             stmt.executeUpdate();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Override
     public void deleteOfficer(int id) {
-        String sql="DELETE FROM officer WHERE id = ?";
-        try (Connection connection=MySQLConnection.getConnection()){
-            PreparedStatement stmt=connection.prepareStatement(sql);
-            stmt.setInt(1,id);
+        String sql = "DELETE FROM officer WHERE id = ?";
+        try (Connection connection = MySQLConnection.getConnection()) {
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, id);
             stmt.executeUpdate();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -148,12 +237,7 @@ public class OfficerServiceImpl implements OfficeService {
     public List<OfficerViewDTO> findByName(String name) {
         Map<Integer, OfficerViewDTO> officerMap = new HashMap<>();
 
-        String sql =
-                "SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name, " +
-                        "       o.unit, o.hometown, o.birth_year, o.note, o.identifierCode " +
-                        "FROM officer o " +
-                        "JOIN level l ON o.level_id = l.id " +
-                        "WHERE o.full_name LIKE ?";
+        String sql = "SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name, " + "       o.unit, o.hometown, o.birth_year, o.note, o.identifierCode " + "FROM officer o " + "JOIN level l ON o.level_id = l.id " + "WHERE o.full_name LIKE ?";
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
@@ -173,8 +257,7 @@ public class OfficerServiceImpl implements OfficeService {
                         String note = rs.getString("note");
                         String identifierCode = rs.getString("identifierCode");
 
-                        OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                                unit, birthYear, homeTown, note, identifierCode);
+                        OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName, unit, birthYear, homeTown, note, identifierCode);
                         officerMap.put(id, dto);
                     }
                 }
@@ -183,15 +266,9 @@ public class OfficerServiceImpl implements OfficeService {
             if (officerMap.isEmpty()) return new ArrayList<>();
 
             // Bước 2: Lấy thông tin học tập từ bảng studyTimes
-            String idPlaceholders = officerMap.keySet().stream()
-                    .map(id -> "?")
-                    .collect(Collectors.joining(", "));
+            String idPlaceholders = officerMap.keySet().stream().map(id -> "?").collect(Collectors.joining(", "));
 
-            String studySql =
-                    "SELECT officer_id, round, start_date, end_date " +
-                            "FROM studyTimes " +
-                            "WHERE officer_id IN (" + idPlaceholders + ") " +
-                            "ORDER BY officer_id, round";
+            String studySql = "SELECT officer_id, round, start_date, end_date " + "FROM studyTimes " + "WHERE officer_id IN (" + idPlaceholders + ") " + "ORDER BY officer_id, round";
 
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
 
@@ -214,8 +291,7 @@ public class OfficerServiceImpl implements OfficeService {
                         // Lưu lại thông tin học tập
                         dto.addStudyRound(round, originalStart, originalEnd);
 
-                        Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
-                                .computeIfAbsent(officerId, k -> new HashMap<>());
+                        Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer.computeIfAbsent(officerId, k -> new HashMap<>());
 
                         LocalDate date = originalStart;
                         while (!date.isAfter(originalEnd)) {
@@ -240,9 +316,7 @@ public class OfficerServiceImpl implements OfficeService {
                     continue;
                 }
 
-                YearMonth firstMonth = daysPerMonth.keySet().stream()
-                        .min(YearMonth::compareTo)
-                        .orElse(currentMonth);
+                YearMonth firstMonth = daysPerMonth.keySet().stream().min(YearMonth::compareTo).orElse(currentMonth);
 
                 int totalMonths = (int) ChronoUnit.MONTHS.between(firstMonth, currentMonth) + 1;
 
@@ -271,17 +345,16 @@ public class OfficerServiceImpl implements OfficeService {
         Map<Integer, OfficerViewDTO> officerMap = new HashMap<>();
 
         String officerSql = """
-        SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
-               o.unit, o.hometown, o.birth_year, o.note, o.identifierCode
-        FROM officer o
-        JOIN level l ON o.level_id = l.id
-    """;
+                    SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
+                           o.unit, o.hometown, o.birth_year, o.note, o.identifierCode
+                    FROM officer o
+                    JOIN level l ON o.level_id = l.id
+                """;
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
             // ===== Bước 1: Lấy danh sách cán bộ =====
-            try (PreparedStatement stmt = connection.prepareStatement(officerSql);
-                 ResultSet rs = stmt.executeQuery()) {
+            try (PreparedStatement stmt = connection.prepareStatement(officerSql); ResultSet rs = stmt.executeQuery()) {
 
                 while (rs.next()) {
                     int id = rs.getInt("id");
@@ -294,8 +367,7 @@ public class OfficerServiceImpl implements OfficeService {
                     String note = rs.getString("note");
                     String identifierCode = rs.getString("identifierCode");
 
-                    OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName,
-                            unit, birthYear, homeTown, note, identifierCode);
+                    OfficerViewDTO dto = new OfficerViewDTO(id, fullName, levelId, levelName, unit, birthYear, homeTown, note, identifierCode);
                     officerMap.put(id, dto);
                 }
             }
@@ -305,19 +377,17 @@ public class OfficerServiceImpl implements OfficeService {
             }
 
             // Chuẩn bị placeholder cho IN (...)
-            String idPlaceholders = officerMap.keySet().stream()
-                    .map(id -> "?")
-                    .collect(Collectors.joining(", "));
+            String idPlaceholders = officerMap.keySet().stream().map(id -> "?").collect(Collectors.joining(", "));
 
             // ===== Bước 2: Lấy studyTimes và tính số ngày học từng tháng =====
             Map<Integer, Map<YearMonth, Integer>> studyDaysByOfficer = new HashMap<>();
             String studySql = """
-            SELECT officer_id, round, start_date, end_date
-            FROM studyTimes
-            WHERE officer_id IN (""" + idPlaceholders + """
-            )
-            ORDER BY officer_id, round
-        """;
+                    SELECT officer_id, round, start_date, end_date
+                    FROM studyTimes
+                    WHERE officer_id IN (""" + idPlaceholders + """
+                        )
+                        ORDER BY officer_id, round
+                    """;
 
             try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
                 int index = 1;
@@ -337,8 +407,7 @@ public class OfficerServiceImpl implements OfficeService {
 
                         dto.addStudyRound(round, start, end);
 
-                        Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer
-                                .computeIfAbsent(officerId, k -> new HashMap<>());
+                        Map<YearMonth, Integer> monthlyDays = studyDaysByOfficer.computeIfAbsent(officerId, k -> new HashMap<>());
 
                         LocalDate date = start;
                         while (!date.isAfter(end)) {
@@ -352,11 +421,11 @@ public class OfficerServiceImpl implements OfficeService {
 
             // ===== Bước 3: Lấy allowances =====
             String allowanceSql = """
-    SELECT officer_id, start_date, end_date
-    FROM allowance
-    WHERE officer_id IN (""" + idPlaceholders + """
-    )
-""";
+                    SELECT officer_id, start_date, end_date
+                    FROM allowance
+                    WHERE officer_id IN (""" + idPlaceholders + """
+                        )
+                    """;
 
             try (PreparedStatement stmt = connection.prepareStatement(allowanceSql)) {
                 int index = 1;
@@ -368,16 +437,13 @@ public class OfficerServiceImpl implements OfficeService {
                     while (rs.next()) {
                         int officerId = rs.getInt("officer_id");
                         LocalDate start = rs.getDate("start_date").toLocalDate();
-                        LocalDate end = rs.getDate("end_date") != null
-                                ? rs.getDate("end_date").toLocalDate()
-                                : LocalDate.now();
+                        LocalDate end = rs.getDate("end_date") != null ? rs.getDate("end_date").toLocalDate() : LocalDate.now();
 
                         OfficerViewDTO dto = officerMap.get(officerId);
                         if (dto == null) continue;
 
                         // Lấy dữ liệu số ngày học theo tháng
-                        Map<YearMonth, Integer> studyDays = studyDaysByOfficer
-                                .getOrDefault(officerId, Map.of());
+                        Map<YearMonth, Integer> studyDays = studyDaysByOfficer.getOrDefault(officerId, Map.of());
 
                         // Đếm số ngày học thật sự trong khoảng start → end
                         Map<YearMonth, Integer> daysInRange = new HashMap<>();
@@ -392,8 +458,7 @@ public class OfficerServiceImpl implements OfficeService {
                         }
 
                         // Kiểm tra nếu bất kỳ tháng nào trong khoảng có >= 15 ngày học
-                        boolean hasMonthWithEnoughDays = daysInRange.values().stream()
-                                .anyMatch(count -> count >= 15);
+                        boolean hasMonthWithEnoughDays = daysInRange.values().stream().anyMatch(count -> count >= 15);
 
                         if (hasMonthWithEnoughDays) {
                             int key = dto.getAllowances().size() + 1;
@@ -408,8 +473,7 @@ public class OfficerServiceImpl implements OfficeService {
             for (Map.Entry<Integer, OfficerViewDTO> entry : officerMap.entrySet()) {
                 int officerId = entry.getKey();
                 OfficerViewDTO dto = entry.getValue();
-                Map<YearMonth, Integer> studyDays = studyDaysByOfficer
-                        .getOrDefault(officerId, Map.of());
+                Map<YearMonth, Integer> studyDays = studyDaysByOfficer.getOrDefault(officerId, Map.of());
 
                 if (dto.getAllowances().isEmpty()) {
                     dto.setAllowanceMonths(0);
@@ -419,9 +483,7 @@ public class OfficerServiceImpl implements OfficeService {
                 int count = 0;
                 for (AllowanceDTO allowance : dto.getAllowances().values()) {
                     LocalDate allowanceStart = allowance.getStartDate();
-                    LocalDate allowanceEnd = allowance.getEndDate() != null
-                            ? allowance.getEndDate()
-                            : LocalDate.now();
+                    LocalDate allowanceEnd = allowance.getEndDate() != null ? allowance.getEndDate() : LocalDate.now();
 
                     YearMonth ymStart = YearMonth.from(allowanceStart);
                     YearMonth ymEnd = YearMonth.from(allowanceEnd);
@@ -454,7 +516,7 @@ public class OfficerServiceImpl implements OfficeService {
     public List<Officer> getOfficers() {
         List<Officer> officers = new ArrayList<>();
         String sql = "SELECT * FROM officer";
-        try(Connection connection=MySQLConnection.getConnection()) {
+        try (Connection connection = MySQLConnection.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
@@ -468,7 +530,7 @@ public class OfficerServiceImpl implements OfficeService {
                 officer.setNote(rs.getString("note"));
                 officers.add(officer);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return officers;
@@ -479,12 +541,12 @@ public class OfficerServiceImpl implements OfficeService {
         OfficerViewDTO dto = null;
 
         String officerSql = """
-        SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
-               o.unit, o.hometown, o.birth_year, o.note, o.identifierCode
-        FROM officer o
-        JOIN level l ON o.level_id = l.id
-        WHERE o.id = ?
-    """;
+                    SELECT o.id, o.full_name, l.id AS levelId, l.name AS level_name,
+                           o.unit, o.hometown, o.birth_year, o.note, o.identifierCode
+                    FROM officer o
+                    JOIN level l ON o.level_id = l.id
+                    WHERE o.id = ?
+                """;
 
         try (Connection connection = MySQLConnection.getConnection()) {
 
@@ -493,17 +555,7 @@ public class OfficerServiceImpl implements OfficeService {
                 stmt.setInt(1, officerId);
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (rs.next()) {
-                        dto = new OfficerViewDTO(
-                                rs.getInt("id"),
-                                rs.getString("full_name"),
-                                rs.getInt("levelId"),
-                                rs.getString("level_name"),
-                                rs.getString("unit"),
-                                rs.getInt("birth_year"),
-                                rs.getString("hometown"),
-                                rs.getString("note"),
-                                rs.getString("identifierCode")
-                        );
+                        dto = new OfficerViewDTO(rs.getInt("id"), rs.getString("full_name"), rs.getInt("levelId"), rs.getString("level_name"), rs.getString("unit"), rs.getInt("birth_year"), rs.getString("hometown"), rs.getString("note"), rs.getString("identifierCode"));
                     }
                 }
             }
@@ -515,11 +567,11 @@ public class OfficerServiceImpl implements OfficeService {
             // ===== Bước 2: Lấy studyTimes và tính ngày học theo tháng =====
             Map<YearMonth, Integer> studyDays = new HashMap<>();
             String studySql = """
-            SELECT round, start_date, end_date
-            FROM studyTimes
-            WHERE officer_id = ?
-            ORDER BY round
-        """;
+                        SELECT round, start_date, end_date
+                        FROM studyTimes
+                        WHERE officer_id = ?
+                        ORDER BY round
+                    """;
 
             try (PreparedStatement stmt = connection.prepareStatement(studySql)) {
                 stmt.setInt(1, officerId);
@@ -543,19 +595,17 @@ public class OfficerServiceImpl implements OfficeService {
 
             // ===== Bước 3: Lấy allowances =====
             String allowanceSql = """
-            SELECT start_date, end_date
-            FROM allowance
-            WHERE officer_id = ?
-        """;
+                        SELECT start_date, end_date
+                        FROM allowance
+                        WHERE officer_id = ?
+                    """;
 
             try (PreparedStatement stmt = connection.prepareStatement(allowanceSql)) {
                 stmt.setInt(1, officerId);
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
                         LocalDate start = rs.getDate("start_date").toLocalDate();
-                        LocalDate end = rs.getDate("end_date") != null
-                                ? rs.getDate("end_date").toLocalDate()
-                                : LocalDate.now();
+                        LocalDate end = rs.getDate("end_date") != null ? rs.getDate("end_date").toLocalDate() : LocalDate.now();
 
                         // Đếm số ngày học trong khoảng
                         Map<YearMonth, Integer> daysInRange = new HashMap<>();
@@ -569,8 +619,7 @@ public class OfficerServiceImpl implements OfficeService {
                         }
 
                         // Chỉ thêm allowance nếu có tháng >= 15 ngày học
-                        boolean hasMonthWithEnoughDays = daysInRange.values().stream()
-                                .anyMatch(count -> count >= 15);
+                        boolean hasMonthWithEnoughDays = daysInRange.values().stream().anyMatch(count -> count >= 15);
 
                         if (hasMonthWithEnoughDays) {
                             int key = dto.getAllowances().size() + 1;
@@ -584,9 +633,7 @@ public class OfficerServiceImpl implements OfficeService {
             int count = 0;
             for (AllowanceDTO allowance : dto.getAllowances().values()) {
                 LocalDate start = allowance.getStartDate();
-                LocalDate end = allowance.getEndDate() != null
-                        ? allowance.getEndDate()
-                        : LocalDate.now();
+                LocalDate end = allowance.getEndDate() != null ? allowance.getEndDate() : LocalDate.now();
 
                 YearMonth ymStart = YearMonth.from(start);
                 YearMonth ymEnd = YearMonth.from(end);
@@ -609,7 +656,6 @@ public class OfficerServiceImpl implements OfficeService {
 
         return dto;
     }
-
 
 
 }

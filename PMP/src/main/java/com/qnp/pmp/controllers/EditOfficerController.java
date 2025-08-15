@@ -10,13 +10,18 @@ import com.qnp.pmp.service.impl.LevelServiceImpl;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -88,6 +93,38 @@ public class EditOfficerController {
 
             }
         });
+    }
+    private void enableWindowDragging(Stage stage, Parent root) {
+        final double[] xOffset = {0};
+        final double[] yOffset = {0};
+
+        root.setOnMousePressed(event -> {
+            xOffset[0] = event.getSceneX();
+            yOffset[0] = event.getSceneY();
+        });
+
+        root.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - xOffset[0]);
+            stage.setY(event.getScreenY() - yOffset[0]);
+        });
+    }
+    @FXML
+    private void onUpdateAllowanceTime(){
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/AllowanceTime/benefit-detail.fxml"));
+            Parent root = loader.load();
+            BenefitDetailsController controller = loader.getController();
+            controller.loadData(id);
+            Stage stage = new Stage();
+            stage.setTitle("Chi tiết được hưởng");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        }catch (IOException e){
+            Dialog.displayErrorMessage("Không thể mở cửa sổ chi tiết được hưởng");
+        }
     }
     @FXML
     private void onSave() {
