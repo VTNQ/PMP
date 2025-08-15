@@ -612,9 +612,9 @@ public class OfficerServiceImpl implements OfficeService {
                         LocalDate date = start.plusDays(1);
                         while (!date.isAfter(end)) {
                             YearMonth ym = YearMonth.from(date);
-                            if (studyDays.getOrDefault(ym, 0) > 0) {
+
                                 daysInRange.put(ym, daysInRange.getOrDefault(ym, 0) + 1);
-                            }
+
                             date = date.plusDays(1);
                         }
 
