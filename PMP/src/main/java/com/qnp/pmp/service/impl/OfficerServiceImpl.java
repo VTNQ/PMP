@@ -318,7 +318,7 @@ public class OfficerServiceImpl implements OfficeService {
 
                 YearMonth firstMonth = daysPerMonth.keySet().stream().min(YearMonth::compareTo).orElse(currentMonth);
 
-                int totalMonths = (int) ChronoUnit.MONTHS.between(firstMonth, currentMonth) + 1;
+                int totalMonths = (int) ChronoUnit.MONTHS.between(firstMonth, currentMonth) ;
 
                 int count = 0;
                 for (int i = 0; i < totalMonths; i++) {
@@ -451,9 +451,9 @@ public class OfficerServiceImpl implements OfficeService {
                         while (!date.isAfter(end)) {
                             YearMonth ym = YearMonth.from(date);
                             // Chỉ tính ngày nếu tháng đó có học
-                            if (studyDays.getOrDefault(ym, 0) > 0) {
+
                                 daysInRange.put(ym, daysInRange.getOrDefault(ym, 0) + 1);
-                            }
+
                             date = date.plusDays(1);
                         }
 
@@ -488,7 +488,7 @@ public class OfficerServiceImpl implements OfficeService {
                     YearMonth ymStart = YearMonth.from(allowanceStart);
                     YearMonth ymEnd = YearMonth.from(allowanceEnd);
 
-                    long monthsBetween = ChronoUnit.MONTHS.between(ymStart, ymEnd) + 1;
+                    long monthsBetween = ChronoUnit.MONTHS.between(ymStart, ymEnd) ;
 
                     for (int i = 0; i < monthsBetween; i++) {
                         YearMonth ym = ymStart.plusMonths(i);
@@ -612,9 +612,9 @@ public class OfficerServiceImpl implements OfficeService {
                         LocalDate date = start.plusDays(1);
                         while (!date.isAfter(end)) {
                             YearMonth ym = YearMonth.from(date);
-                            if (studyDays.getOrDefault(ym, 0) > 0) {
+
                                 daysInRange.put(ym, daysInRange.getOrDefault(ym, 0) + 1);
-                            }
+
                             date = date.plusDays(1);
                         }
 
@@ -638,7 +638,7 @@ public class OfficerServiceImpl implements OfficeService {
                 YearMonth ymStart = YearMonth.from(start);
                 YearMonth ymEnd = YearMonth.from(end);
 
-                long monthsBetween = ChronoUnit.MONTHS.between(ymStart, ymEnd) + 1;
+                long monthsBetween = ChronoUnit.MONTHS.between(ymStart, ymEnd) ;
 
                 for (int i = 0; i < monthsBetween; i++) {
                     YearMonth ym = ymStart.plusMonths(i);
