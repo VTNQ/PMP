@@ -80,11 +80,6 @@ public class AddOfficerController {
         });
     }
     @FXML
-    private void handleCancel() {
-        Stage stage=(Stage) fullNameField.getScene().getWindow();
-        stage.close();
-    }
-    @FXML
     private void onClose() {
         Stage stage = (Stage) closeButton.getScene().getWindow();
         stage.close();

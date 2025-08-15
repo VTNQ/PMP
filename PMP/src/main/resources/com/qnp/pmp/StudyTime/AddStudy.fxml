@@ -9,7 +9,7 @@
       fx:controller="com.qnp.pmp.controllers.AddStudyTimeController"
       spacing="20"
       alignment="TOP_CENTER"
-      prefWidth="420" prefHeight="340"
+      prefWidth="660" prefHeight="440"
       stylesheets="@AddStudy.css">
 
     <padding>
@@ -30,6 +30,16 @@
 
         <Label text="Ngày kết thúc:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
         <DatePicker fx:id="endDatePicker" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="Quyết định công tác:"
+               GridPane.rowIndex="4" GridPane.columnIndex="0"
+               GridPane.valignment="TOP"/>
+
+        <!-- Hàng 5: TextArea chiếm 2 cột -->
+        <TextArea fx:id="decisionTextArea"
+                  GridPane.rowIndex="5" GridPane.columnIndex="0"
+                  GridPane.columnSpan="2"
+                  prefRowCount="3" wrapText="true"
+                  maxWidth="Infinity"/>
     </GridPane>
 
     <HBox spacing="20" alignment="CENTER_RIGHT">

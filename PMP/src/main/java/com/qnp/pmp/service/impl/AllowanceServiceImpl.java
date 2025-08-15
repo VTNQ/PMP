@@ -28,6 +28,7 @@ public class AllowanceServiceImpl implements AllowanceService {
             stmt.setString(5, allowance.getDecisionEnd());
 
             stmt.executeUpdate();
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

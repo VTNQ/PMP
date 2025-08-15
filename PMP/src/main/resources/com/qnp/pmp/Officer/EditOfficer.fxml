@@ -61,6 +61,8 @@
     <!-- ======= NÚT HÀNH ĐỘNG ======= -->
     <HBox spacing="20" alignment="CENTER_RIGHT">
         <Button fx:id="saveButton" text="💾 Lưu" onAction="#onSave" styleClass="save-button"/>
+        <Button fx:id="updateAllowanceButton" text="🕒 Cập nhật thời gian hưởng"
+                onAction="#onUpdateAllowanceTime" styleClass="secondary-button"/>
     </HBox>
 
 </VBox>
