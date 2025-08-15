@@ -36,3 +36,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+.env
+.env.local
+
+# Thư mục backup
+backup/
+# Bỏ file MySQLConnection.java
+src/main/java/com/qnp/pmp/config/MySQLConnection.java

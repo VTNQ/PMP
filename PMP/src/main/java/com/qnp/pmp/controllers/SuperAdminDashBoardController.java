@@ -3,14 +3,59 @@ package com.qnp.pmp.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 
 public class SuperAdminDashBoardController {
+    @FXML private Button maximizeButton;
+
+    private double xOffset, yOffset;
+
+    private Stage stage() {
+        return (Stage) contentArea.getScene().getWindow();
+    }
+
+    /* ===== Nút cửa sổ ===== */
+    @FXML
+    private void onMinimizeClick() { stage().setIconified(true); }
+
+    @FXML
+    private void onMaximizeRestoreClick() {
+        Stage s = stage();
+        boolean after = !s.isMaximized();
+        s.setMaximized(after);
+        if (maximizeButton != null) maximizeButton.setText(after ? "🗗" : "⬜");
+    }
+
+    @FXML
+    private void onCloseClick() { stage().close(); }
+
+    /* ===== Kéo cửa sổ trên titlebar ===== */
+    @FXML
+    private void onTitleBarMousePressed(javafx.scene.input.MouseEvent e) {
+        if (stage().isMaximized()) return;
+        xOffset = e.getSceneX();
+        yOffset = e.getSceneY();
+    }
+
+    @FXML
+    private void onTitleBarMouseDragged(javafx.scene.input.MouseEvent e) {
+        Stage s = stage();
+        if (s.isMaximized()) return;
+        s.setX(e.getScreenX() - xOffset);
+        s.setY(e.getScreenY() - yOffset);
+    }
+
+    @FXML
+    private void onTitleBarMouseClicked(javafx.scene.input.MouseEvent e) {
+        if (e.getClickCount() == 2) onMaximizeRestoreClick();
+    }
 
     @FXML
     private ListView<String> menuList;

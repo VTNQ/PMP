@@ -21,8 +21,29 @@ import java.io.IOException;
 
 public class LoginController {
     private final UserService userService;
+    @FXML private javafx.scene.layout.BorderPane root;
+    @FXML private Button maximizeButton;
+    private double xOffset = 0;
+    private double yOffset = 0;
+    private Stage stage() {
+        return (Stage) root.getScene().getWindow();
+    }
     @FXML
-    private Button closeButton;
+    private void onMinimizeClick() {
+        stage().setIconified(true);
+    }
+
+    @FXML
+    private void onMaximizeRestoreClick() {
+        Stage s = stage();
+        boolean after = !s.isMaximized();
+        s.setMaximized(after);
+        if (maximizeButton != null) {
+            maximizeButton.setText(after ? "🗗" : "⬜"); // đổi icon
+        }
+    }
+
+
     public LoginController() {
         this.userService = new UserServiceImpl();
     }
@@ -71,6 +92,10 @@ public class LoginController {
                     stage.setScene(scene);
                     stage.setTitle("SuperAdmin Dashboard");
                     enableWindowDragging(stage, root);
+
+                    stage.sizeToScene();
+                    stage.centerOnScreen();
+
                     stage.show();
                     break;
 
@@ -81,6 +106,10 @@ public class LoginController {
                     stage.setScene(scene);
                     stage.setTitle("Admin Dashboard");
                     enableWindowDragging(stage, root);
+
+                    stage.sizeToScene();
+                    stage.centerOnScreen();
+
                     stage.show();
                     break;
                 case USER:
@@ -90,6 +119,9 @@ public class LoginController {
                     stage.setScene(scene);
                     stage.setTitle("Admin Dashboard");
                     enableWindowDragging(stage, root);
+
+                    stage.sizeToScene();
+                    stage.centerOnScreen();
                     stage.show();
                     break;
 
@@ -118,9 +150,32 @@ public class LoginController {
     }
 
     @FXML
-    private void onCloseClick() {
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
+     private void onCloseClick() {
+        stage().close();
     }
+
+    @FXML
+    private void onTitleBarMousePressed(javafx.scene.input.MouseEvent e) {
+        Stage s = stage();
+        if (s.isMaximized()) return; // đang phóng to thì không kéo
+        xOffset = e.getSceneX();
+        yOffset = e.getSceneY();
+    }
+
+    @FXML
+    private void onTitleBarMouseDragged(javafx.scene.input.MouseEvent e) {
+        Stage s = stage();
+        if (s.isMaximized()) return;
+        s.setX(e.getScreenX() - xOffset);
+        s.setY(e.getScreenY() - yOffset);
+    }
+
+    @FXML
+    private void onTitleBarMouseClicked(javafx.scene.input.MouseEvent e) {
+        if (e.getClickCount() == 2) {
+            onMaximizeRestoreClick();
+        }
+    }
+
 
 }

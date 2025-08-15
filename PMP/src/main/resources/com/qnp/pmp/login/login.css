@@ -57,3 +57,54 @@
 .login-button:hover {
     -fx-background-color: #303f9f;
 }
+
+.titlebar {
+    -fx-padding: 8 12 8 12;
+    -fx-background-color: rgba(255,255,255,0.06);
+    -fx-cursor: move;
+}
+
+.title {
+    -fx-text-fill: #eaeef6;
+    -fx-font-weight: bold;
+}
+
+.winbtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #c9d2e9;
+    -fx-font-size: 12px;
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 6;
+}
+.winbtn:hover { -fx-background-color: rgba(255,255,255,0.12); }
+.winbtn-close:hover { -fx-background-color: #e74c3c; -fx-text-fill: white; }
+
+.titlebar { -fx-padding: 8 12; }
+/* Nút cửa sổ chung */
+.winbtn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #cccccc;
+    -fx-font-size: 12px;
+    -fx-padding: 0;
+    -fx-min-width: 35px;   /* chiều ngang giống app chuẩn */
+    -fx-min-height: 30px;  /* chiều cao giống title bar */
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+}
+
+.winbtn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+
+.winbtn-min:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+
+.winbtn-max:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+
+.winbtn-close:hover {
+    -fx-background-color: #e81123;
+    -fx-text-fill: white;
+}

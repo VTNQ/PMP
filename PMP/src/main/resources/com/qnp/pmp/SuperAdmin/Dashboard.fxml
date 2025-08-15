@@ -6,13 +6,47 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.Button?>
 <AnchorPane xmlns="http://javafx.com/javafx/23.0.1"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.qnp.pmp.controllers.SuperAdminDashBoardController"
             stylesheets="@Dashboard.css"
             prefWidth="1500" prefHeight="800">
 
-    <HBox AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"
+    <HBox spacing="0"
+          alignment="CENTER_LEFT"
+          styleClass="titlebar"
+          prefHeight="30"
+          AnchorPane.topAnchor="0" AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0"
+          onMousePressed="#onTitleBarMousePressed"
+          onMouseDragged="#onTitleBarMouseDragged"
+          onMouseClicked="#onTitleBarMouseClicked">
+
+        <Label text="🧑‍💻 SuperAdmin Dashboard" styleClass="title"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+
+        <!-- 3 nút cửa sổ -->
+        <Button text="—"
+                focusTraversable="false"
+                onAction="#onMinimizeClick"
+                styleClass="winbtn winbtn-min"/>
+
+        <Button fx:id="maximizeButton"
+                text="⬜"
+                focusTraversable="false"
+                onAction="#onMaximizeRestoreClick"
+                styleClass="winbtn winbtn-max"/>
+
+        <Button text="✕"
+                focusTraversable="false"
+                onAction="#onCloseClick"
+                styleClass="winbtn winbtn-close"/>
+    </HBox>
+
+    <!-- Nội dung chính, đẩy xuống dưới titlebar 30px -->
+    <HBox AnchorPane.topAnchor="30" AnchorPane.bottomAnchor="0"
           AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
           prefWidth="1200" prefHeight="750">
 

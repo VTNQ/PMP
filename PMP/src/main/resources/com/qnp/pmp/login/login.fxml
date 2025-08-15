@@ -1,35 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.qnp.pmp.controllers.LoginController"
-           stylesheets="@login.css"
-           prefWidth="1000.0" prefHeight="600.0">
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.qnp.pmp.controllers.LoginController"
+        stylesheets="@login.css"
+        prefWidth="1000.0" prefHeight="600.0"
+        fx:id="root">
 
-    <!-- Khung login chính -->
-    <VBox alignment="CENTER" spacing="15.0" styleClass="login-container">
-        <Text text="🔐 ĐĂNG NHẬP HỆ THỐNG" styleClass="heading"/>
-        <TextField fx:id="usernameField" promptText="Tên đăng nhập" styleClass="form-field"/>
-        <PasswordField fx:id="passwordField" promptText="Mật khẩu" styleClass="form-field"/>
-        <Button fx:id="loginButton" text="Đăng nhập" onAction="#onLoginClick" styleClass="login-button"/>
-        <Label fx:id="messageLabel" textFill="red"/>
-    </VBox>
+    <!-- TOP: Title bar -->
+    <top>
+        <HBox spacing="0"
+              alignment="CENTER_LEFT"
+              styleClass="titlebar"
+              prefHeight="30"
+              onMousePressed="#onTitleBarMousePressed"
+              onMouseDragged="#onTitleBarMouseDragged"
+              onMouseClicked="#onTitleBarMouseClicked">
 
-    <!-- Nút đóng góc phải (đặt sau để hiển thị trên cùng) -->
-    <Button fx:id="closeButton"
-            text="X"
-            onAction="#onCloseClick"
-            styleClass="close-button"
-            StackPane.alignment="TOP_RIGHT">
-        <StackPane.margin>
-            <Insets top="10" right="10"/>
-        </StackPane.margin>
-    </Button>
-</StackPane>
+            <Label text="🔐 PMP - Đăng nhập" styleClass="title"/>
+            <Pane HBox.hgrow="ALWAYS"/> <!-- đẩy nút sang phải -->
 
+            <Button text="—"
+                    focusTraversable="false"
+                    onAction="#onMinimizeClick"
+                    styleClass="winbtn winbtn-min"/>
 
+            <Button fx:id="maximizeButton"
+                    text="⬜"
+                    focusTraversable="false"
+                    onAction="#onMaximizeRestoreClick"
+                    styleClass="winbtn winbtn-max"/>
+
+            <Button text="✕"
+                    focusTraversable="false"
+                    onAction="#onCloseClick"
+                    styleClass="winbtn winbtn-close"/>
+        </HBox>
+    </top>
+
+    <!-- CENTER: Form -->
+    <center>
+        <StackPane alignment="CENTER">
+            <VBox alignment="CENTER" spacing="15.0" styleClass="login-container">
+                <padding>
+                    <Insets top="30" right="24" bottom="24" left="24"/>
+                </padding>
+                <Text text="🔐 ĐĂNG NHẬP HỆ THỐNG" styleClass="heading"/>
+                <TextField fx:id="usernameField" promptText="Tên đăng nhập" styleClass="form-field"/>
+                <PasswordField fx:id="passwordField" promptText="Mật khẩu" styleClass="form-field"/>
+                <Button fx:id="loginButton" text="Đăng nhập" onAction="#onLoginClick" styleClass="login-button"/>
+                <Label fx:id="messageLabel" textFill="red"/>
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

@@ -15,6 +15,8 @@ module com.qnp.pmp {
     requires mysql.connector.j;
     requires org.apache.commons.lang3;
     requires com.google.protobuf;
+    requires io.github.cdimascio.dotenv.java;
+
     opens com.qnp.pmp to javafx.fxml;
     exports com.qnp.pmp;
 
