@@ -89,4 +89,21 @@ public class AllowanceServiceImpl implements AllowanceService {
             }
         }
     }
+
+    @Override
+    public LocalDate getLastEndDateByOfficerId(int officerId) {
+        String sql="SELECT end_date FROM allowance WHERE officer_id = ?";
+        try (Connection connection=MySQLConnection.getConnection()){
+            PreparedStatement stmt = connection.prepareStatement(sql);
+            stmt.setInt(1, officerId);
+            try (ResultSet rs = stmt.executeQuery()){
+                if(rs.next()){
+                    return rs.getDate("end_date").toLocalDate();
+                }
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

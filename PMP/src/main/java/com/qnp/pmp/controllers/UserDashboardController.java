@@ -1,8 +1,11 @@
 package com.qnp.pmp.controllers;
 
+import com.qnp.pmp.service.OfficeService;
+import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
@@ -16,12 +19,16 @@ public class UserDashboardController {
     @FXML
     private AnchorPane contentArea;
     @FXML
+    private Label labelOfficer;
+    private final OfficeService officeService=new OfficerServiceImpl();
+    @FXML
     public void initialize() {
             menuList.getItems().addAll(
                     "📊 Dashboard",
                     "👨‍💼 Can bo",
                     "🚪 Logout"
             );
+            loadDashboardData();
         menuList.getSelectionModel().select(0);
         loadView("UserDashboard/DefaultDashboard");
         menuList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -62,6 +69,10 @@ public class UserDashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    private void loadDashboardData() {
+        int countOfficer= officeService.countOfficers();
+        labelOfficer.setText("📁 " + countOfficer + " cán bộ");
     }
     private void logOut() {
         try {

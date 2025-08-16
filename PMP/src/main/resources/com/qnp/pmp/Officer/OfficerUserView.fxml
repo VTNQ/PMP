@@ -15,9 +15,8 @@
           AnchorPane.leftAnchor="10" AnchorPane.rightAnchor="10">
 
 
-
         <!-- Tiêu đề -->
-        <Label text="📊 Danh sách cán bộ đang hưởng phụ cấp"   styleClass="main-title"
+        <Label text="📊 Danh sách cán bộ đang hưởng phụ cấp" styleClass="main-title"
                style="-fx-font-size:18px; -fx-font-weight:bold;"/>
 
         <!-- Thanh tìm kiếm -->
@@ -29,17 +28,35 @@
         </HBox>
 
         <!-- Bảng dữ liệu -->
-        <TableView fx:id="officerUserTable" VBox.vgrow="ALWAYS" styleClass="modern-table">
-            <columns>
-                <TableColumn fx:id="fullNameCol" text="Họ tên" prefWidth="200"/>
-                <TableColumn fx:id="positionCol" text="Chức vụ" prefWidth="200"/>
-                <TableColumn fx:id="unitCol" text="Đơn vị" prefWidth="200"/>
-                <TableColumn fx:id="allowanceCol" text="Tháng trợ cấp" prefWidth="200"/>
-                <TableColumn fx:id="detailButtonCol" text="Chi tiết" prefWidth="120"/>
-                <TableColumn fx:id="studyTimeButtonCol" text="📋 Công tác" prefWidth="110"/>
-            </columns>
-        </TableView>
-
-
+        <TabPane fx:id="officerTabPane" VBox.vgrow="ALWAYS">
+            <tabs>
+                <Tab text="Trên 60 tháng">
+                    <TableView fx:id="officerTableAbove60" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="fullNameColAbove" text="👤 Họ tên" prefWidth="180"/>
+                            <TableColumn fx:id="identifierCodeColAbove" text="🆔 Số hiệu CAND" prefWidth="140"/>
+                            <TableColumn fx:id="birthYearColAbove" text="📅 Năm sinh" prefWidth="100"/>
+                            <TableColumn fx:id="allowanceColAbove" text="Tháng trợ cấp" prefWidth="140"/>
+                            <TableColumn fx:id="unitColAbove" text="🏢 Đơn vị" prefWidth="140"/>
+                            <TableColumn fx:id="detailColAbove" text="⚙ Thao tác" prefWidth="140"/>
+                            <TableColumn fx:id="workColAbove" text="📋 Thời gian Thôi hưởng" prefWidth="110"/>
+                        </columns>
+                    </TableView>
+                </Tab>
+                <Tab text="Dưới hoặc bằng 60 tháng">
+                    <TableView fx:id="officerTableBelow60" styleClass="modern-table">
+                        <columns>
+                            <TableColumn fx:id="fullNameColBelow" text="👤 Họ tên" prefWidth="180"/>
+                            <TableColumn fx:id="identifierCodeColBelow" text="🆔 Số hiệu CAND" prefWidth="140"/>
+                            <TableColumn fx:id="birthYearColBelow" text="📅 Năm sinh" prefWidth="100"/>
+                            <TableColumn fx:id="allowanceColBelow" text="Tháng trợ cấp" prefWidth="140"/>
+                            <TableColumn fx:id="unitColBelow" text="🏢 Đơn vị" prefWidth="140"/>
+                            <TableColumn fx:id="detailColBelow" text="⚙ Thao tác" prefWidth="140"/>
+                            <TableColumn fx:id="workColBelow" text="📋 Công tác" prefWidth="110"/>
+                        </columns>
+                    </TableView>
+                </Tab>
+            </tabs>
+        </TabPane>
     </VBox>
 </AnchorPane>

@@ -16,6 +16,7 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class AddAllowanceTimeController {
@@ -69,6 +70,26 @@ public class AddAllowanceTimeController {
     private void onSave(){
         try {
             Allowance allowance=new Allowance();
+            if(officerComboBox.getValue()!=null || fromDatePicker.getValue()!=null || toDatePicker.getValue()!=null || decisionEndTextArea.getText()!=null || decisionStartTextArea.getText()!=null){
+                Dialog.displayErrorMessage("Vui lòng điền đầy đủ thông tin.");
+                return;
+            }
+            LocalDate startDate=fromDatePicker.getValue();
+            LocalDate endDate=toDatePicker.getValue();
+            LocalDate today = LocalDate.now();
+            if(startDate.isBefore(endDate)){
+                Dialog.displayErrorMessage("Ngày bắt đầu phải từ hôm nay trở đi.");
+                return;
+            }
+            if(!endDate.isAfter(startDate)){
+                Dialog.displayErrorMessage("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+                return;
+            }
+            LocalDate lastEndDate=allowanceService.getLastEndDateByOfficerId(officerComboBox.getValue().getId());
+            if(lastEndDate!=null && !startDate.isAfter(lastEndDate)){
+                Dialog.displayErrorMessage("Ngày bắt đầu phải lớn hơn ngày kết thúc lần được hưởng trước (" + lastEndDate + ").");
+                return;
+            }
             allowance.setOfficerId(officerComboBox.getValue().getId());
             allowance.setStartDate(fromDatePicker.getValue());
             allowance.setEndDate(toDatePicker.getValue());

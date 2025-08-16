@@ -15,4 +15,5 @@ public interface OfficeService {
     List<OfficerViewDTO>getOfficerAllowanceStatus();
     List<Officer>getOfficers();
     OfficerViewDTO getOfficerById(int officerId);
+    int countOfficers();
 }

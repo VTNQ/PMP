@@ -155,4 +155,36 @@ public class UserServiceImpl implements UserService {
         }
         return userViewModelList;
     }
+
+    @Override
+    public int countUserByRoleAdmin() {
+        int count=0;
+        String sql="SELECT COUNT(*) FROM user WHERE role='ADMIN'";
+        try (Connection conn=MySQLConnection.getConnection()){
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs=stmt.executeQuery();
+                if(rs.next()){
+                    count=rs.getInt(1);
+                }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    @Override
+    public int countUserByRoleUser() {
+        int count=0;
+        String sql="SELECT COUNT(*) FROM user WHERE role='USER'";
+        try (Connection conn=MySQLConnection.getConnection()){
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs=stmt.executeQuery();
+            if(rs.next()){
+                count=rs.getInt(1);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return count;
+    }
 }

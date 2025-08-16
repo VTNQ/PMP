@@ -82,6 +82,8 @@ public class OfficerViewController {
         // Khởi tạo cấu hình cho 2 bảng
         setupTable(fullNameColAbove, identifierCodeColAbove, birthYearColAbove, allowanceColAbove, unitColAbove, detailColAbove, workColAbove);
         setupTable(fullNameColBelow, identifierCodeColBelow, birthYearColBelow, allowanceColBelow, unitColBelow, detailColBelow, workColBelow);
+        officerTableBelow60.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        officerTableAbove60.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         attachRowClickHandler(officerTableAbove60);
         attachRowClickHandler(officerTableBelow60);
         // Nạp dữ liệu ban đầu
@@ -106,7 +108,7 @@ public class OfficerViewController {
         unitCol.setCellValueFactory(c -> c.getValue().unitProperty());
 
         addButtonToColumn(detailCol, "Chi tiết", this::showOfficerDetail);
-        addButtonToColumn(workCol, "Công tác", this::showOfficerWorkHistory);
+        addButtonToColumn(workCol, "Thời gian thôi hưởng", this::showOfficerWorkHistory);
     }
 
     /**
