@@ -17,13 +17,13 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class AddStudyTimeController {
     private final StudyTimeService studyTimeService = new StudyTimeServiceImpl();
     private final OfficeService officeService = new OfficerServiceImpl();
 
-    @FXML private Spinner<Integer> roundSpinner;
     @FXML private ComboBox<Officer> officerComboBox;
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
@@ -68,8 +68,7 @@ public class AddStudyTimeController {
            }
         });
 
-        // Spinner lần học
-        roundSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 10, 1));
+
     }
 
     @FXML
@@ -80,10 +79,24 @@ public class AddStudyTimeController {
                 Dialog.displayErrorMessage("Vui lòng điền đầy đủ thông tin.");
                 return;
             }
-
+            LocalDate startDate=startDatePicker.getValue();
+            LocalDate endDate=endDatePicker.getValue();
+            LocalDate today = LocalDate.now();
+            if(startDate.isBefore(today)){
+                Dialog.displayErrorMessage("Ngày bắt đầu phải từ hôm nay trở đi.");
+                return;
+            }
+            if(!endDate.isAfter(startDate)){
+                Dialog.displayErrorMessage("Ngày kết thúc phải lớn hơn ngày bắt đầu.");
+                return;
+            }
+            LocalDate lastEndDate=studyTimeService.getLastEndDateByOfficerId(selectedOfficer.getId());
+            if(lastEndDate!=null && !startDate.isAfter(lastEndDate)){
+                Dialog.displayErrorMessage("Ngày bắt đầu phải lớn hơn ngày kết thúc lần học trước (" + lastEndDate + ").");
+                return;
+            }
             StudyTime studyTime = new StudyTime();
             studyTime.setOfficerId(selectedOfficer.getId());
-            studyTime.setRound(roundSpinner.getValue());
             studyTime.setStartDate(startDatePicker.getValue());
             studyTime.setEndDate(endDatePicker.getValue());
             studyTime.setDecision(decisionTextArea.getText());
@@ -92,7 +105,6 @@ public class AddStudyTimeController {
             // Reset form
             officerComboBox.getSelectionModel().clearSelection();
             officerComboBox.getEditor().clear();
-            roundSpinner.getValueFactory().setValue(1);
             decisionTextArea.clear();
             startDatePicker.setValue(null);
             endDatePicker.setValue(null);

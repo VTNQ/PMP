@@ -6,7 +6,7 @@
 <?import javafx.scene.control.Label?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-
+      fx:controller="com.qnp.pmp.controllers.SuperAdminDashBoardController"
       spacing="25" styleClass="dashboard-pane"
       stylesheets="@Dashboard.css">
 
@@ -21,11 +21,8 @@
         </StackPane>
 
         <StackPane fx:id="cardProject" prefWidth="180" prefHeight="110" styleClass="card-blue">
-            <Label fx:id="labelProject" text="📁 34 Dự án" styleClass="card-label"/>
+            <Label fx:id="labelOfficer" text="📁 0 cán bộ" styleClass="card-label"/>
         </StackPane>
 
-        <StackPane fx:id="cardAlert" prefWidth="180" prefHeight="110" styleClass="card-orange">
-            <Label fx:id="labelAlert" text="⚠ 5 Cảnh báo" styleClass="card-label"/>
-        </StackPane>
     </HBox>
 </VBox>

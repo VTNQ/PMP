@@ -13,4 +13,6 @@ public interface UserService {
     User getUser();
     List<UserViewDTO> getUserByRoleAdmin();
     List<UserViewDTO> getUserByRoleUser();
+    int countUserByRoleAdmin();
+    int countUserByRoleUser();
 }

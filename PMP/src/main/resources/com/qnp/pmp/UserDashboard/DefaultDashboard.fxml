@@ -6,26 +6,20 @@
 <?import javafx.scene.control.Label?>
 
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-
+      fx:controller="com.qnp.pmp.controllers.UserDashboardController"
       spacing="25" styleClass="dashboard-pane"
       stylesheets="@Dashboard.css">
 
     <!-- Tiêu đề -->
-    <Label text="👋 Chào mừng SuperAdmin!" styleClass="dashboard-title"/>
-    <Label text="Hệ thống quản lý người dùng và dự án." styleClass="dashboard-subtitle"/>
+    <Label text="👋 Chào mừng User!" styleClass="dashboard-title"/>
+    <Label text="Hệ thống quản lý cán bộ." styleClass="dashboard-subtitle"/>
 
     <!-- Các thẻ thống kê -->
     <HBox spacing="20">
-        <StackPane fx:id="cardUser" prefWidth="180" prefHeight="110" styleClass="card-green">
-            <Label fx:id="labelUser" text="👤 120 Người dùng" styleClass="card-label"/>
-        </StackPane>
-
         <StackPane fx:id="cardProject" prefWidth="180" prefHeight="110" styleClass="card-blue">
-            <Label fx:id="labelProject" text="📁 34 Dự án" styleClass="card-label"/>
+            <Label fx:id="labelOfficer" text="📁 0 cán bộ" styleClass="card-label"/>
         </StackPane>
 
-        <StackPane fx:id="cardAlert" prefWidth="180" prefHeight="110" styleClass="card-orange">
-            <Label fx:id="labelAlert" text="⚠ 5 Cảnh báo" styleClass="card-label"/>
-        </StackPane>
+
     </HBox>
 </VBox>

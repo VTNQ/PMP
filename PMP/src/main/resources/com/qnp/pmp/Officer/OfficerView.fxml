@@ -52,7 +52,7 @@
                             <TableColumn fx:id="allowanceColAbove" text="Tháng trợ cấp" prefWidth="140"/>
                             <TableColumn fx:id="unitColAbove" text="🏢 Đơn vị" prefWidth="140"/>
                             <TableColumn fx:id="detailColAbove" text="⚙ Thao tác" prefWidth="140"/>
-                            <TableColumn fx:id="workColAbove" text="📋 Công tác" prefWidth="110"/>
+                            <TableColumn fx:id="workColAbove" text="📋 Thơi gian thôi hưởng" prefWidth="110"/>
                         </columns>
                     </TableView>
                 </Tab>
@@ -66,7 +66,7 @@
                             <TableColumn fx:id="allowanceColBelow" text="Tháng trợ cấp" prefWidth="140"/>
                             <TableColumn fx:id="unitColBelow" text="🏢 Đơn vị" prefWidth="140"/>
                             <TableColumn fx:id="detailColBelow" text="⚙ Thao tác" prefWidth="140"/>
-                            <TableColumn fx:id="workColBelow" text="📋 Công tác" prefWidth="110"/>
+                            <TableColumn fx:id="workColBelow" text="📋 Thơi gian thôi hưởng" prefWidth="110"/>
                         </columns>
                     </TableView>
                 </Tab>

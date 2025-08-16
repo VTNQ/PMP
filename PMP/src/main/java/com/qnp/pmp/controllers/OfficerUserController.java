@@ -13,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -20,21 +21,42 @@ import javafx.util.Callback;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class OfficerUserController {
 
     @FXML
-    private TableView<OfficerViewDTO> officerUserTable;
+    private TableView<OfficerViewDTO>officerTableAbove60;
     @FXML
-    private TableColumn<OfficerViewDTO, String> fullNameCol;
+    private TableColumn<OfficerViewDTO,String>fullNameColAbove;
     @FXML
-    private TableColumn<OfficerViewDTO, String> positionCol;
+    private TableColumn<OfficerViewDTO,String>identifierCodeColAbove;
     @FXML
-    private TableColumn<OfficerViewDTO, Integer> allowanceCol;
+    private TableColumn<OfficerViewDTO,Integer>birthYearColAbove;
     @FXML
-    private TableColumn<OfficerViewDTO, String> unitCol;
+    private TableColumn<OfficerViewDTO,Integer>allowanceColAbove;
     @FXML
-    private TableColumn<OfficerViewDTO, Void> detailButtonCol;
+    private TableColumn<OfficerViewDTO,Void>detailColAbove;
+    @FXML private TableColumn<OfficerViewDTO,Void>workColAbove;
+    @FXML
+    private TableColumn<OfficerViewDTO,String>unitColAbove;
+    @FXML
+    private TableView<OfficerViewDTO>officerTableBelow60;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> fullNameColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> identifierCodeColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Integer> birthYearColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Integer> allowanceColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Void> detailColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, Void> workColBelow;
+    @FXML
+    private TableColumn<OfficerViewDTO, String> unitColBelow;
     @FXML
     private TextField searchField;
     @FXML
@@ -44,94 +66,68 @@ public class OfficerUserController {
     @FXML
     public void initialize() {
         // Gán dữ liệu cho các cột
-        fullNameCol.setCellValueFactory(data -> data.getValue().fullNameProperty());
-        positionCol.setCellValueFactory(data -> data.getValue().levelNameProperty());
-        unitCol.setCellValueFactory(data -> data.getValue().unitProperty());
-        allowanceCol.setCellValueFactory(data->data.getValue().allowanceMonthsProperty().asObject());
-        officerUserTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        setupTable(fullNameColAbove, identifierCodeColAbove, birthYearColAbove, allowanceColAbove, unitColAbove, detailColAbove, workColAbove);
+        setupTable(fullNameColBelow, identifierCodeColBelow, birthYearColBelow, allowanceColBelow, unitColBelow, detailColBelow, workColBelow);
 
-        centerAllColumns(fullNameCol, positionCol, unitCol, detailButtonCol, studyTimeButtonCol,allowanceCol);
-        addDetailButtonToTable();
-        addStudyTimeButtonToTable();
+    }
+
+    private void setupTable(TableColumn<OfficerViewDTO, String> fullNameCol,
+                            TableColumn<OfficerViewDTO, String> identifierCodeCol,
+                            TableColumn<OfficerViewDTO, Integer> birthYearCol,
+                            TableColumn<OfficerViewDTO, Integer> allowanceCol,
+                            TableColumn<OfficerViewDTO, String> unitCol,
+                            TableColumn<OfficerViewDTO, Void> detailCol,
+                            TableColumn<OfficerViewDTO, Void> workCol) {
+
+        fullNameCol.setCellValueFactory(c -> c.getValue().fullNameProperty());
+        identifierCodeCol.setCellValueFactory(c -> c.getValue().identifierCodeProperty());
+        birthYearCol.setCellValueFactory(c -> c.getValue().birthYearProperty().asObject());
+        allowanceCol.setCellValueFactory(c -> c.getValue().allowanceMonthsProperty().asObject());
+        unitCol.setCellValueFactory(c -> c.getValue().unitProperty());
+
+        addButtonToColumn(detailCol, "Chi tiết", this::showDetailPopup);
+        addButtonToColumn(workCol, "Công tác", this::showStudyTime);
         loadOfficerAllowance();
     }
 
-    private void addStudyTimeButtonToTable() {
-        Callback<TableColumn<OfficerViewDTO, Void>, TableCell<OfficerViewDTO, Void>> cellFactory = param -> new TableCell<>() {
-            private final Button btn = new Button("⏱ Xem");
+    private void addButtonToColumn(TableColumn<OfficerViewDTO, Void> column,
+                                   String buttonText,
+                                   Consumer<OfficerViewDTO> action) {
+        column.setCellFactory(tc -> new TableCell<>() {
+            private final Button btn = new Button(buttonText);
 
             {
-                btn.setOnAction(event -> {
+                btn.setOnAction(e -> {
                     OfficerViewDTO officer = getTableView().getItems().get(getIndex());
-                    showStudyTime(officer);
+                    action.accept(officer);
                 });
-                btn.setStyle(
-                        "-fx-background-color: #007bff;" +
-                                "-fx-text-fill: white;" +
-                                "-fx-font-weight: bold;" +
-                                "-fx-background-radius: 8;" +
-                                "-fx-cursor: hand;"
-                );
+                btn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 12px;");
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : btn);
+                setGraphic(empty ? null : new HBox(btn));
             }
-        };
-
-        studyTimeButtonCol.setCellFactory(cellFactory);
+        });
     }
-
-    private void addDetailButtonToTable() {
-        Callback<TableColumn<OfficerViewDTO, Void>, TableCell<OfficerViewDTO, Void>> cellFactory = param -> new TableCell<>() {
-            private final Button btn = new Button("Chi tiết");
-
-            {
-                btn.setOnAction(event -> {
-                    OfficerViewDTO officer = getTableView().getItems().get(getIndex());
-                    showDetailPopup(officer);
-                });
-                btn.setStyle(
-                        "-fx-background-color: #007bff;" +
-                                "-fx-text-fill: white;" +
-                                "-fx-font-weight: bold;" +
-                                "-fx-background-radius: 8;" +
-                                "-fx-cursor: hand;" +
-                                "-fx-padding: 5 10 5 10;"
-                );
-            }
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(btn);
-                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                    setAlignment(javafx.geometry.Pos.CENTER); // Căn giữa nút
-                }
-            }
-        };
-        detailButtonCol.setCellFactory(cellFactory);
-    }
-
     private void showDetailPopup(OfficerViewDTO officer) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/OfficerUserDetailView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/OfficerDetailPopup.fxml"));
             Parent root = loader.load();
-            OfficerUserDetailViewController controller = loader.getController();
-            controller.setOfficer(officer);
+
+            OfficerDetailViewController controller = loader.getController();
+            controller.setOfficerId(officer.getId().getValue());
+
             Stage stage = new Stage();
             stage.setTitle("Chi tiết cán bộ");
+            stage.setScene(new Scene(root));
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
             enableWindowDragging(stage, root);
-            stage.setScene(new Scene(root));
+            stage.setResizable(false);
             stage.showAndWait();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -159,7 +155,7 @@ public class OfficerUserController {
             controller.setOfficer(officer);
 
             Stage stage = new Stage();
-            stage.setTitle("Thời gian học");
+            stage.setTitle("Thời gian Công tác");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
             enableWindowDragging(stage, root);
@@ -171,9 +167,18 @@ public class OfficerUserController {
     }
 
     private void loadOfficerAllowance() {
-        List<OfficerViewDTO> data = officeService.getOfficerAllowanceStatus();
-        ObservableList<OfficerViewDTO> observableData = FXCollections.observableArrayList(data);
-        officerUserTable.setItems(observableData);
+        List<OfficerViewDTO> allData = officeService.getOfficerAllowanceStatus();
+
+        List<OfficerViewDTO> above60 = allData.stream()
+                .filter(o -> o.getAllowanceMonths() > 60)
+                .collect(Collectors.toList());
+
+        List<OfficerViewDTO> belowOrEqual60 = allData.stream()
+                .filter(o -> o.getAllowanceMonths() <= 60)
+                .collect(Collectors.toList());
+
+        officerTableAbove60.setItems(FXCollections.observableArrayList(above60));
+        officerTableBelow60.setItems(FXCollections.observableArrayList(belowOrEqual60));
     }
 
     @FXML
@@ -182,28 +187,12 @@ public class OfficerUserController {
             String keyword = searchField.getText().trim();
             if (!keyword.isEmpty()) {
                 ObservableList<OfficerViewDTO> result = FXCollections.observableArrayList(officeService.findByName(keyword));
-                officerUserTable.setItems(result);
+
             } else {
                 loadOfficerAllowance();
             }
         }
     }
 
-    private <T> void centerCell(TableColumn<OfficerViewDTO, T> column) {
-        column.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(T item, boolean empty) {
-                super.updateItem(item, empty);
-                setText(empty || item == null ? null : item.toString());
-                setStyle("-fx-alignment: CENTER;");
-            }
-        });
-    }
 
-    @SafeVarargs
-    private final void centerAllColumns(TableColumn<OfficerViewDTO, ?>... columns) {
-        for (TableColumn<OfficerViewDTO, ?> col : columns) {
-            centerCell(col);
-        }
-    }
 }

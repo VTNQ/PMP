@@ -1,9 +1,14 @@
 package com.qnp.pmp.controllers;
 
+import com.qnp.pmp.service.OfficeService;
+import com.qnp.pmp.service.UserService;
+import com.qnp.pmp.service.impl.OfficerServiceImpl;
+import com.qnp.pmp.service.impl.UserServiceImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
@@ -14,13 +19,15 @@ import java.io.IOException;
 
 public class SuperAdminDashBoardController {
     @FXML private Button maximizeButton;
-
+    @FXML private Label labelUser;
+    @FXML private Label labelOfficer;
     private double xOffset, yOffset;
 
     private Stage stage() {
         return (Stage) contentArea.getScene().getWindow();
     }
-
+    private final UserService userService=new UserServiceImpl();
+    private final OfficeService officeService=new OfficerServiceImpl();
     /* ===== Nút cửa sổ ===== */
     @FXML
     private void onMinimizeClick() { stage().setIconified(true); }
@@ -75,7 +82,7 @@ public class SuperAdminDashBoardController {
                 "⚙ Settings",
                 "🚪 Logout"
         );
-
+        loadDashboardData();
         // Mặc định chọn Dashboard
         menuList.getSelectionModel().select(0);
         loadView("SuperAdmin/DefaultDashboard");
@@ -104,7 +111,14 @@ public class SuperAdminDashBoardController {
             }
         });
     }
+    private void loadDashboardData() {
+        int adminCount = userService.countUserByRoleAdmin();
+        int officerCount=officeService.countOfficers();
 
+        // set text vào label
+        labelUser.setText("👤 " + adminCount + " người dùng");
+        labelOfficer.setText("📁 " + officerCount + " cán bộ");
+    }
     /**
      * Load một view FXML vào contentArea và đặt lại kích thước nếu cần.
      */

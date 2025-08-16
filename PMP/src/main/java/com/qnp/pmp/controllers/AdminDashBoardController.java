@@ -1,8 +1,13 @@
 package com.qnp.pmp.controllers;
 
+import com.qnp.pmp.service.OfficeService;
+import com.qnp.pmp.service.UserService;
+import com.qnp.pmp.service.impl.OfficerServiceImpl;
+import com.qnp.pmp.service.impl.UserServiceImpl;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Region;
@@ -16,6 +21,12 @@ public class AdminDashBoardController {
 
     @FXML
     private AnchorPane contentArea;
+    private final UserService userService=new UserServiceImpl();
+    private final OfficeService officeService=new OfficerServiceImpl();
+    @FXML
+    private Label labelUser;
+    @FXML
+    private Label labelOfficer;
     @FXML
     public void initialize() {
         menuList.getItems().addAll(
@@ -24,6 +35,7 @@ public class AdminDashBoardController {
                 "⚙ Settings",
                 "🚪 Logout"
         );
+        loadDashboardData();
         menuList.getSelectionModel().select(0);
     loadView("AdminDashboard/DefaultDashboard");
         menuList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -45,6 +57,12 @@ public class AdminDashBoardController {
                 }
             }
         });
+    }
+    private void loadDashboardData(){
+        int userCount=userService.countUserByRoleUser();
+        int officerCount=officeService.countOfficers();
+        labelUser.setText("👤 " + (userCount) + " Người dùng");
+        labelOfficer.setText("📁 " + officerCount + " cán bộ");
     }
     private void logOut() {
         try {

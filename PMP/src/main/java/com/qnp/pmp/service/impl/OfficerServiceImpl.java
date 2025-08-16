@@ -657,5 +657,21 @@ public class OfficerServiceImpl implements OfficeService {
         return dto;
     }
 
+    @Override
+    public int countOfficers() {
+        int count=0;
+        String sql="SELECT count(*) FROM officer";
+        try (Connection conn=MySQLConnection.getConnection()){
+                PreparedStatement statement=conn.prepareStatement(sql);
+                ResultSet rs=statement.executeQuery();
+                if (rs.next()) {
+                    count=rs.getInt(1);
+                }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return count;
+    }
+
 
 }
