@@ -25,7 +25,6 @@
             <Button text="⏳ Thời gian được hưởng" styleClass="time-btn" onAction="#onAllowanceTime"/>
             <Button text="🛡️ Thêm cấp bậc" styleClass="rank-btn" onAction="#addRank"/>
             <Button text="🔄 Làm mới" styleClass=" refresh-btn" onAction="#refreshTable"/>
-            <Button text="🗑 Xóa" styleClass=" delete-btn" onAction="#onDelete"/>
         </HBox>
 
         <!-- Tiêu đề -->

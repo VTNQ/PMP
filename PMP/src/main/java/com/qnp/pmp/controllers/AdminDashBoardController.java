@@ -35,29 +35,22 @@ public class AdminDashBoardController {
                 "⚙ Settings",
                 "🚪 Logout"
         );
-        loadDashboardData();
+
         menuList.getSelectionModel().select(0);
-    loadView("AdminDashboard/DefaultDashboard");
-        menuList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                String viewKey = newValue.replaceAll("[^a-zA-Z ]", "").trim();
-                switch (viewKey) {
-                    case "Dashboard":
-                        loadView("AdminDashboard/DefaultDashboard");
-                        break;
-                    case "Manager User":
-                        loadView("AdminDashboard/UserManagementView");
-                        break;
-                    case "Logout":
-                        logOut();
-                        break;
-                    default:
-                        System.out.println("Không xác định menu: " + viewKey);
-                        break;
-                }
+        showDefaultDashboard(); // thay cho loadDashboardData() + loadView(...)
+
+        menuList.getSelectionModel().selectedItemProperty().addListener((obs, oldV, newV) -> {
+            if (newV == null) return;
+            String key = newV.replaceAll("[^a-zA-Z ]", "").trim();
+            switch (key) {
+                case "Dashboard"      -> showDefaultDashboard();
+                case "Manager User"   -> loadView("AdminDashboard/UserManagementView");
+                case "Logout"         -> logOut();
+                default               -> System.out.println("Không xác định menu: " + key);
             }
         });
     }
+
     private void loadDashboardData(){
         int userCount=userService.countUserByRoleUser();
         int officerCount=officeService.countOfficers();
@@ -92,4 +85,21 @@ public class AdminDashBoardController {
             e.printStackTrace();
         }
     }
+    private void showDefaultDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/qnp/pmp/AdminDashboard/DefaultDashboard.fxml"));
+            loader.setController(this);          // dùng chính controller hiện tại
+            Parent view = loader.load();         // lúc này labelUser/labelOfficer đã được inject
+
+            if (view instanceof Region r) {
+                r.prefWidthProperty().bind(contentArea.widthProperty());
+                r.prefHeightProperty().bind(contentArea.heightProperty());
+            }
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

@@ -2,6 +2,7 @@ package com.qnp.pmp.dto;
 
 import com.qnp.pmp.entity.Officer;
 import javafx.beans.property.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -10,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
+@Data
 public class OfficerViewDTO {
     private final IntegerProperty id;
     private final StringProperty fullName;

@@ -23,31 +23,19 @@ public class UserDashboardController {
     private final OfficeService officeService=new OfficerServiceImpl();
     @FXML
     public void initialize() {
-            menuList.getItems().addAll(
-                    "📊 Dashboard",
-                    "👨‍💼 Can bo",
-                    "🚪 Logout"
-            );
-            loadDashboardData();
+        menuList.getItems().addAll("📊 Dashboard","👨‍💼 Can bo","🚪 Logout");
+
         menuList.getSelectionModel().select(0);
-        loadView("UserDashboard/DefaultDashboard");
-        menuList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                String viewKey = newValue.replaceAll("[^a-zA-Z ]", "").trim();
-                switch (viewKey) {
-                    case "Dashboard":
-                        loadView("UserDashboard/DefaultDashboard");
-                        break;
-                    case "Can bo":  // "👨‍💼 Cán bộ" sau khi loại emoji và dấu
-                        loadView("Officer/OfficerUserView");
-                        break;
-                    case "Logout":
-                        logOut();
-                        break;
-                    default:
-                        System.out.println("Không xác định menu: " + viewKey);
-                        break;
-                }
+        showDefaultDashboard(); // nạp dashboard đúng cách
+
+        menuList.getSelectionModel().selectedItemProperty().addListener((obs, o, n) -> {
+            if (n == null) return;
+            String key = n.replaceAll("[^a-zA-Z ]", "").trim();
+            switch (key) {
+                case "Dashboard" -> showDefaultDashboard();
+                case "Can bo"    -> loadView("Officer/OfficerUserView");
+                case "Logout"    -> logOut();
+                default          -> System.out.println("Không xác định menu: " + key);
             }
         });
     }
@@ -79,6 +67,23 @@ public class UserDashboardController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/login/login.fxml"));
             Parent loginRoot = loader.load();
             contentArea.getScene().setRoot(loginRoot);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showDefaultDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/qnp/pmp/UserDashboard/DefaultDashboard.fxml"));
+            loader.setController(this);                 // dùng chính controller hiện tại
+            Parent view = loader.load();               // lúc này labelOfficer đã được inject
+
+            if (view instanceof Region r) {
+                r.prefWidthProperty().bind(contentArea.widthProperty());
+                r.prefHeightProperty().bind(contentArea.heightProperty());
+            }
+            contentArea.getChildren().setAll(view);
         } catch (IOException e) {
             e.printStackTrace();
         }
