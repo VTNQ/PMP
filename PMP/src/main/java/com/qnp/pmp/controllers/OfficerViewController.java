@@ -9,7 +9,8 @@ import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-
+import com.qnp.pmp.excel.ExcelImportUtil;
+import com.qnp.pmp.controllers.ImportPreviewController;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -263,55 +264,93 @@ public class OfficerViewController {
             e.printStackTrace();
         }
     }
-
+    // 1) Backup thủ công: tính max toàn cục và tạo 2 sheet với cùng cấu trúc cột
     @FXML
     private void onManualExcelBackup() {
         List<OfficerViewDTO> above60 = new ArrayList<>(officerTableAbove60.getItems());
-        List<OfficerViewDTO> below60 = new ArrayList<>(officerTableBelow60.getItems());
+        List<OfficerViewDTO> belowOrEqual60 = new ArrayList<>(officerTableBelow60.getItems());
+
+        // Gom để tính max chung
+        List<OfficerViewDTO> all = new ArrayList<>();
+        all.addAll(above60);
+        all.addAll(belowOrEqual60);
+
+        int globalMaxStudyRounds = all.stream()
+                .map(OfficerViewDTO::getStudyRounds).filter(Objects::nonNull)
+                .mapToInt(m -> m.keySet().stream().mapToInt(Integer::intValue).max().orElse(0))
+                .max().orElse(0);
+
+        int globalMaxAllowanceRounds = all.stream()
+                .map(OfficerViewDTO::getAllowances).filter(Objects::nonNull)
+                .mapToInt(m -> m.keySet().stream().mapToInt(Integer::intValue).max().orElse(0))
+                .max().orElse(0);
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Chọn nơi lưu file Excel");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Excel file", "*.xlsx"));
         File file = fileChooser.showSaveDialog(officerTableAbove60.getScene().getWindow());
         if (file == null) return;
+
         try (Workbook workbook = new XSSFWorkbook()) {
-            createSheet(workbook, "Trên 60", above60);
-            createSheet(workbook, "Dưới 60", below60);
+            // Sanitize + đảm bảo không trùng tên
+            String s1 = sanitizeSheetName("Trên 60 tháng");
+            String s2 = sanitizeSheetName("Dưới hoặc bằng 60 tháng");
+            if (s2.equalsIgnoreCase(s1)) s2 = s2 + " (2)";
+
+            createSheet(workbook, s1, above60, globalMaxStudyRounds, globalMaxAllowanceRounds);
+            createSheet(workbook, s2, belowOrEqual60, globalMaxStudyRounds, globalMaxAllowanceRounds);
+
+            // Kiểm tra số sheet
+            int sheetCount = workbook.getNumberOfSheets();
+            if (sheetCount < 2) {
+                throw new IllegalStateException("Tạo chưa đủ sheet (hiện có " + sheetCount + ").");
+            }
+
             try (OutputStream os = new FileOutputStream(file)) {
                 workbook.write(os);
             }
+            Dialog.displaySuccessFully("Xuất Excel thành công: " + file.getName());
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Lỗi khi xuất Excel: " + e.getMessage());
+            Dialog.displayErrorMessage("Xuất Excel thất bại: " + e.getMessage());
         }
     }
 
-    private void createSheet(Workbook wb, String sheetName, List<OfficerViewDTO> data) {
+    /** POI giới hạn tên sheet <=31 ký tự và không chứa: : \ / ? * [ ]  */
+    private String sanitizeSheetName(String name) {
+        String n = name.replace(':',' ')
+                .replace('\\',' ')
+                .replace('/',' ')
+                .replace('?',' ')
+                .replace('*',' ')
+                .replace('[','(')
+                .replace(']',')');
+        if (n.length() > 31) n = n.substring(0, 31);
+        if (n.isBlank()) n = "Sheet";
+        return n.trim();
+    }
+
+
+
+
+    private void createSheet(Workbook wb,
+                             String sheetName,
+                             List<OfficerViewDTO> data,
+                             int maxStudyRounds,
+                             int maxAllowanceRounds) {
         Sheet sheet = wb.createSheet(sheetName);
 
-        // Max study round index (keys may be sparse)
-        int maxStudyRounds = data.stream()
-                .map(OfficerViewDTO::getStudyRounds)
-                .filter(Objects::nonNull)
-                .mapToInt(m -> m.keySet().stream().mapToInt(Integer::intValue).max().orElse(0))
-                .max()
-                .orElse(0);
-
-        // Styles
         CreationHelper ch = wb.getCreationHelper();
 
         CellStyle headerStyle = wb.createCellStyle();
-        Font headerFont = wb.createFont();
-        headerFont.setBold(true);
-        headerStyle.setFont(headerFont);
-        headerStyle.setWrapText(true);
+        Font headerFont = wb.createFont(); headerFont.setBold(true);
+        headerStyle.setFont(headerFont); headerStyle.setWrapText(true);
 
         CellStyle dateStyle = wb.createCellStyle();
         dateStyle.setDataFormat(ch.createDataFormat().getFormat("dd/MM/yyyy"));
 
-        // Header
-        int rowIdx = 0;
+        int rowIdx = 0, col = 0;
         Row header = sheet.createRow(rowIdx++);
-        int col = 0;
         setHeader(header, col++, "ID", headerStyle);
         setHeader(header, col++, "Họ tên", headerStyle);
         setHeader(header, col++, "Mã định danh", headerStyle);
@@ -320,62 +359,56 @@ public class OfficerViewController {
         setHeader(header, col++, "Năm sinh", headerStyle);
         setHeader(header, col++, "Quê quán", headerStyle);
         setHeader(header, col++, "Ghi chú", headerStyle);
-        setHeader(header, col++, "Ngày bắt đầu hưởng", headerStyle);
-        setHeader(header, col++, "Ngày kết thúc hưởng", headerStyle);
         setHeader(header, col++, "Số tháng hưởng", headerStyle);
 
         for (int i = 1; i <= maxStudyRounds; i++) {
-            setHeader(header, col++, "Lần " + i + " Bắt đầu", headerStyle);
-            setHeader(header, col++, "Lần " + i + " Kết thúc", headerStyle);
+            setHeader(header, col++, "Lần " + i + " Bắt đầu (học)", headerStyle);
+            setHeader(header, col++, "Lần " + i + " Kết thúc (học)", headerStyle);
+        }
+        for (int i = 1; i <= maxAllowanceRounds; i++) {
+            setHeader(header, col++, "Được hưởng " + i + " - Từ ngày", headerStyle);
+            setHeader(header, col++, "Được hưởng " + i + " - Đến ngày", headerStyle);
         }
 
-        // Data
         for (OfficerViewDTO o : data) {
             Row row = sheet.createRow(rowIdx++);
-            col = 0;
+            int c = 0;
 
-            setString(row, col++, safeStr(o.getId() != null ? o.getId().get() : null));
-            setString(row, col++, safeStr(o.fullNameProperty() != null ? o.fullNameProperty().get() : null));
-            setString(row, col++, safeStr(o.identifierCodeProperty() != null ? o.identifierCodeProperty().get() : null));
-            setString(row, col++, safeStr(o.levelNameProperty() != null ? o.levelNameProperty().get() : null));
-            setString(row, col++, safeStr(o.unitProperty() != null ? o.unitProperty().get() : null));
+            setString(row, c++, safeStr(o.getId() != null ? o.getId().get() : null));
+            setString(row, c++, safeStr(o.fullNameProperty() != null ? o.fullNameProperty().get() : null));
+            setString(row, c++, safeStr(o.identifierCodeProperty() != null ? o.identifierCodeProperty().get() : null));
+            setString(row, c++, safeStr(o.levelNameProperty() != null ? o.levelNameProperty().get() : null));
+            setString(row, c++, safeStr(o.unitProperty() != null ? o.unitProperty().get() : null));
 
-            // Năm sinh: write as number if possible
-            Integer birthYearInt = (o.birthYearProperty() != null ? o.birthYearProperty().get() : null);
-            String birthYear = (birthYearInt != null ? String.valueOf(birthYearInt) : null);
-            setNumericOrString(row, col++, birthYear);
-            setNumericOrString(row, col++, birthYear);
+            Integer by = (o.birthYearProperty() != null ? o.birthYearProperty().get() : null);
+            setNumericOrString(row, c++, by == null ? null : String.valueOf(by));
 
-            setString(row, col++, safeStr(o.homeTownProperty() != null ? o.homeTownProperty().get() : null));
-            setString(row, col++, safeStr(o.noteProperty() != null ? o.noteProperty().get() : null));
+            setString(row, c++, safeStr(o.homeTownProperty() != null ? o.homeTownProperty().get() : null));
+            setString(row, c++, safeStr(o.noteProperty() != null ? o.noteProperty().get() : null));
 
-            // Ngày bắt đầu/ kết thúc hưởng (as real dates if present)
+            row.createCell(c++).setCellValue(o.getAllowanceMonths());
 
-            // Số tháng hưởng
-            row.createCell(col++).setCellValue(o.getAllowanceMonths());
-
-            // Study rounds (dates)
-            // rounds không null
-            Map<Integer, StudyRoundDTO> rounds =
-                    o.getStudyRounds() != null ? o.getStudyRounds() : Collections.emptyMap();
-
-            for (int j = 1; j <= maxStudyRounds; j++) {
-                StudyRoundDTO r = rounds.get(j);
-
-                // writeLocalDate đã tự set blank nếu giá trị null
-                java.time.LocalDate start = (r != null) ? r.getStartDate() : null;
-                java.time.LocalDate end = (r != null) ? r.getEndDate() : null;
-
-                writeLocalDate(row, col++, start, dateStyle);
-                writeLocalDate(row, col++, end, dateStyle);
+            Map<Integer, StudyRoundDTO> rounds = o.getStudyRounds() == null ? Map.of() : o.getStudyRounds();
+            for (int i = 1; i <= maxStudyRounds; i++) {
+                StudyRoundDTO r = rounds.get(i);
+                writeLocalDate(row, c++, r == null ? null : r.getStartDate(), dateStyle);
+                writeLocalDate(row, c++, r == null ? null : r.getEndDate(),   dateStyle);
             }
 
+            Map<Integer, com.qnp.pmp.dto.AllowanceDTO> als = o.getAllowances() == null ? Map.of() : o.getAllowances();
+            for (int i = 1; i <= maxAllowanceRounds; i++) {
+                com.qnp.pmp.dto.AllowanceDTO a = als.get(i);
+                writeLocalDate(row, c++, a == null ? null : a.getStartDate(), dateStyle);
+                writeLocalDate(row, c++, a == null ? null : a.getEndDate(),   dateStyle);
+            }
         }
 
-        // Optional niceties
-        sheet.createFreezePane(0, 1); // freeze header
-        for (int c = 0; c < col; c++) sheet.autoSizeColumn(c);
+        sheet.createFreezePane(0, 1);
+        for (int i = 0; i < Math.min(col, 120); i++) sheet.autoSizeColumn(i);
     }
+
+
+
 
     /* ---------------- helpers ---------------- */
 
@@ -419,6 +452,8 @@ public class OfficerViewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Officer/AddOfficerView.fxml"));
             Parent root = loader.load();
+            AddOfficerController ctrl = loader.getController();            // <-- lấy controller
+            ctrl.setOnSuccess(this::loadData);
             Stage stage = new Stage();
             stage.setTitle("Thêm cán bộ");
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -434,7 +469,53 @@ public class OfficerViewController {
 
     @FXML
     private void onImport() {
+        try {
+            // 1) Chọn file
+            FileChooser chooser = new FileChooser();
+            chooser.setTitle("Chọn file Excel để import");
+            chooser.getExtensionFilters().addAll(
+                    new FileChooser.ExtensionFilter("Excel Workbook (*.xlsx)", "*.xlsx")
+            );
+            File file = chooser.showOpenDialog(officerTableAbove60.getScene().getWindow());
+            if (file == null) return;
 
+            // 2) Đọc dữ liệu từ Excel
+            List<OfficerViewDTO> imported = ExcelImportUtil.readOfficers(file);
+            if (imported == null || imported.isEmpty()) {
+                Dialog.displayErrorMessage("Không tìm thấy dữ liệu hợp lệ trong file.");
+                return;
+            }
+
+            // 3) Mở preview + callback khi người dùng xác nhận
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/qnp/pmp/Import/ImportPreview.fxml"));
+            Parent root = loader.load();
+            ImportPreviewController ctrl = loader.getController();
+
+            ctrl.setPreviewData(imported, approvedList -> {
+                try {
+                    // 4) Lưu vào DB qua service
+                    officeService.importOfficers(approvedList);
+                    Dialog.displaySuccessFully("Nhập dữ liệu thành công: " + approvedList.size() + " dòng.");
+                    loadData(); // reload lại 2 bảng
+                } catch (Exception ex) {
+                    Dialog.displayErrorMessage("Lỗi lưu dữ liệu: " + ex.getMessage());
+                }
+            });
+
+            // 5) Hiển thị cửa sổ preview
+            Stage stage = new Stage();
+            stage.setTitle("Xác nhận nhập dữ liệu");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.initStyle(javafx.stage.StageStyle.UNDECORATED);
+            enableWindowDragging(stage, root);
+            stage.setResizable(false);
+            stage.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialog.displayErrorMessage("Không thể import: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -493,7 +574,7 @@ public class OfficerViewController {
 
     @FXML
     private void refreshTable() {
-
+        loadData();
     }
 
     @FXML

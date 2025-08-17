@@ -9,14 +9,17 @@ import com.qnp.pmp.service.impl.LevelServiceImpl;
 import com.qnp.pmp.service.impl.OfficerServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import javafx.stage.Window;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,137 +28,133 @@ import java.io.FileReader;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AddOfficerController {
+
     private final OfficeService officeService;
     private final LevelService levelService;
-    @FXML
-    private Button closeButton;
+
+    @FXML private Button closeButton;
+
+    @FXML private TextField identifierField;
+    @FXML private TextField fullNameField;
+    @FXML private ComboBox<Level> levelComboBox;
+    @FXML private TextField unitField;
+    @FXML private TextField birthYearField;
+    @FXML private TextArea  noteField;
+    @FXML private TextField homeTownField;
+    @FXML private Label     fileLabel;
+
+    private File selectedFile;
+
     public AddOfficerController() {
         this.officeService = new OfficerServiceImpl();
-        this.levelService = new LevelServiceImpl();
+        this.levelService  = new LevelServiceImpl();
     }
-
-    @FXML
-    private TextField identifierField;
-    @FXML
-    private TextField fullNameField;
-
-    @FXML
-    private ComboBox<Level> levelComboBox;
-    @FXML
-    private TextField unitField;
-    @FXML
-    private TextField birthYearField;
-    @FXML
-    private TextArea noteField;
-    @FXML
-    private TextField homeTownField;
-    @FXML
-    private Label fileLabel; // Label hiển thị tên file
-    private File selectedFile;
 
     @FXML
     public void initialize() {
-        List<Level>levelList=levelService.getAll();
-        levelComboBox.setItems(FXCollections.observableList(levelList));
-        levelComboBox.setConverter(new StringConverter<Level>() {
-            @Override
-            public String toString(Level level) {
-                return level != null ? level.getName() : "";
-            }
-
-            @Override
-            public Level fromString(String s) {
+        List<Level> levels = levelService.getAll();
+        levelComboBox.setItems(FXCollections.observableList(levels));
+        levelComboBox.setConverter(new StringConverter<>() {
+            @Override public String toString(Level l) { return l != null ? l.getName() : ""; }
+            @Override public Level fromString(String s) {
                 return levelComboBox.getItems().stream()
-                        .filter(level -> level.getName().equals(s))
-                        .findFirst()
-                        .orElse(null);
-
+                        .filter(l -> Objects.equals(l.getName(), s))
+                        .findFirst().orElse(null);
             }
         });
     }
+    private Runnable onSuccess;              // <-- thêm
+    public void setOnSuccess(Runnable r) {   // <-- thêm
+        this.onSuccess = r;
+    }
+
     @FXML
     private void onClose() {
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
+        Window w = closeButton.getScene() != null ? closeButton.getScene().getWindow() : null;
+        if (w instanceof Stage) ((Stage) w).close();
     }
+
     @FXML
-    private void onChooseFile(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Import Officer");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("CSV file", "*.csv"),
-                new FileChooser.ExtensionFilter("Excel file", "*.xlsx")
+    private void onChooseFile() {
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Import Officer");
+        fc.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Excel (*.xlsx, *.xls)", "*.xlsx", "*.xls"),
+                new FileChooser.ExtensionFilter("CSV (*.csv)", "*.csv")
         );
-
-        // Mở dialog chọn file
-        selectedFile = fileChooser.showOpenDialog(null);
-        if (selectedFile != null) {
-            fileLabel.setText(selectedFile.getName());
-        } else {
-            fileLabel.setText("Chưa chọn file");
-        }
+        Window owner = closeButton.getScene() != null ? closeButton.getScene().getWindow() : null;
+        selectedFile = fc.showOpenDialog(owner);
+        fileLabel.setText(selectedFile != null ? selectedFile.getName() : "Chưa chọn file");
     }
-    private int tryParseInt(String input) {
-        try {
-            return Integer.parseInt(input.trim());
-        } catch (Exception e) {
-            return 0;
-        }
+
+    /* ================= Helpers ================= */
+
+    private static final DateTimeFormatter[] DATE_FORMATS = new DateTimeFormatter[] {
+            DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+            DateTimeFormatter.ISO_LOCAL_DATE
+    };
+
+    private int tryParseInt(String s) {
+        try { return Integer.parseInt(s.trim()); } catch (Exception e) { return 0; }
     }
-    private LocalDate getCellLocalDateString(Cell cell) {
-        if (cell == null) {
-            return null;
+
+    private LocalDate parseDateFlexible(String s) {
+        if (s == null || s.isBlank()) return null;
+        for (DateTimeFormatter f : DATE_FORMATS) {
+            try { return LocalDate.parse(s.trim(), f); } catch (Exception ignored) {}
         }
-
-        try {
-            CellType cellType = cell.getCellType();
-
-            // Trường hợp ô là ngày dạng số
-            if (cellType == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
-                return cell.getDateCellValue()
-                        .toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDate();
-            }
-
-            // Trường hợp ô là chuỗi (String) - ví dụ "12/07/2025"
-            else if (cellType == CellType.STRING) {
-                String dateStr = cell.getStringCellValue().trim();
-
-                if (dateStr.isEmpty()) {
-                    return null;
-                }
-
-                // Cố gắng parse định dạng dd/MM/yyyy
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                return LocalDate.parse(dateStr, formatter);
-            }
-
-            // Có thể xử lý thêm trường hợp công thức (formula) nếu cần
-            else if (cellType == CellType.FORMULA) {
-                FormulaEvaluator evaluator = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
-                CellValue evaluated = evaluator.evaluate(cell);
-
-                if (evaluated.getCellType() == CellType.NUMERIC) {
-                    return LocalDate.ofInstant(
-                            DateUtil.getJavaDate(evaluated.getNumberValue()).toInstant(),
-                            ZoneId.systemDefault()
-                    );
-                }
-            }
-
-        } catch (Exception e) {
-            System.out.println("⚠️ Lỗi khi đọc ngày từ ô: " + e.getMessage());
-        }
-
         return null;
     }
+
+    private String getCellString(Cell cell) {
+        if (cell == null) return "";
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue().trim();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getLocalDateTimeCellValue()
+                            .toLocalDate()
+                            .format(DATE_FORMATS[0]); // dd/MM/yyyy
+                }
+                double d = cell.getNumericCellValue();
+                long l = Math.round(d);
+                return (Math.abs(d - l) < 1e-9) ? String.valueOf(l) : String.valueOf(d);
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                try {
+                    return cell.getStringCellValue().trim();
+                } catch (Exception e) {
+                    try {
+                        double dv = cell.getNumericCellValue();
+                        long lv = Math.round(dv);
+                        return (Math.abs(dv - lv) < 1e-9) ? String.valueOf(lv) : String.valueOf(dv);
+                    } catch (Exception ignored) { return ""; }
+                }
+            default:
+                return "";
+        }
+    }
+
+    private LocalDate getCellLocalDate(Cell cell) {
+        if (cell == null) return null;
+        if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
+            return cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+        if (cell.getCellType() == CellType.STRING) {
+            return parseDateFlexible(cell.getStringCellValue());
+        }
+        if (cell.getCellType() == CellType.FORMULA) {
+            try { return cell.getLocalDateTimeCellValue().toLocalDate(); } catch (Exception ignored) {}
+        }
+        return null;
+    }
+
+    /* ================= Import Excel/CSV ================= */
 
     private void importExcelFile(File file) {
         List<Officer> officerList = new ArrayList<>();
@@ -166,65 +165,49 @@ public class AddOfficerController {
             boolean skipHeader = true;
 
             for (Row row : sheet) {
-                if (skipHeader) {
-                    skipHeader = false;
-                    continue;
-                }
+                if (skipHeader) { skipHeader = false; continue; }
 
                 try {
                     int col = 0;
-                    int id = tryParseInt(getCellString(row.getCell(col++)));              // ID (không dùng)
-                    String fullName = getCellString(row.getCell(col++));                  // Họ tên
-                    String identifierCode = getCellString(row.getCell(col++));            // Mã định danh (⚠️ String)
-                    String level = getCellString(row.getCell(col++));                     // Trình độ
-                    String unit = getCellString(row.getCell(col++));                      // Đơn vị
-                    int birthYear = tryParseInt(getCellString(row.getCell(col++)));       // Năm sinh
-                    String homeTown = getCellString(row.getCell(col++));                  // Quê quán
-                    String note = getCellString(row.getCell(col++));                      // Ghi chú
-                    LocalDate since = getCellLocalDateString(row.getCell(col++));         // Ngày bắt đầu hưởng
-                    LocalDate util = getCellLocalDateString(row.getCell(col++));          // Ngày kết thúc hưởng
-                    col++; // Bỏ qua cột "Số tháng hưởng" vì không cần nhập
+                    /* 0 */        String _idIgnore   = getCellString(row.getCell(col++)); // ID (bỏ)
+                    /* 1 */        String fullName    = getCellString(row.getCell(col++));
+                    /* 2 */        String identifier  = getCellString(row.getCell(col++));
+                    /* 3 */        String levelName   = getCellString(row.getCell(col++));
+                    /* 4 */        String unit        = getCellString(row.getCell(col++));
+                    /* 5 */        int birthYear      = tryParseInt(getCellString(row.getCell(col++)));
+                    /* 6 */        String homeTown    = getCellString(row.getCell(col++));
+                    /* 7 */        String note        = getCellString(row.getCell(col++));
+                    /* 8 */        LocalDate since    = getCellLocalDate(row.getCell(col++));
+                    /* 9 */        LocalDate until    = getCellLocalDate(row.getCell(col++));
+                    /* 10 */       col++; // Số tháng hưởng (bỏ)
 
                     Officer officer = new Officer(
-                            fullName,
-                            identifierCode,
-                            birthYear,
-                            since,
-                            util,
-                            level,
-                            unit,
-                            homeTown,
-                            note
+                            fullName, identifier, birthYear, since, until,
+                            levelName, unit, homeTown, note
                     );
 
-                    // Xử lý các lần công tác
-                    Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
-                    int roundIndex = 1;
-
+                    // Lần 1 BĐ, Lần 1 KT, Lần 2 BĐ, Lần 2 KT, ...
+                    Map<Integer, Pair<LocalDate, LocalDate>> rounds = new LinkedHashMap<>();
+                    int round = 1;
                     for (; col + 1 < row.getLastCellNum(); col += 2) {
-                        LocalDate startDate = getCellLocalDateString(row.getCell(col));
-                        LocalDate endDate = getCellLocalDateString(row.getCell(col + 1));
-
-                        if (startDate != null && endDate != null) {
-                            studyTimes.put(roundIndex++, Pair.of(startDate, endDate));
-                        }
+                        LocalDate s = getCellLocalDate(row.getCell(col));
+                        LocalDate e = getCellLocalDate(row.getCell(col + 1));
+                        if (s != null && e != null) rounds.put(round++, Pair.of(s, e));
                     }
+                    officer.setStudyTimes(rounds);
 
-                    officer.setStudyTimes(studyTimes);
                     officerList.add(officer);
-
-                } catch (Exception e) {
-                    System.err.println("⚠️ Lỗi tại dòng " + row.getRowNum() + ": " + e.getMessage());
+                } catch (Exception ex) {
+                    System.err.println("⚠ Dòng " + (row.getRowNum() + 1) + " lỗi: " + ex.getMessage());
                 }
             }
 
             officeService.saveOfficerAll(officerList);
             Dialog.displaySuccessFully("✅ Đã lưu " + officerList.size() + " cán bộ");
 
-
         } catch (Exception e) {
             e.printStackTrace();
-            Dialog.displayErrorMessage("❌ Không thể đọc file Excel");
+            Dialog.displayErrorMessage("❌ Không thể đọc file Excel: " + e.getMessage());
         }
     }
 
@@ -235,130 +218,114 @@ public class AddOfficerController {
             boolean skipHeader = true;
 
             while ((line = br.readLine()) != null) {
-                if (skipHeader) {
-                    skipHeader = false;
-                    continue;
+                if (skipHeader) { skipHeader = false; continue; }
+
+                String[] f = line.split(",", -1); // giữ ô trống
+                if (f.length < 10) continue;
+
+                // 0:ID(bỏ), 1:Họ tên, 2:Mã định danh, 3:Trình độ, 4:Đơn vị, 5:Năm sinh,
+                // 6:Quê quán, 7:Ghi chú, 8:Since, 9:Until, 10:Số tháng(bỏ), 11..: vòng học
+                String fullName   = f[1].trim();
+                String identifier = f[2].trim();
+                String levelName  = f[3].trim();
+                String unit       = f[4].trim();
+                int    birthYear  = tryParseInt(f[5].trim());
+                String homeTown   = f[6].trim();
+                String note       = f[7].trim();
+                LocalDate since   = parseDateFlexible(f[8].trim());
+                LocalDate until   = parseDateFlexible(f[9].trim());
+
+                Officer officer = new Officer(fullName, identifier, birthYear, since, until,
+                        levelName, unit, homeTown, note);
+
+                Map<Integer, Pair<LocalDate, LocalDate>> rounds = new LinkedHashMap<>();
+                int round = 1;
+                for (int i = 11; i + 1 < f.length; i += 2) {
+                    LocalDate s = parseDateFlexible(f[i].trim());
+                    LocalDate e = parseDateFlexible(f[i + 1].trim());
+                    if (s != null && e != null) rounds.put(round++, Pair.of(s, e));
                 }
+                officer.setStudyTimes(rounds);
 
-                String[] fields = line.split(",", -1); // giữ ô trống
-
-                if (fields.length >= 7) {
-                    String fullName = fields[0].trim();
-                    String identifierCode = fields[1].trim();
-                    int birthYear = Integer.parseInt(fields[1].trim());
-                    LocalDate since = parseDate(fields[2].trim());
-                    LocalDate util = parseDate(fields[3].trim());
-                    String levelName = fields[4].trim();
-                    String unit = fields[5].trim();
-                    String homeTown = fields[6].trim();
-                    String note = fields[7].trim();
-
-                    Officer officer = new Officer(fullName,identifierCode, birthYear, since,util, levelName, unit, homeTown, note);
-
-                    // Bắt đầu từ cột 7 → Lần 1 BĐ, Lần 1 KT, ...
-                    Map<Integer, Pair<LocalDate, LocalDate>> studyTimes = new LinkedHashMap<>();
-                    int roundIndex = 1;
-                    for (int i = 8; i + 1 < fields.length; i += 2) {
-                        LocalDate start = parseDate(fields[i].trim());
-                        LocalDate end = parseDate(fields[i + 1].trim());
-
-                        if (start != null && end != null) {
-                            studyTimes.put(roundIndex++, Pair.of(start, end));
-                        }
-                    }
-
-                    officer.setStudyTimes(studyTimes);
-                    officerList.add(officer);
-                }
+                officerList.add(officer);
             }
 
             officeService.saveOfficerAll(officerList);
             Dialog.displaySuccessFully("✅ Đã lưu " + officerList.size() + " cán bộ");
+
         } catch (Exception e) {
             e.printStackTrace();
-            Dialog.displayErrorMessage("❌ Không thể đọc file CSV");
-        }
-    }
-    private LocalDate parseDate(String dateStr) {
-        try {
-            if (dateStr == null || dateStr.isBlank()) return null;
-            return LocalDate.parse(dateStr); // mặc định theo định dạng ISO: yyyy-MM-dd
-        } catch (Exception e) {
-            System.err.println("⚠️ Không thể parse ngày: " + dateStr);
-            return null;
+            Dialog.displayErrorMessage("❌ Không thể đọc file CSV: " + e.getMessage());
         }
     }
 
-    private String getCellString(org.apache.poi.ss.usermodel.Cell cell) {
-        if (cell == null) return "";
-        return switch (cell.getCellType()) {
-            case STRING -> cell.getStringCellValue();
-            case NUMERIC -> String.valueOf((long) cell.getNumericCellValue());
-            case BOOLEAN -> String.valueOf(cell.getBooleanCellValue());
-            case FORMULA -> cell.getCellFormula();
-            default -> "";
-        };
-    }
-    private LocalDate getCellLocalDate(Cell cell) {
-        if (cell == null ) {
-            return null; // hoặc LocalDate.now() tùy ý bạn
-        }
-
-        if (DateUtil.isCellDateFormatted(cell)) {
-            return cell.getDateCellValue()
-                    .toInstant()
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDate();
-        }
-
-        return null;
-    }
     @FXML
-    private void onImport(){
+    private void onImport() {
         if (selectedFile == null) {
             Dialog.displayErrorMessage("Vui lòng chọn file trước khi import!");
             return;
         }
-
-        String fileName = selectedFile.getName().toLowerCase();
+        String name = selectedFile.getName().toLowerCase();
         try {
-            if (fileName.endsWith(".csv")) {
-                importCsvFile(selectedFile);
-            } else if (fileName.endsWith(".xlsx")) {
-                importExcelFile(selectedFile);
-            } else {
-                Dialog.displayErrorMessage("Định dạng file không hỗ trợ.");
-            }
+            if (name.endsWith(".csv")) importCsvFile(selectedFile);
+            else if (name.endsWith(".xlsx") || name.endsWith(".xls")) importExcelFile(selectedFile);
+            else Dialog.displayErrorMessage("Định dạng file không hỗ trợ.");
+            afterSuccess();
         } catch (Exception e) {
             e.printStackTrace();
-            Dialog.displayErrorMessage("Lỗi khi import file!");
+            Dialog.displayErrorMessage("Lỗi khi import file: " + e.getMessage());
         }
     }
+
     @FXML
     private void onSave() {
         try {
+            String fullName = fullNameField.getText();
+            if (fullName == null || fullName.isBlank()) {
+                Dialog.displayErrorMessage("Họ tên không được để trống.");
+                return;
+            }
+            Level selectedLevel = levelComboBox.getValue();
+            if (selectedLevel == null) {
+                Dialog.displayErrorMessage("Vui lòng chọn cấp bậc.");
+                return;
+            }
+
+            int birthYear = tryParseInt(birthYearField.getText());
 
             Officer officer = new Officer();
-            officer.setUnit(unitField.getText());
-            officer.setFullName(fullNameField.getText());
-            officer.setLevelId(levelComboBox.getValue().getId());
-            officer.setHomeTown(homeTownField.getText());
-            officer.setBirthYear(Integer.valueOf(birthYearField.getText()));
-            officer.setIdentifierCode(identifierField.getText());
-            officer.setNote(noteField.getText());
+            officer.setFullName(fullName.trim());
+            officer.setIdentifierCode(identifierField.getText() != null ? identifierField.getText().trim() : "");
+            officer.setLevelId(selectedLevel.getId());
+            officer.setLevelName(selectedLevel.getName());
+            officer.setUnit(unitField.getText() != null ? unitField.getText().trim() : "");
+            officer.setHomeTown(homeTownField.getText() != null ? homeTownField.getText().trim() : "");
+            officer.setBirthYear(birthYear);
+            officer.setNote(noteField.getText() != null ? noteField.getText().trim() : "");
+
             officeService.saveOfficer(officer);
+
+            // clear form
+            identifierField.clear();
             fullNameField.clear();
             unitField.clear();
             birthYearField.clear();
             homeTownField.clear();
-            levelComboBox.getSelectionModel().clearSelection();
             noteField.clear();
+            levelComboBox.getSelectionModel().clearSelection();
 
-            Dialog.displaySuccessFully("Luu cán bộ thành công");
+            Dialog.displaySuccessFully("Lưu cán bộ thành công");
+            afterSuccess();
         } catch (Exception e) {
             e.printStackTrace();
-            Dialog.displayErrorMessage("Luu cán bộ thất bại");
+            Dialog.displayErrorMessage("Lưu cán bộ thất bại");
         }
     }
-
+    private void afterSuccess() {
+        try {
+            if (onSuccess != null) onSuccess.run();   // báo về OfficerViewController để loadData()
+        } finally {
+            onClose();                                // đóng popup AddOfficer
+        }
+    }
 }

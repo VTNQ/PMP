@@ -38,7 +38,7 @@ public class OfficerServiceImpl implements OfficeService {
             conn = MySQLConnection.getConnection();
 
             String sql = "INSERT INTO officer(full_name,level_id,unit,hometown,birth_year,note,identifierCode) VALUES(?,?,?,?,?,?,?);";
-            stmt = conn.prepareStatement(sql);
+            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             stmt.setString(1, officer.getFullName());
             stmt.setInt(2, officer.getLevelId());
             stmt.setString(3, officer.getUnit());
@@ -104,7 +104,7 @@ public class OfficerServiceImpl implements OfficeService {
 
     @Override
     public void saveOfficerAll(List<Officer> officers) {
-        String insertOfficer = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, since,util,identifierCode) VALUES (?, ?, ?, ?, ?,?, ?, ?,?)";
+        String insertOfficer = "INSERT INTO officer(full_name, level_id, unit, hometown, birth_year, note, identifierCode) VALUES (?, ?, ?, ?, ?, ?, ?)";
         String insertStudy = "INSERT INTO studyTimes(officer_id, round, start_date, end_date) VALUES (?, ?, ?, ?)";
         String insertAllow = "INSERT INTO allowance(officer_id, start_date, end_date, decision_start, decision_end) VALUES (?, ?, ?, ?, ?)";
         java.util.Map<String, Integer> levelCache = new java.util.HashMap<>();
@@ -135,9 +135,7 @@ public class OfficerServiceImpl implements OfficeService {
                 officerStmt.setString(4, officer.getHomeTown());
                 officerStmt.setInt(5, officer.getBirthYear());
                 officerStmt.setString(6, officer.getNote());
-                officerStmt.setDate(7, officer.getSince() != null ? java.sql.Date.valueOf(officer.getSince()) : null);
-                officerStmt.setDate(8, officer.getUntil() != null ? java.sql.Date.valueOf(officer.getUntil()) : null);
-                officerStmt.setString(9, officer.getIdentifierCode());
+                officerStmt.setString(7, officer.getIdentifierCode());
                 officerStmt.executeUpdate();
                 try (ResultSet rs = officerStmt.getGeneratedKeys()) {
                     if (!rs.next()) {
@@ -202,7 +200,7 @@ public class OfficerServiceImpl implements OfficeService {
 
     @Override
     public void updateOfficer(int id, Officer officer) {
-        String sql = "UPDATE officer SET full_name = ?, level_id = ?, unit = ?, hometown = ?,birth_year= ?,note= ?,since=?,util=?,identifierCode=? WHERE id = ?";
+        String sql = "UPDATE officer SET full_name = ?, level_id = ?, unit = ?, hometown = ?, birth_year = ?, note = ?, identifierCode = ? WHERE id = ?";
         try (Connection connection = MySQLConnection.getConnection()) {
             PreparedStatement stmt = connection.prepareStatement(sql);
             stmt.setString(1, officer.getFullName());
@@ -211,10 +209,8 @@ public class OfficerServiceImpl implements OfficeService {
             stmt.setString(4, officer.getHomeTown());
             stmt.setInt(5, officer.getBirthYear());
             stmt.setString(6, officer.getNote());
-            stmt.setDate(7, java.sql.Date.valueOf(officer.getSince()));
-            stmt.setDate(8, officer.getUntil() != null ? java.sql.Date.valueOf(officer.getUntil()) : null);
-            stmt.setString(9, officer.getIdentifierCode());
-            stmt.setInt(10, id);
+            stmt.setString(7, officer.getIdentifierCode());
+            stmt.setInt(8, id);
             stmt.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
@@ -671,6 +667,41 @@ public class OfficerServiceImpl implements OfficeService {
             e.printStackTrace();
         }
         return count;
+    }
+    @Override
+    public void importOfficers(List<OfficerViewDTO> dtos) {
+        if (dtos == null || dtos.isEmpty()) return;
+
+        List<Officer> entities = new ArrayList<>();
+        for (OfficerViewDTO dto : dtos) {
+            if (dto == null) continue;
+
+            Officer o = new Officer();
+            o.setFullName(dto.getFullName().get());        // StringProperty -> String
+            o.setLevelName(dto.getLevelName().get());
+            o.setUnit(dto.getUnit().get());
+            o.setHomeTown(dto.getHomeTown().get());
+            o.setBirthYear(dto.getBirthYear().get());      // IntegerProperty -> int
+            o.setNote(dto.getNote().get());
+            o.setIdentifierCode(dto.getIdentifierCode().get());
+
+            // studyTimes
+            if (dto.getStudyRounds() != null && !dto.getStudyRounds().isEmpty()) {
+                Map<Integer, org.apache.commons.lang3.tuple.Pair<LocalDate, LocalDate>> map = new HashMap<>();
+                dto.getStudyRounds().forEach((round, sr) -> {
+                    if (sr != null) map.put(round, org.apache.commons.lang3.tuple.Pair.of(sr.getStartDate(), sr.getEndDate()));
+                });
+                o.setStudyTimes(map);
+            }
+
+            // since/until không có trong file → để null
+            o.setSince(null);
+            o.setUntil(null);
+
+            entities.add(o);
+        }
+
+        saveOfficerAll(entities); // dùng batch insert bạn đã có
     }
 
 

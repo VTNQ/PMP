@@ -19,8 +19,6 @@ import java.io.IOException;
 
 public class SuperAdminDashBoardController {
     @FXML private Button maximizeButton;
-    @FXML private Label labelUser;
-    @FXML private Label labelOfficer;
     private double xOffset, yOffset;
 
     private Stage stage() {
@@ -74,7 +72,6 @@ public class SuperAdminDashBoardController {
 
     @FXML
     public void initialize() {
-        // Thêm các mục vào menu
         menuList.getItems().addAll(
                 "📊 Dashboard",
                 "🏢 Manager Officer",
@@ -82,43 +79,24 @@ public class SuperAdminDashBoardController {
                 "⚙ Settings",
                 "🚪 Logout"
         );
-        loadDashboardData();
-        // Mặc định chọn Dashboard
-        menuList.getSelectionModel().select(0);
-        loadView("SuperAdmin/DefaultDashboard");
 
-        // Xử lý khi thay đổi menu
-        menuList.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                String viewKey = newValue.replaceAll("[^a-zA-Z ]", "").trim();
-                switch (viewKey) {
-                    case "Dashboard":
-                        loadView("SuperAdmin/DefaultDashboard");
-                        break;
-                    case "Manager Officer":
-                        loadView("Officer/OfficerView");
-                        break;
-                    case "Manager User":
-                        loadView("User/UserManagementView");
-                        break;
-                    case "Logout":
-                        logOut();
-                        break;
-                    default:
-                        System.out.println("Không xác định menu: " + viewKey);
-                        break;
-                }
+        menuList.getSelectionModel().select(0);
+        showDefaultDashboard();
+
+        menuList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null) return;
+            String viewKey = newVal.replaceAll("[^a-zA-Z ]", "").trim();
+            switch (viewKey) {
+                case "Dashboard" -> showDefaultDashboard();                 // <— dùng hàm mới
+                case "Manager Officer" -> loadView("Officer/OfficerView");
+                case "Manager User" -> loadView("User/UserManagementView");
+                case "Logout" -> logOut();
+                default -> System.out.println("Không xác định menu: " + viewKey);
             }
         });
     }
-    private void loadDashboardData() {
-        int adminCount = userService.countUserByRoleAdmin();
-        int officerCount=officeService.countOfficers();
 
-        // set text vào label
-        labelUser.setText("👤 " + adminCount + " người dùng");
-        labelOfficer.setText("📁 " + officerCount + " cán bộ");
-    }
+
     /**
      * Load một view FXML vào contentArea và đặt lại kích thước nếu cần.
      */
@@ -154,4 +132,26 @@ public class SuperAdminDashBoardController {
             e.printStackTrace();
         }
     }
+    private void showDefaultDashboard() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/qnp/pmp/SuperAdmin/DefaultDashboard.fxml"));
+            Parent view = loader.load();
+
+            // set số liệu
+            Label lu = (Label) view.lookup("#labelUser");
+            Label lo = (Label) view.lookup("#labelOfficer");
+            if (lu != null) lu.setText("👤 " + userService.countUserByRoleAdmin() + " người dùng");
+            if (lo != null) lo.setText("📁 " + officeService.countOfficers() + " cán bộ");
+
+            if (view instanceof Region r) {
+                r.prefWidthProperty().bind(contentArea.widthProperty());
+                r.prefHeightProperty().bind(contentArea.heightProperty());
+            }
+            contentArea.getChildren().setAll(view);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

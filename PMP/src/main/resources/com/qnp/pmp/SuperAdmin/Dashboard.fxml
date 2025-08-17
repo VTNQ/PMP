@@ -25,6 +25,8 @@
           onMouseClicked="#onTitleBarMouseClicked">
 
         <Label text="🧑‍💻 SuperAdmin Dashboard" styleClass="title"/>
+        <Label fx:id="labelUser" text="" styleClass="user-label" />
+
         <Pane HBox.hgrow="ALWAYS"/>
 
         <!-- 3 nút cửa sổ -->

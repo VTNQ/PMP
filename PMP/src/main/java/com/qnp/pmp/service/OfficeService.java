@@ -16,4 +16,5 @@ public interface OfficeService {
     List<Officer>getOfficers();
     OfficerViewDTO getOfficerById(int officerId);
     int countOfficers();
+    void importOfficers(List<OfficerViewDTO> officers);
 }
